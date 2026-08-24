@@ -83,13 +83,13 @@ export const GlassSphere: React.FC<GlassSphereProps> = ({ scrollProgress, mouse 
 
     // Scroll-based parallax and scale adjustments
     const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-    const isTablet = typeof window !== "undefined" && window.innerWidth < 1024;
-    const responsiveFactor = isMobile ? 0.34 : (isTablet ? 0.8 : 1.0);
+    const isTablet = typeof window !== "undefined" && window.innerWidth >= 768 && window.innerWidth < 1024;
+    const responsiveFactor = isMobile ? 0.48 : (isTablet ? 0.8 : 1.0);
 
-    // React to mouse movement (lerped for smoothness) - centered on mobile
+    // React to mouse movement (lerped for smoothness) - perfectly centered on mobile
     const targetX = isMobile ? 0 : (mouse.current.x * 0.35);
-    // Position Lion logo perfectly centered between top badge and tagline card with clear margins on both sides
-    const targetY = isMobile ? 0.52 : (-0.65 + mouse.current.y * 0.2);
+    // Position Lion logo perfectly centered vertically and horizontally within the hero banner on mobile
+    const targetY = isMobile ? 0.05 : (-0.65 + mouse.current.y * 0.2);
 
     // If mesh is brand new, set position immediately to avoid slow initial drift
     if (meshRef.current.position.y === 0 && meshRef.current.position.x === 0) {

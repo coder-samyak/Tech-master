@@ -315,7 +315,7 @@ export const Journey: React.FC = () => {
       </div>
 
       {/* Thematic Growth Roadmap */}
-      <div className="roadmap-container max-w-7xl mx-auto px-6 relative z-10 pb-16">
+      <div className="roadmap-container -mx-6 sm:mx-auto px-0 sm:px-6 max-w-none sm:max-w-7xl relative z-10 pb-16 w-screen sm:w-auto overflow-hidden">
         <style>{`
           @keyframes roadmapScroll {
             0% { transform: translateX(0); }
@@ -331,7 +331,7 @@ export const Journey: React.FC = () => {
           }
         `}</style>
 
-        <div className="mb-16 text-center">
+        <div className="mb-16 text-center px-6 sm:px-0">
           <p className="typo-badge mb-4">ROADMAP</p>
           <h2 className="typo-h2">
             Founder's <span className="text-gold italic font-bold">Growth Roadmap</span>
@@ -339,7 +339,7 @@ export const Journey: React.FC = () => {
           <p className="text-xs text-gray-500 font-mono tracking-[1px] uppercase mt-2">Hover to Pause Timeline</p>
         </div>
 
-        <div className="relative overflow-hidden pb-12 pt-6">
+        <div className="relative overflow-hidden pb-12 pt-6 w-full max-w-[100vw]">
           <div className="animate-roadmap flex gap-8 relative z-10 h-[440px]">
             
             {/* Connection line inside the scrolling container */}

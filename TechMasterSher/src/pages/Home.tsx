@@ -587,7 +587,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-4 sm:px-6 relative overflow-hidden pt-16 sm:pt-20 md:pt-24 pb-0 text-center">
+      <section className="flex flex-col justify-center items-center px-6 sm:px-6 md:px-12 relative overflow-hidden pt-16 sm:pt-20 md:pt-24 pb-0 text-center">
         {/* Main Title: TECH MASTER - Positioned just below navbar */}
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-3">
           <motion.h1
@@ -653,7 +653,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.6 }}
-            className="text-gray-300 text-sm sm:text-lg md:text-2xl font-serif italic max-w-3xl leading-relaxed mb-4 md:mb-10 p-4 sm:p-6 md:p-8 rounded-2xl border border-gold/30 bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
+            className="text-gray-300 text-sm sm:text-lg md:text-2xl font-serif italic max-w-3xl leading-relaxed mb-2 md:mb-4 p-4 sm:p-6 md:p-8 rounded-2xl border border-gold/30 bg-black/40 backdrop-blur-sm shadow-[0_0_30px_rgba(212,175,55,0.1)]"
           >
             {heroTagline}
             <span className="block text-[10px] sm:text-xs font-mono font-normal text-gold/80 not-italic uppercase tracking-[2px] mt-2 sm:mt-3">
@@ -665,11 +665,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.8 }}
-            className="relative z-30 mt-4 sm:mt-6 mb-4 sm:mb-8"
+            className="relative z-30 mt-1 sm:mt-2 mb-1 sm:mb-2"
           >
             <div
               onClick={() => introRef.current?.scrollIntoView({ behavior: "smooth" })}
-              className="flex flex-col items-center gap-1.5 px-5 py-2.5 rounded-full border border-gold/40 hover:border-gold bg-black/80 hover:bg-black/90 backdrop-blur-md shadow-[0_0_25px_rgba(212,175,55,0.25)] hover:scale-105 transition-all duration-300 cursor-pointer group select-none"
+              className="flex flex-col items-center gap-1.5 px-4 py-2 opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300 cursor-pointer group select-none"
             >
               <span className="text-[10px] uppercase tracking-[3px] text-gold font-bold font-mono group-hover:text-gold-light transition-colors">
                 Scroll down
@@ -686,7 +686,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Intro & The Vision Animated Vertical Timeline Section */}
-      <section className="scroll-section py-12 sm:py-20 px-4 sm:px-6 max-w-4xl mx-auto relative z-10">
+      <section className="scroll-section pt-3 pb-12 sm:pt-6 sm:pb-20 px-6 sm:px-6 md:px-12 max-w-4xl mx-auto relative z-10">
         <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-10 sm:gap-20">
           
           {/* Central Vertical Connecting Timeline Line (Journey Style) */}
@@ -712,7 +712,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                 <span className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-gold animate-pulse shadow-[0_0_12px_rgba(212,175,55,0.9)]" />
                 <span className="typo-badge text-gold tracking-[2px] uppercase font-mono font-bold text-[10px] sm:text-xs">{introBadge}</span>
               </div>
-              <h2 className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-bold mb-3 sm:mb-5 leading-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-3 sm:mb-5 leading-tight">
                 {introHeading}
               </h2>
               <p className="text-gray-300 text-xs sm:text-base md:text-lg font-light leading-relaxed">
@@ -744,7 +744,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                   {visionBadge}
                 </motion.span>
               </div>
-              <h2 className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-bold mb-3 sm:mb-5 leading-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-3 sm:mb-5 leading-tight">
                 {visionHeading}
               </h2>
               <p className="text-gray-300 text-xs sm:text-base md:text-lg font-light leading-relaxed">
@@ -757,12 +757,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* About the CEO / Founder */}
-      <section className="scroll-section py-8 sm:py-12 px-4 sm:px-6 max-w-7xl mx-auto relative z-10">
+      <section className="scroll-section py-8 sm:py-12 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10">
         <div className="glass-panel p-5 sm:p-12 rounded-2xl sm:rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
           <span className="typo-badge text-gold/80 border border-gold/30 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs inline-block mb-4 sm:mb-6">
             {founderBadge}
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-bold mb-4 sm:mb-6">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-bold mb-4 sm:mb-6">
             {founderName} <span className="text-gold italic">{founderHighlighted}</span>
           </h2>
           <p className="text-gray-300 text-sm sm:text-lg font-light leading-relaxed max-w-4xl">
@@ -773,8 +773,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
       {/* 2. Channels Ticker Section */}
       <section className="py-6 sm:py-8 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-2 sm:gap-3">
-        <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-4 sm:px-6">
-          <h2 className="font-serif text-xl sm:text-3xl font-bold text-white tracking-tight">
+        <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-6 sm:px-6">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {tickerHeading} <span className="text-gold italic font-bold">{tickerHighlight}</span>
           </h2>
           <p className="text-gray-400 text-[11px] sm:text-sm font-mono tracking-wider uppercase mt-0.5 sm:mt-1">
@@ -842,7 +842,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 5. Global Reach & Statistics */}
-      <section className="scroll-section py-12 sm:py-16 bg-[#050505] border-y border-white/5 px-4 sm:px-6 relative z-10 text-center">
+      <section className="scroll-section py-12 sm:py-16 bg-[#050505] border-y border-white/5 px-6 sm:px-6 md:px-12 relative z-10 text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             {activeHome?.statistics?.badge || "GLOBAL REACH & STATISTICS"}
@@ -940,7 +940,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
         {/* Main Heading & Subtitle */}
         <div className="max-w-3xl mx-auto mb-8 sm:mb-12 relative z-20">
-          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-normal text-white mb-3 sm:mb-4 tracking-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-3 sm:mb-4 tracking-tight">
             {(() => {
               const rawHeading = activeHome?.brandCollaborations?.heading;
               if (rawHeading && !rawHeading.includes("Trusted By") && !rawHeading.includes("Leading Technology Brands")) {
@@ -1092,7 +1092,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                       transition: { staggerChildren: 0.04 }
                     }
                   }}
-                  className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-2.5 w-full items-center justify-items-center"
+                  className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full items-center justify-items-center"
                 >
                   {displayCollabs.map((brand: any, idx: number) => {
                     const bName = brand.brandName;
@@ -1162,7 +1162,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
 
       {/* Contact Preview */}
-      <section className="scroll-section pb-8 px-4 sm:px-6 max-w-7xl mx-auto relative z-10 text-center">
+      <section className="scroll-section pb-8 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-6 sm:mb-10 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs">{contactTag}</span>
         </div>
