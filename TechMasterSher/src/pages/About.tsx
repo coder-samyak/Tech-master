@@ -88,7 +88,7 @@ export const About: React.FC = () => {
       <div className="absolute top-1/4 left-1/2 w-[60vw] h-[60vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-gold opacity-15 pointer-events-none translate-x-1/2 translate-y-1/2" />
 
-      <div className="max-w-6xl mx-auto space-y-20 sm:space-y-24 relative z-10">
+      <div className="max-w-6xl mx-auto space-y-10 sm:space-y-24 relative z-10">
 
         {/* 1. Founder Philosophy (FIRST SECTION: Image on Left, Content Card on Right) */}
         {philosophy.visibility !== false && philosophy.status !== "Draft" && (

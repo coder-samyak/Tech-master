@@ -686,7 +686,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Intro & The Vision Animated Vertical Timeline Section */}
-      <section className="scroll-section pt-3 pb-12 sm:pt-6 sm:pb-20 px-6 sm:px-6 md:px-12 max-w-4xl mx-auto relative z-10">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-4xl mx-auto relative z-10">
         <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-10 sm:gap-20">
           
           {/* Central Vertical Connecting Timeline Line (Journey Style) */}
@@ -757,7 +757,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* About the CEO / Founder */}
-      <section className="scroll-section py-8 sm:py-12 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10">
         <div className="glass-panel p-5 sm:p-12 rounded-2xl sm:rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
           <span className="typo-badge text-gold/80 border border-gold/30 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs inline-block mb-4 sm:mb-6">
             {founderBadge}
@@ -772,7 +772,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 2. Channels Ticker Section */}
-      <section className="py-6 sm:py-8 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-2 sm:gap-3">
+      <section className="py-10 sm:py-16 bg-black/60 border-y border-white/10 relative z-10 overflow-hidden text-center flex flex-col items-center justify-center gap-2 sm:gap-3">
         <div className="flex flex-col items-center gap-1 relative z-20 max-w-3xl px-6 sm:px-6">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {tickerHeading} <span className="text-gold italic font-bold">{tickerHighlight}</span>
@@ -825,7 +825,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 3. Core Values Section */}
-      <section className="scroll-section section-padding relative z-10 text-center">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-8 sm:mb-12 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             {activeHome?.coreValues?.badge || "HOW WE MOVE"}
@@ -842,7 +842,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 5. Global Reach & Statistics */}
-      <section className="scroll-section py-12 sm:py-16 bg-[#050505] border-y border-white/5 px-6 sm:px-6 md:px-12 relative z-10 text-center">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 bg-[#050505] border-y border-white/5 px-6 sm:px-6 md:px-12 relative z-10 text-center">
         <div className="flex justify-center mb-6 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             {activeHome?.statistics?.badge || "GLOBAL REACH & STATISTICS"}
@@ -876,7 +876,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 6. Video Showcase Section */}
-      <section className="scroll-section py-12 sm:py-16 px-2 sm:px-6 max-w-7xl mx-auto relative z-10 text-left">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10 text-left">
         <div className="flex justify-center mb-8 sm:mb-12 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             FEATURED VIDEO SHOWCASE
@@ -930,7 +930,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 7. Brand Collaborations Grid (Original Logo Size, Reduced Inner Gap, Centered) */}
-      <section className="scroll-section py-12 sm:py-20 px-3 sm:px-6 max-w-6xl mx-auto relative z-10 text-center flex flex-col items-center justify-center">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 px-3 sm:px-6 max-w-6xl mx-auto relative z-10 text-center flex flex-col items-center justify-center">
         {/* Small Badge */}
         <div className="flex justify-center mb-4 sm:mb-6 relative z-20">
           <span className="typo-badge text-gold/80 border border-gold/30 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/50 font-mono font-semibold tracking-[2px] sm:tracking-[3px] uppercase text-[10px] sm:text-xs">
@@ -1162,7 +1162,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
 
       {/* Contact Preview */}
-      <section className="scroll-section pb-8 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10 text-center">
+      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10 text-center">
         <div className="flex justify-center mb-6 sm:mb-10 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs">{contactTag}</span>
         </div>
