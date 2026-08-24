@@ -3,7 +3,6 @@ import { Mail, MapPin } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import { motion } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useData } from "../context/DataContext";
 
