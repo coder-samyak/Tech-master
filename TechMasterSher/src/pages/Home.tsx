@@ -1101,12 +1101,12 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                     const isLenskart = bName.toLowerCase() === "lenskart";
 
                     const imgClasses = isUltra
-                      ? "h-4 sm:h-6 md:h-7 w-auto max-w-[80px] sm:max-w-[130px] md:max-w-[150px]"
+                      ? "h-6 sm:h-6 md:h-7 w-auto max-w-[130px] sm:max-w-[130px] md:max-w-[150px]"
                       : (isCashify
-                        ? "h-3.5 sm:h-5 md:h-6 w-auto max-w-[70px] sm:max-w-[105px] md:max-w-[125px]"
+                        ? "h-5.5 sm:h-5 md:h-6 w-auto max-w-[120px] sm:max-w-[105px] md:max-w-[125px]"
                         : (isLenskart
-                          ? "h-6 sm:h-9 md:h-11 w-auto max-w-[90px] sm:max-w-[160px] md:max-w-[200px]"
-                          : "h-9 sm:h-14 md:h-18 w-auto max-w-[110px] sm:max-w-[220px] md:max-w-[280px]"));
+                          ? "h-9 sm:h-9 md:h-11 w-auto max-w-[145px] sm:max-w-[160px] md:max-w-[200px]"
+                          : "h-12 sm:h-14 md:h-18 w-auto max-w-[145px] sm:max-w-[220px] md:max-w-[280px]"));
 
                     const logoFilter = isCashify
                       ? "brightness(2.8) contrast(150%) grayscale(1)"
@@ -1121,7 +1121,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                         }}
                         whileHover={{ y: -3, scale: 1.04 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="group relative flex items-center justify-center p-1 sm:p-4 h-18 sm:h-28 md:h-32 w-full rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                        className="group relative flex items-center justify-center p-2 sm:p-4 h-20 sm:h-28 md:h-32 w-full rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
                       >
                         {/* Subtle Cell Hover Ambient Light Sweep */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
