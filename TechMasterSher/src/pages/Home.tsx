@@ -587,7 +587,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-6 sm:px-6 md:px-12 relative overflow-hidden pt-16 sm:pt-20 md:pt-24 pb-0 text-center">
+      <section className="flex flex-col justify-center items-center px-6 sm:px-6 md:px-12 relative overflow-hidden pt-28 sm:pt-20 md:pt-24 pb-0 text-center">
         {/* Main Title: TECH MASTER - Positioned just below navbar */}
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-3">
           <motion.h1
