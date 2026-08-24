@@ -1044,17 +1044,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
           const activeCollabs = rawCollabs.filter((b: any) => b.deleted !== true && (b.status === "Active" || b.status === true || b.status === undefined || b.visible !== false));
 
-          // Sanitize activeCollabs so Marshall is replaced with Fire-Boltt, and Fire-Boltt position becomes Mahindra
+          // Sanitize activeCollabs cleanly without wiping out logos
           const sanitizedCollabs = activeCollabs.map((b: any) => {
             const bName = b.brandName || b.name || "";
             if (/marshall/i.test(bName)) {
-              return { ...b, brandName: "Fire-Boltt", logoUrl: "", logo: "" };
-            }
-            if (/fire-?boltt?/i.test(bName)) {
-              return { ...b, brandName: "Mahindra", logoUrl: "", logo: "" };
+              return { ...b, brandName: "Fire-Boltt" };
             }
             return b;
-          }).filter((b: any) => !/marshall/i.test(b.brandName || b.name || ""));
+          });
 
           const displayCollabs = (sanitizedCollabs.length > 0 ? sanitizedCollabs : defaultBrandCollabs).map((b: any) => {
             const bName = b.brandName || b.name || "";
@@ -1099,6 +1096,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                     const isUltra = bName.toLowerCase().includes("ultraviolet");
                     const isCashify = bName.toLowerCase() === "cashify";
                     const isLenskart = bName.toLowerCase() === "lenskart";
+                    const isFirebolt = bName.toLowerCase().includes("fire");
 
                     const imgClasses = isUltra
                       ? "h-8 sm:h-6 md:h-7 w-full max-w-[160px] sm:max-w-[130px] md:max-w-[150px]"
@@ -1108,7 +1106,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                           ? "h-11 sm:h-9 md:h-11 w-full max-w-[170px] sm:max-w-[160px] md:max-w-[200px]"
                           : "h-14 sm:h-14 md:h-18 w-full max-w-[180px] sm:max-w-[220px] md:max-w-[280px]"));
 
-                    const logoFilter = isCashify
+                    const logoFilter = (isCashify || isFirebolt)
                       ? "brightness(2.8) contrast(150%) grayscale(1)"
                       : "grayscale(1) brightness(1.2)";
 
@@ -1139,6 +1137,11 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                               }
                             } else if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
                               target.src = brand.fallbackLogo;
+                            } else {
+                              target.style.display = 'none';
+                              if (target.nextElementSibling) {
+                                (target.nextElementSibling as HTMLElement).style.display = 'block';
+                              }
                             }
                           }}
                           className={`${imgClasses} object-contain transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10 mix-blend-screen`}
