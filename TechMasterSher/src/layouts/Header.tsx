@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-[999] py-[7px] md:py-2 pl-3.5 pr-2.5 sm:pl-6 md:pl-12 md:pr-5 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
+        className={`fixed top-0 left-0 w-full z-[999] py-[6.5px] md:py-2 pl-3.5 pr-2.5 sm:pl-6 md:pl-12 md:pr-5 flex justify-between items-center transition-all duration-300 ${!isScrolled ? "glass-nav" : ""}`}
         style={{
           filter: isScrolled ? 'none' : `
             drop-shadow(0 2px 4px rgba(212, 175, 55, 0.7))
