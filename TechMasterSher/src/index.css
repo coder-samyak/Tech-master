@@ -250,7 +250,7 @@ html.lenis, html.lenis body {
   }
 }
 
-/* Force Roboto Font on Career Form and All Child Controls */
+/* Force Roboto Font on Career and Contact Form and All Child Controls */
 .career-form-container,
 .career-form-container *,
 .career-form-container input,
@@ -258,6 +258,14 @@ html.lenis, html.lenis body {
 .career-form-container textarea,
 .career-form-container label,
 .career-form-container button,
-.career-form-container option {
+.career-form-container option,
+.contact-form-container,
+.contact-form-container *,
+.contact-form-container input,
+.contact-form-container select,
+.contact-form-container textarea,
+.contact-form-container label,
+.contact-form-container button,
+.contact-form-container option {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }

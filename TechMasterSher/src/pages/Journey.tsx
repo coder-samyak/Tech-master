@@ -326,9 +326,6 @@ export const Journey: React.FC = () => {
             width: max-content;
             animation: roadmapScroll 45s linear infinite;
           }
-          .animate-roadmap:hover {
-            animation-play-state: paused;
-          }
         `}</style>
 
         <div className="mb-16 text-center px-6 sm:px-0">
@@ -336,7 +333,6 @@ export const Journey: React.FC = () => {
           <h2 className="typo-h2">
             Founder's <span className="text-gold italic font-bold">Growth Roadmap</span>
           </h2>
-          <p className="text-xs text-gray-500 font-mono tracking-[1px] uppercase mt-2">Hover to Pause Timeline</p>
         </div>
 
         <div className="relative overflow-hidden pb-12 pt-6 w-full max-w-[100vw]">

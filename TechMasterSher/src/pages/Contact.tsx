@@ -105,9 +105,9 @@ export const Contact: React.FC = () => {
           {contactHero.badge}
         </motion.div>
         
-        <h1 className="typo-h1 mb-8">
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white mb-6">
           {contactHero.heading} <br />
-          <span className="text-gold italic font-bold">{contactHero.highlightHeading}</span>.
+          <span className="text-gold italic font-bold">{contactHero.highlightHeading}</span>
         </h1>
       </section>
 
@@ -202,92 +202,90 @@ export const Contact: React.FC = () => {
         {/* Form Column */}
         <div className="lg:col-span-7 flex flex-col justify-between gap-8">
           {/* Business Inquiry Form */}
-          <div className="glass-panel p-8 md:p-10 rounded-3xl border border-white/5 relative">
-            <h3 className="font-serif text-2xl text-white font-bold mb-8">Business Inquiry Form</h3>
+          <div className="glass-panel p-8 rounded-3xl border border-white/5 relative contact-form-container font-roboto">
+            <h3 className="font-serif text-2xl text-white font-bold mb-6">Business Inquiry Form</h3>
 
             {submitted ? (
-              <div className="py-20 text-center">
-                <span className="text-gold text-5xl block mb-6">✓</span>
-                <h4 className="font-serif text-2xl font-bold mb-3">Transmission Logged</h4>
-                <p className="text-gray-400 text-sm font-light">
+              <div className="py-12 text-center font-roboto">
+                <span className="text-gold text-4xl block mb-4">✓</span>
+                <h4 className="font-serif text-xl font-bold mb-2">Transmission Logged</h4>
+                <p className="text-gray-400 text-xs font-light font-roboto">
                   Your direct booking or collaboration inquiry has been logged successfully. We will respond within 24 hours.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5 font-roboto">
                 {errorMsg && (
-                  <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-light">
+                  <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-light font-roboto">
                     {errorMsg}
                   </div>
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">YOUR NAME</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="ARIAN DEVI"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">EMAIL ADDRESS</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="ARIAN@DEVI.COM"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">INQUIRY CATEGORY</label>
-                    <select 
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300"
-                    >
-                      {inquiryTypes.map((type: any) => (
-                        <option key={type.value} value={type.value} className="bg-[#121212] text-white">
-                          {type.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">COMPANY / BRAND</label>
-                    <input
-                      type="text"
-                      placeholder="GOOGLE INC."
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
-                    />
-                  </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">YOUR NAME</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="ARIAN DEVI"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  />
                 </div>
 
                 <div>
-                  <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">INQUIRY OUTLINE</label>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">EMAIL ADDRESS</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="ARIAN@DEVI.COM"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">INQUIRY CATEGORY</label>
+                  <select 
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  >
+                    {inquiryTypes.map((type: any) => (
+                      <option key={type.value} value={type.value} className="bg-[#121212] text-white font-roboto">
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">COMPANY / BRAND</label>
+                  <input
+                    type="text"
+                    placeholder="GOOGLE INC."
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">INQUIRY OUTLINE</label>
                   <textarea
                     rows={4}
                     required
                     placeholder="Provide outline dates, audience sizes, sponsorship briefs, or general requests."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-gold/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-roboto"
                   data-cursor="submit"
                 >
                   {isSubmitting ? "Logging Outline..." : "Log Inquiry Details"}
