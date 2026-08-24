@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-5 h-5" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -181,23 +182,37 @@ export const Portfolio: React.FC = () => {
       popular: "2M (Short)",
       link: "https://www.youtube.com/@fullcircle_in",
       accent: "#AA3BFF"
-    },
-    {
-      id: "ch-5",
-      keyName: "Trendz Talk",
-      name: "5. Trendz Talk",
-      desc: "Complex ideas, made visual. TrendzTalk breaks down engineering, technology, and the facts most people never stop to think about - one animation at a time.",
-      stats: ["15K Followers on IG"],
-      ytSubs: "",
-      igFollowers: "15K Followers on IG",
-      popular: "4.8M (Reel)",
-      link: "https://www.instagram.com/techmasterco/",
-      accent: "#00FF66"
     }
   ];
 
   const rawChannels = livePortfolioData?.channels || activeDb?.multiverseChannels || activeDb?.portfolioCMS?.channels || defaultChannels;
-  const channels = (Array.isArray(rawChannels) && rawChannels.length > 0 ? rawChannels : defaultChannels).filter((c: any) => c.visible !== false && !c.deleted);
+  const channels = (Array.isArray(rawChannels) && rawChannels.length > 0 ? rawChannels : defaultChannels)
+    .filter((c: any) => c.visible !== false && !c.deleted)
+    .filter((c: any) => {
+      const name = (c.name || c.keyName || "").toLowerCase();
+      return !name.includes("trendz");
+    });
+
+  const currentChannelIndex = channels.findIndex((c: any) => {
+    const rawName = (c.keyName || c.name || "").replace(/^\d+\.\s*/, "").trim();
+    return rawName.toLowerCase() === selectedChannel.toLowerCase();
+  });
+
+  const handlePrevChannel = () => {
+    if (channels.length === 0) return;
+    const activeIdx = currentChannelIndex >= 0 ? currentChannelIndex : 0;
+    const prevIdx = (activeIdx - 1 + channels.length) % channels.length;
+    const rawName = (channels[prevIdx].keyName || channels[prevIdx].name || "").replace(/^\d+\.\s*/, "").trim();
+    setSelectedChannel(rawName);
+  };
+
+  const handleNextChannel = () => {
+    if (channels.length === 0) return;
+    const activeIdx = currentChannelIndex >= 0 ? currentChannelIndex : 0;
+    const nextIdx = (activeIdx + 1) % channels.length;
+    const rawName = (channels[nextIdx].keyName || channels[nextIdx].name || "").replace(/^\d+\.\s*/, "").trim();
+    setSelectedChannel(rawName);
+  };
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-16 px-6 overflow-hidden bg-black">
@@ -248,118 +263,146 @@ export const Portfolio: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. DYNAMIC CENTERED CHANNEL CARDS DISPLAY */}
+      {/* 2. DYNAMIC CENTERED CHANNEL CARDS DISPLAY WITH CIRCULAR NAVIGATION */}
       <section className="max-w-7xl mx-auto mb-16 relative z-10">
-        <AnimatePresence mode="wait">
+        <div className="relative flex items-center justify-center max-w-4xl mx-auto px-2 sm:px-12">
+          {/* Previous Channel Circular Button */}
+          {channels.length > 1 && (
+            <button
+              onClick={handlePrevChannel}
+              className="absolute left-0 sm:left-2 md:-left-4 z-30 p-2.5 sm:p-3 rounded-full border border-gold/40 hover:border-gold hover:scale-110 bg-black/80 hover:bg-black text-gold backdrop-blur-md transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)] cursor-pointer flex items-center justify-center"
+              aria-label="Previous channel"
+              title="Previous Channel"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
+            </button>
+          )}
+
           {/* Single Centered Channel Card */}
-          <motion.div
-            key={selectedChannel}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="max-w-xl mx-auto"
-          >
-            {(() => {
-              const ch = channels.find((c: any) => {
-                const rawName = (c.keyName || c.name || "").replace(/^\d+\.\s*/, "").trim();
-                return rawName.toLowerCase() === selectedChannel.toLowerCase();
-              }) || channels[0];
-              
-              const channelStats = Array.isArray(ch.stats) 
-                ? ch.stats 
-                : [ch.ytSubs, ch.igFollowers].filter(Boolean);
+          <div className="w-full max-w-xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedChannel}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="w-full"
+              >
+                {(() => {
+                  const ch = channels.find((c: any) => {
+                    const rawName = (c.keyName || c.name || "").replace(/^\d+\.\s*/, "").trim();
+                    return rawName.toLowerCase() === selectedChannel.toLowerCase();
+                  }) || channels[0];
+                  
+                  const channelStats = Array.isArray(ch.stats) 
+                    ? ch.stats 
+                    : [ch.ytSubs, ch.igFollowers].filter(Boolean);
 
-              return (
-                <div className="glass-panel p-8 sm:p-10 rounded-3xl border-2 border-gold/50 shadow-[0_0_50px_rgba(212,175,55,0.25)] bg-black/85 backdrop-blur-xl flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">{ch.name}</h3>
-                      
-                      {/* Right Side Circular Channel Image Badge with Enhanced Brightness */}
-                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gold/60 shadow-[0_0_20px_rgba(212,175,55,0.4)] bg-black shrink-0 group/circle flex items-center justify-center">
-                        <img
-                          src={getChannelCircleImage(ch.name || ch.keyName, ch, livePortfolioData, activeDb)}
-                          alt={`${ch.name} Circle`}
-                          className="w-full h-full object-cover rounded-full opacity-95 brightness-110 contrast-105 group-hover/circle:opacity-100 group-hover/circle:scale-110 transition-all duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                  return (
+                    <div className="glass-panel p-8 sm:p-10 rounded-3xl border-2 border-gold/50 shadow-[0_0_50px_rgba(212,175,55,0.25)] bg-black/85 backdrop-blur-xl flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-5">
+                          <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">{ch.name}</h3>
+                          
+                          {/* Right Side Circular Channel Image Badge with Enhanced Brightness */}
+                          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gold/60 shadow-[0_0_20px_rgba(212,175,55,0.4)] bg-black shrink-0 group/circle flex items-center justify-center">
+                            <img
+                              src={getChannelCircleImage(ch.name || ch.keyName, ch, livePortfolioData, activeDb)}
+                              alt={`${ch.name} Circle`}
+                              className="w-full h-full object-cover rounded-full opacity-95 brightness-110 contrast-105 group-hover/circle:opacity-100 group-hover/circle:scale-110 transition-all duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2.5 mb-5">
+                          {channelStats.map((st: string, i: number) => (
+                            <span key={i} className="px-4 py-1.5 rounded-full bg-gold/15 border border-gold/40 text-gold text-xs font-mono font-bold">
+                              {st}
+                            </span>
+                          ))}
+                        </div>
+                        
+                        <p className="text-gray-300 text-sm md:text-base font-light leading-relaxed mb-6">
+                          {(() => {
+                            const lowName = (ch.name || "").toLowerCase();
+                            if (lowName.includes("tech master")) {
+                              return "Making tech simple, relatable, and impossible to ignore - through humor, honesty, and real stories anyone can feel. And we're just getting started.";
+                            }
+                            if (lowName.includes("next univerz")) {
+                              return "Where curiosity meets the unknown. Next Univerz goes beyond typical tech content - exploring cutting-edge innovation and hidden corners of the world most channels never reach.";
+                            }
+                            if (lowName.includes("master wheels") || lowName.includes("wheels")) {
+                              return "India's auto culture, from every angle. Reviews. Road trips. Modifications. Ownership stories. The full Experience";
+                            }
+                            if (lowName.includes("full circle") || lowName.includes("fullcircle")) {
+                              return "Experiences most people only dream about. Full Circle goes further than most channels are willing to. Challenges. Experiments. No limits.";
+                            }
+                            if (lowName.includes("trendz talk") || lowName.includes("trendztalk") || lowName.includes("trendz")) {
+                              return "Complex ideas, made visual. TrendzTalk breaks down engineering, technology, and the facts most people never stop to think about - one animation at a time.";
+                            }
+                            return ch.desc || ch.description || "";
+                          })()}
+                        </p>
+                        {ch.popular && (
+                          <div className="text-xs font-mono text-gray-300 bg-black/60 p-4 rounded-2xl border border-white/10 mb-6">
+                            <span className="text-gold uppercase tracking-wider block text-[10px] mb-1 font-bold">MOST POPULAR:</span>
+                            <span className="text-white font-semibold text-sm">{ch.popular}</span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2.5 mb-5">
-                      {channelStats.map((st: string, i: number) => (
-                        <span key={i} className="px-4 py-1.5 rounded-full bg-gold/15 border border-gold/40 text-gold text-xs font-mono font-bold">
-                          {st}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <p className="text-gray-300 text-sm md:text-base font-light leading-relaxed mb-6">
+
+                      {/* Circular Social Buttons (YouTube & Instagram - Grey Theme) */}
                       {(() => {
-                        const lowName = (ch.name || "").toLowerCase();
-                        if (lowName.includes("tech master")) {
-                          return "Making tech simple, relatable, and impossible to ignore - through humor, honesty, and real stories anyone can feel. And we're just getting started.";
-                        }
-                        if (lowName.includes("next univerz")) {
-                          return "Where curiosity meets the unknown. Next Univerz goes beyond typical tech content - exploring cutting-edge innovation and hidden corners of the world most channels never reach.";
-                        }
-                        if (lowName.includes("master wheels") || lowName.includes("wheels")) {
-                          return "India's auto culture, from every angle. Reviews. Road trips. Modifications. Ownership stories. The full Experience";
-                        }
-                        if (lowName.includes("full circle") || lowName.includes("fullcircle")) {
-                          return "Experiences most people only dream about. Full Circle goes further than most channels are willing to. Challenges. Experiments. No limits.";
-                        }
-                        if (lowName.includes("trendz talk") || lowName.includes("trendztalk") || lowName.includes("trendz")) {
-                          return "Complex ideas, made visual. TrendzTalk breaks down engineering, technology, and the facts most people never stop to think about - one animation at a time.";
-                        }
-                        return ch.desc || ch.description || "";
+                        const social = getSocialLinks(ch);
+                        return (
+                          <div className="flex items-center gap-3 pt-2">
+                            {social.youtube && (
+                              <a
+                                href={social.youtube}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Visit YouTube Channel"
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-11 h-11 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
+                              >
+                                <YoutubeIcon className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" />
+                              </a>
+                            )}
+                            {social.instagram && (
+                              <a
+                                href={social.instagram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Visit Instagram Page"
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-11 h-11 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
+                              >
+                                <InstagramIcon className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" />
+                              </a>
+                            )}
+                          </div>
+                        );
                       })()}
-                    </p>
-                    {ch.popular && (
-                      <div className="text-xs font-mono text-gray-300 bg-black/60 p-4 rounded-2xl border border-white/10 mb-6">
-                        <span className="text-gold uppercase tracking-wider block text-[10px] mb-1 font-bold">MOST POPULAR:</span>
-                        <span className="text-white font-semibold text-sm">{ch.popular}</span>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  );
+                })()}
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-                  {/* Circular Social Buttons (YouTube & Instagram - Grey Theme) */}
-                  {(() => {
-                    const social = getSocialLinks(ch);
-                    return (
-                      <div className="flex items-center gap-3 pt-2">
-                        {social.youtube && (
-                          <a
-                            href={social.youtube}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Visit YouTube Channel"
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-11 h-11 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
-                          >
-                            <YoutubeIcon className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" />
-                          </a>
-                        )}
-                        {social.instagram && (
-                          <a
-                            href={social.instagram}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Visit Instagram Page"
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-11 h-11 rounded-full border border-white/15 bg-white/5 text-gray-300 hover:bg-white/20 hover:text-white hover:border-white/40 transition-all duration-300 flex items-center justify-center shadow-md group/btn cursor-pointer"
-                          >
-                            <InstagramIcon className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" />
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })()}
-                </div>
-              );
-            })()}
-          </motion.div>
-        </AnimatePresence>
+          {/* Next Channel Circular Button */}
+          {channels.length > 1 && (
+            <button
+              onClick={handleNextChannel}
+              className="absolute right-0 sm:right-2 md:-right-4 z-30 p-2.5 sm:p-3 rounded-full border border-gold/40 hover:border-gold hover:scale-110 bg-black/80 hover:bg-black text-gold backdrop-blur-md transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)] cursor-pointer flex items-center justify-center"
+              aria-label="Next channel"
+              title="Next Channel"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
+            </button>
+          )}
+        </div>
       </section>
     </div>
   );

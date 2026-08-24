@@ -80,7 +80,7 @@ export const About: React.FC = () => {
   };
 
   const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80";
-  const founderImgUrl = mediaUrl(philosophy.profileImageUrl || aboutDataAny?.introduction?.profileImageUrl) || coverImg;
+  const founderImgUrl = mediaUrl(philosophy.profileImageUrl || philosophy.imageUrl || philosophy.image || aboutDataAny?.introduction?.profileImageUrl) || coverImg;
 
   return (
     <div className="relative text-white min-h-screen pt-28 pb-16 px-6 overflow-hidden bg-black">
@@ -88,14 +88,58 @@ export const About: React.FC = () => {
       <div className="absolute top-1/4 left-1/2 w-[60vw] h-[60vw] aurora-glow-purple opacity-20 pointer-events-none -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] aurora-glow-gold opacity-15 pointer-events-none translate-x-1/2 translate-y-1/2" />
 
-      <div className="max-w-6xl mx-auto space-y-24 relative z-10">
+      <div className="max-w-6xl mx-auto space-y-20 sm:space-y-24 relative z-10">
 
-        {/* 1. Header & Company Story */}
+        {/* 1. Founder Philosophy (FIRST SECTION: Image on Left, Content Card on Right) */}
+        {philosophy.visibility !== false && philosophy.status !== "Draft" && (
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+            {/* Left Column: Clean Image Container WITHOUT Any Text Overlay */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="relative rounded-3xl overflow-hidden border border-gold/30 shadow-[0_0_40px_rgba(212,175,55,0.2)] h-[380px] sm:h-[480px] md:h-[520px] w-full"
+            >
+              <img
+                src={founderImgUrl}
+                alt={philosophy.founderName || "Tech Master Founder"}
+                className="w-full h-full object-cover object-top"
+              />
+            </motion.div>
+
+            {/* Right Column: Glass Card with Text Content */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(212,175,55,0.1)] h-full min-h-[380px] sm:min-h-[480px]"
+            >
+              <span className="text-gold font-mono text-xs sm:text-sm tracking-[4px] uppercase font-bold mb-4 block text-center">
+                {philosophy.smallBadge || "FOUNDER PHILOSOPHY"}
+              </span>
+
+              <blockquote className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-normal italic leading-tight mb-6 text-center max-w-xl">
+                "{philosophy.quote || philosophy.description || "Information is Wealth."}"
+              </blockquote>
+
+              {philosophy.showDivider !== false && (
+                <div className="w-16 h-1 bg-gold rounded-full shadow-[0_0_12px_rgba(212,175,55,0.8)] mb-6 mx-auto" />
+              )}
+
+              <p className="text-gold font-mono text-xs sm:text-sm tracking-[2px] uppercase font-bold text-center">
+                — {philosophy.founderName || "Tech Master Founder"} {philosophy.founderDesignation ? `(${philosophy.founderDesignation})` : ""}
+              </p>
+            </motion.div>
+          </section>
+        )}
+
+        {/* 2. Header & Company Story */}
         {aboutTechMaster.visibility !== false && aboutTechMaster.status !== "Draft" && (
           <section className="text-center max-w-4xl mx-auto">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6 }}
               className="typo-badge mb-4 uppercase inline-block"
             >
@@ -104,8 +148,9 @@ export const About: React.FC = () => {
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="glass-panel p-8 sm:p-12 rounded-3xl border border-gold/30 bg-black/50 backdrop-blur-xl text-left shadow-[0_0_40px_rgba(212,175,55,0.1)]"
             >
               <div 
@@ -116,7 +161,7 @@ export const About: React.FC = () => {
           </section>
         )}
 
-        {/* 2 & 3. Team Culture & Studio Image Card Section */}
+        {/* 3. Team Culture & Studio Image Card Section */}
         {(culture.visibility !== false || studioCard.visibility !== false) && (
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {culture.visibility !== false && culture.status !== "Draft" && (
@@ -167,39 +212,6 @@ export const About: React.FC = () => {
                 </div>
               </motion.div>
             )}
-          </section>
-        )}
-
-        {/* 4. Founder Philosophy (Clean Cardless Typography + Bright Clear Background Photo) */}
-        {philosophy.visibility !== false && philosophy.status !== "Draft" && (
-          <section className="relative rounded-3xl overflow-hidden border border-gold/30 shadow-[0_0_50px_rgba(212,175,55,0.25)] min-h-[500px] sm:min-h-[560px] max-w-4xl mx-auto flex items-center justify-center p-6 sm:p-12 text-center group bg-black">
-            {/* Full Background Photo (Cover.jpeg) - Ultra Bright & Clear (0 Blur, 95% Opacity) */}
-            <div 
-              className="absolute inset-0 bg-cover bg-[position:center_15%] transition-transform duration-700 opacity-95 group-hover:scale-105" 
-              style={{ backgroundImage: `url(${founderImgUrl})` }}
-            />
-
-            {/* Light Film Gradient Overlay just for Text Contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/45 pointer-events-none" />
-
-            {/* Foreground Content - Pure Typography Without Any Cards or Boxes */}
-            <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center justify-center space-y-6">
-              <span className="text-gold font-mono text-xs sm:text-sm tracking-[5px] uppercase font-bold drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
-                {philosophy.smallBadge || "FOUNDER PHILOSOPHY"}
-              </span>
-
-              <blockquote className="font-serif text-3xl sm:text-5xl md:text-6xl text-white font-normal italic leading-tight tracking-tight drop-shadow-[0_4px_25px_rgba(0,0,0,0.98)] max-w-3xl">
-                "{philosophy.quote || philosophy.description || "Information is Wealth."}"
-              </blockquote>
-
-              {philosophy.showDivider !== false && (
-                <div className="w-20 h-1 bg-gold rounded-full shadow-[0_0_15px_rgba(212,175,55,0.9)] my-2" />
-              )}
-
-              <p className="text-gold font-mono text-sm sm:text-base tracking-[3px] uppercase font-bold drop-shadow-[0_2px_12px_rgba(0,0,0,0.98)]">
-                — {philosophy.founderName || "Tech Master Founder"} {philosophy.founderDesignation ? `(${philosophy.founderDesignation})` : ""}
-              </p>
-            </div>
           </section>
         )}
 

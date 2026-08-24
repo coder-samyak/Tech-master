@@ -13,15 +13,17 @@ export const SmoothScroll: React.FC<SmoothScrollProps> = ({ children }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize Lenis
+    // Initialize Lenis with ultra-smooth momentum config
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // standard fast-to-slow easing
+      duration: 1.4,
+      lerp: 0.08,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 1.1,
+      touchMultiplier: 2.0,
+      infinite: false,
     });
 
     // Update ScrollTrigger on scroll

@@ -115,20 +115,24 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   const tickerSubHeading = (liveHomeData?.channelsTicker?.subHeading || activeHome?.channelsTicker?.subHeading || activeHome?.tickerSubHeading || "Four channels today. A Media Empire in Motion.")
     .replace(/we're just getting started\s*[\/\-]?\s*/gi, "")
     .replace(/five channels/gi, "Four channels")
+    .replace(/four channels/gi, "Four channels")
     .trim();
   const defaultBrandChannels = [
     { brandName: "Tech Master" },
     { brandName: "Next Univerz" },
     { brandName: "Master Wheels" },
-    { brandName: "Full Circle" },
-    { brandName: "Trendz Talk" }
+    { brandName: "Full Circle" }
   ];
   const rawChannels = (liveHomeData?.channelsTicker?.channels && liveHomeData.channelsTicker.channels.length > 0)
     ? liveHomeData.channelsTicker.channels
     : ((activeHome?.channelsTicker?.channels && activeHome.channelsTicker.channels.length > 0)
       ? activeHome.channelsTicker.channels
       : (activeHome?.channels && activeHome.channels.length > 0 ? activeHome.channels : defaultBrandChannels));
-  const tickerChannelsList = rawChannels.filter((c: any) => c.visible !== false && c.deleted !== true);
+  const tickerChannelsList = rawChannels.filter((c: any) => {
+    if (c.visible === false || c.deleted === true) return false;
+    const name = (c.brandName || c.name || c.title || "").toLowerCase();
+    return !name.includes("trendz");
+  });
 
   const contactTag = liveHomeData?.newsletterContact?.contactPreview?.tag
     || activeHome?.newsletterContact?.contactPreview?.tag 
@@ -160,15 +164,27 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     || "Get In Touch";
 
   const defaultCoreValues = [
-    { title: "Fearless Energy", desc: "Pushing creative boundaries with unyielding momentum and passion." },
-    { title: "Creative Storytelling", desc: "Crafting narratives that resonate, inform, and inspire millions." },
-    { title: "Community First", desc: "Building genuine connections and putting our audience at the heart of everything we create." }
+    { title: "Fearless Energy", desc: "Pushing creative boundaries with unyielding momentum, bold innovation, and passion." },
+    { title: "Creative Storytelling", desc: "Crafting powerful visual narratives that inform, engage, and inspire millions globally." },
+    { title: "Community First", desc: "Putting our audience at the core of everything we build, cultivate, and create." }
   ];
+  const defaultDescMap: Record<string, string> = {
+    "fearless energy": "Pushing creative boundaries with unyielding momentum, bold innovation, and passion.",
+    "creative storytelling": "Crafting powerful visual narratives that inform, engage, and inspire millions globally.",
+    "community first": "Putting our audience at the core of everything we build, cultivate, and create."
+  };
   const rawCoreValues = (liveHomeData?.coreValues?.cards && liveHomeData.coreValues.cards.length > 0)
     ? liveHomeData.coreValues.cards
     : (activeHome?.coreValues?.cards || []);
   const coreValuesList = (rawCoreValues && rawCoreValues.length > 0)
-    ? rawCoreValues.filter((c: any) => c.deleted !== true).map((c: any) => ({ title: c.title, desc: c.desc || c.description }))
+    ? rawCoreValues.filter((c: any) => c.deleted !== true).map((c: any) => {
+        const titleKey = (c.title || "").toLowerCase().trim();
+        const fallback = defaultDescMap[titleKey] || "Pushing creative boundaries and delivering excellence in everything we build.";
+        return {
+          title: c.title,
+          desc: c.desc || c.description || fallback
+        };
+      })
     : defaultCoreValues;
 
   const defaultStats = [
@@ -494,6 +510,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
   const filteredVideos = activeVideos;
 
   const timelineRef = useRef<HTMLDivElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const visionRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress: timelineScrollProgress } = useScroll({
     target: timelineRef,
@@ -502,8 +520,22 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
   const timelineScaleY = useSpring(timelineScrollProgress, { stiffness: 200, damping: 30 });
 
-  // Intro Card transform properties (Active near top 0% - 45%, highlights when scrolling up / dims when scrolling down)
-  const introHighlightProgress = useTransform(timelineScrollProgress, [0.0, 0.45], [1, 0]);
+  const { scrollYProgress: introScrollProgress } = useScroll({
+    target: introRef,
+    offset: ["start 85%", "center 50%", "end 15%"]
+  });
+
+  const { scrollYProgress: visionScrollProgress } = useScroll({
+    target: visionRef,
+    offset: ["start 85%", "center 50%", "end 15%"]
+  });
+
+  // Intro Card transform properties (Activates ONLY when card reaches the center of the viewport)
+  const introHighlightProgress = useTransform(
+    introScrollProgress,
+    [0.0, 0.35, 0.5, 0.65, 1.0],
+    [0, 0, 1, 0, 0]
+  );
   const introBorderColor = useTransform(
     introHighlightProgress,
     [0, 1],
@@ -519,10 +551,14 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     [0, 1],
     ["0px 10px 40px rgba(0,0,0,0.8)", "0px 0px 50px rgba(212,175,55,0.45)"]
   );
-  const introScale = useTransform(introHighlightProgress, [0, 1], [0.98, 1.03]);
+  const introScale = useTransform(introHighlightProgress, [0, 1], [0.98, 1.02]);
 
-  // Vision Card transform properties (Active near bottom 45% - 90%, highlights when scrolling down / dims when scrolling up)
-  const visionHighlightProgress = useTransform(timelineScrollProgress, [0.45, 0.9], [0, 1]);
+  // Vision Card transform properties (Activates ONLY when card reaches the center of the viewport)
+  const visionHighlightProgress = useTransform(
+    visionScrollProgress,
+    [0.0, 0.35, 0.5, 0.65, 1.0],
+    [0, 0, 1, 0, 0]
+  );
   const visionBorderColor = useTransform(
     visionHighlightProgress,
     [0, 1],
@@ -538,7 +574,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     [0, 1],
     ["0px 10px 40px rgba(0,0,0,0.8)", "0px 0px 50px rgba(212,175,55,0.45)"]
   );
-  const visionScale = useTransform(visionHighlightProgress, [0, 1], [0.98, 1.03]);
+  const visionScale = useTransform(visionHighlightProgress, [0, 1], [0.98, 1.02]);
   const visionBadgeColor = useTransform(visionHighlightProgress, [0, 1], ["#9CA3AF", "#D4AF37"]);
   const visionOrbColor = useTransform(visionHighlightProgress, [0, 1], ["#6B7280", "#D4AF37"]);
   const visionOrbGlow = useTransform(
@@ -558,7 +594,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-none text-center uppercase whitespace-normal sm:whitespace-nowrap select-none inline-block relative z-10 mb-3 sm:mb-4"
+            className="text-4xl sm:text-7xl md:text-8xl lg:text-[104px] font-black leading-none text-center uppercase whitespace-normal sm:whitespace-nowrap select-none inline-block relative z-10 mb-3 sm:mb-4"
             style={{
               fontFamily: "'Montserrat', 'League Spartan', 'Outfit', sans-serif",
               fontWeight: 900,
@@ -629,15 +665,20 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center relative z-20 mb-0"
+            className="relative z-30 mt-4 sm:mt-6 mb-4 sm:mb-8"
           >
-            <div className="flex flex-col items-center gap-1 opacity-70 cursor-pointer hover:opacity-100 transition-opacity duration-300 mt-1 sm:mt-0">
-              <span className="text-[9px] uppercase tracking-[3px] text-gold font-bold">Scroll down</span>
+            <div
+              onClick={() => introRef.current?.scrollIntoView({ behavior: "smooth" })}
+              className="flex flex-col items-center gap-1.5 px-5 py-2.5 rounded-full border border-gold/40 hover:border-gold bg-black/80 hover:bg-black/90 backdrop-blur-md shadow-[0_0_25px_rgba(212,175,55,0.25)] hover:scale-105 transition-all duration-300 cursor-pointer group select-none"
+            >
+              <span className="text-[10px] uppercase tracking-[3px] text-gold font-bold font-mono group-hover:text-gold-light transition-colors">
+                Scroll down
+              </span>
               <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
+                animate={{ y: [0, 6, 0] }}
+                transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
               >
-                <ArrowDown className="w-4 h-4 text-gold" />
+                <ArrowDown className="w-4 h-4 text-gold group-hover:text-white transition-colors" />
               </motion.div>
             </div>
           </motion.div>
@@ -656,8 +697,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             />
           </div>
 
-          {/* Top Card: INTRO (Highlights with Gold Glow when scrolling up / active near top) */}
-          <div className="intro-card-node w-full relative z-10">
+          {/* Top Card: INTRO (Highlights with Gold Glow ONLY when reaching center of viewport) */}
+          <div ref={introRef} className="intro-card-node w-full relative z-10">
             <motion.div
               style={{
                 borderColor: introBorderColor,
@@ -680,8 +721,8 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             </motion.div>
           </div>
 
-          {/* Bottom Card: THE VISION (Highlights with Gold Glow when line reaches it on scroll) */}
-          <div className="vision-card-node w-full relative z-10">
+          {/* Bottom Card: THE VISION (Highlights with Gold Glow ONLY when reaching center of viewport) */}
+          <div ref={visionRef} className="vision-card-node w-full relative z-10">
             <motion.div
               style={{
                 borderColor: visionBorderColor,
@@ -784,7 +825,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* 3. Core Values Section */}
-      <section className="scroll-section section-padding relative z-10 text-left">
+      <section className="scroll-section section-padding relative z-10 text-center">
         <div className="flex justify-center mb-8 sm:mb-12 relative z-20">
           <span className="typo-badge text-gold/70 border border-gold/25 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/40 font-mono font-semibold">
             {activeHome?.coreValues?.badge || "HOW WE MOVE"}
@@ -792,9 +833,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         </div>
         <div className="core-values-grid grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8 max-w-7xl mx-auto">
           {coreValuesList.map((val: any, idx: number) => (
-            <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl sm:rounded-3xl border-l-4 border-l-gold/40 hover:border-l-gold transition-all duration-300">
-              <h3 className="typo-h4 mb-2 sm:mb-3 text-white font-serif">{val.title}</h3>
-              <p className="text-gray-400 text-xs sm:text-sm font-light leading-relaxed">{val.desc}</p>
+            <div key={idx} className="glass-panel p-6 sm:p-8 rounded-2xl sm:rounded-3xl border-t-4 border-t-gold/40 hover:border-t-gold transition-all duration-300 flex flex-col items-center justify-center text-center">
+              <h3 className="typo-h4 mb-2 sm:mb-3 !text-[#FACC15] font-serif text-center font-bold tracking-wide" style={{ color: "#FACC15" }}>{val.title}</h3>
+              <p className="text-gray-300 text-xs sm:text-sm font-light leading-relaxed text-center max-w-md">{val.desc}</p>
             </div>
           ))}
         </div>

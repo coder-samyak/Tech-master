@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Mail, MapPin } from "lucide-react";
 import { Magnetic } from "../components/Magnetic";
 import { motion } from "framer-motion";
@@ -17,6 +17,13 @@ const MorphingTorus: React.FC = () => {
   const innerRingRef = useRef<THREE.Mesh>(null);
   const coreRef = useRef<THREE.Mesh>(null);
 
+  const logoTexture = useMemo(() => {
+    const tex = new THREE.TextureLoader().load("/Tech MAster Logo.png");
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    return tex;
+  }, []);
+
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     
@@ -32,28 +39,29 @@ const MorphingTorus: React.FC = () => {
       innerRingRef.current.rotation.z = time * 0.3;
     }
 
-    // Spin core slowly
+    // Gentle wobble for logo center
     if (coreRef.current) {
-      coreRef.current.rotation.y = time * 0.15;
-      coreRef.current.rotation.x = Math.sin(time * 0.5) * 0.1;
+      coreRef.current.rotation.y = Math.sin(time * 0.5) * 0.15;
     }
   });
 
   return (
     <group scale={1.25}>
-      {/* Outer Gold Ring */}
+      {/* Outer Yellow Ring */}
       <mesh ref={outerRingRef}>
-        <torusGeometry args={[0.7, 0.022, 16, 80]} />
+        <torusGeometry args={[0.58, 0.009, 16, 80]} />
         <meshStandardMaterial
-          color="#D4AF37"
-          metalness={0.95}
-          roughness={0.15}
+          color="#FACC15"
+          metalness={0.8}
+          roughness={0.2}
+          emissive="#EAB308"
+          emissiveIntensity={0.25}
         />
       </mesh>
 
       {/* Inner Cyan/Electric Blue Ring */}
       <mesh ref={innerRingRef}>
-        <torusGeometry args={[0.45, 0.016, 16, 80]} />
+        <torusGeometry args={[0.45, 0.009, 16, 80]} />
         <meshStandardMaterial
           color="#00E5FF"
           metalness={0.9}
@@ -61,17 +69,14 @@ const MorphingTorus: React.FC = () => {
         />
       </mesh>
 
-      {/* Center Glass Sphere */}
+      {/* Center Tech Master Logo */}
       <mesh ref={coreRef}>
-        <sphereGeometry args={[0.22, 32, 32]} />
-        <meshPhysicalMaterial
-          color="#ffffff"
-          roughness={0.02}
-          transmission={1.0}
-          thickness={0.5}
-          ior={1.4}
-          transparent
-          opacity={0.9}
+        <planeGeometry args={[0.9, 0.9]} />
+        <meshBasicMaterial
+          map={logoTexture}
+          transparent={true}
+          side={THREE.DoubleSide}
+          depthWrite={false}
         />
       </mesh>
     </group>
@@ -306,12 +311,11 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                 <directionalLight position={[2, 2, 2]} intensity={1.5} color="#ffffff" />
                 <pointLight position={[-2, -2, 2]} intensity={2.0} color="#aa3bff" />
                 <MorphingTorus />
-                <Environment preset="studio" />
               </Canvas>
             </div>
             <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
-              <span className="text-[8px] font-mono tracking-widest text-gold uppercase bg-black/80 px-2 py-0.5 rounded border border-gold/30">
-                3D SPATIAL NODE
+              <span className="text-[9px] font-mono tracking-widest text-gold uppercase bg-black/80 px-2.5 py-1 rounded border border-gold/30 font-bold">
+                TechMaster
               </span>
             </div>
           </div>

@@ -167,8 +167,8 @@ export const Career: React.FC = () => {
           {careerHero.badge || "JOIN THE TEAM"}
         </motion.div>
         
-        <h1 className="typo-h1 mb-8">
-          {careerHero.titleLine1 || "Join Aman's"} <br />
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-white mb-6">
+          {careerHero.titleLine1 || "Join TechMaster's Team"} <br />
           <span className="text-gold italic font-bold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>.
         </h1>
 
@@ -211,70 +211,70 @@ export const Career: React.FC = () => {
         </div>
 
         {/* Culture Application Form */}
-        <div className="glass-panel p-8 rounded-3xl border border-white/5 relative h-fit">
+        <div className="glass-panel p-8 rounded-3xl border border-white/5 relative h-fit career-form-container font-roboto">
           <h3 className="font-serif text-2xl text-white font-bold mb-6">Direct Application</h3>
           
           {submitted ? (
-            <div className="py-12 text-center">
+            <div className="py-12 text-center font-roboto">
               <span className="text-gold text-4xl block mb-4">✓</span>
               <h4 className="font-serif text-xl font-bold mb-2">Application Received</h4>
-              <p className="text-gray-400 text-xs font-light">
+              <p className="text-gray-400 text-xs font-light font-roboto">
                 Our operations director will review your materials and reach out soon.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleApplySubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleApplySubmit} className="flex flex-col gap-5 font-roboto">
               {errorMsg && (
-                <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-light">
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-xs font-light font-roboto">
                   {errorMsg}
                 </div>
               )}
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">FULL NAME</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">FULL NAME</label>
                 <input
                   type="text"
                   required
                   placeholder="Arya Patel"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">EMAIL ADDRESS</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">EMAIL ADDRESS</label>
                 <input
                   type="email"
                   required
                   placeholder="arya@code.net"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">PHONE NUMBER</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">PHONE NUMBER</label>
                 <input
                   type="tel"
                   required
                   placeholder="+1 (555) 000-0000"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">POSITION APPLYING FOR</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">POSITION APPLYING FOR</label>
                 <select
                   value={formData.jobTitle}
                   onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-gray-400 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 >
-                  <option value="" className="bg-[#121212] text-white">Select a Position (Optional)</option>
+                  <option value="" className="bg-[#121212] text-white font-roboto">Select a Position (Optional)</option>
                   {careerList.map((role: any) => (
-                    <option key={role.id || role._id} value={role.title || role.role} className="bg-[#121212] text-white">
+                    <option key={role.id || role._id} value={role.title || role.role} className="bg-[#121212] text-white font-roboto">
                       {role.title || role.role}
                     </option>
                   ))}
@@ -282,42 +282,42 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">PORTFOLIO / GITHUB LINK</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">PORTFOLIO / GITHUB LINK</label>
                 <input
                   type="url"
                   required
                   placeholder="https://github.com/arya"
                   value={formData.portfolioLink}
                   onChange={(e) => setFormData({ ...formData, portfolioLink: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">WHY JOIN TECH MASTER?</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">WHY JOIN TECH MASTER?</label>
                 <textarea
                   rows={3}
                   required
                   placeholder="Briefly tell us how you want to contribute to the education space."
                   value={formData.whyJoin}
                   onChange={(e) => setFormData({ ...formData, whyJoin: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">COVER LETTER</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">COVER LETTER</label>
                 <textarea
                   rows={4}
                   placeholder="Tell us why you are the best fit for this role."
                   value={formData.coverLetter}
                   onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[9px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-mono">UPLOAD RESUME (PDF/DOC/PPT)</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">UPLOAD RESUME (PDF/DOC/PPT)</label>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx,.ppt,.pptx"
@@ -328,14 +328,14 @@ export const Career: React.FC = () => {
                       setFormData({ ...formData, resumeFile: files[0] });
                     }
                   }}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[9px] file:uppercase file:tracking-[1px] file:font-bold file:bg-gold file:text-black hover:file:bg-gold/80 transition-colors duration-300 cursor-pointer"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[9px] file:uppercase file:tracking-[1px] file:font-bold file:bg-gold file:text-black hover:file:bg-gold/80 transition-colors duration-300 cursor-pointer font-roboto"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full py-4 bg-gold hover:bg-gold-light text-black font-bold uppercase text-xs tracking-[2px] rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-roboto"
                 data-cursor="submit"
               >
                 {isSubmitting ? "Submitting Application..." : "Send Application"}
@@ -373,7 +373,7 @@ export const Career: React.FC = () => {
             {processHeader.titleLine1 || "The"} <span className="text-gold italic font-bold">{processHeader.titleLine2 || "Process"}</span>
           </h2>
         </div>
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative before:absolute before:top-8 before:left-8 md:before:left-0 md:before:top-12 before:w-0.5 md:before:w-full before:h-full md:before:h-0.5 before:bg-white/10">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative before:absolute before:top-8 before:bottom-8 before:left-8 md:before:left-[12.5%] md:before:top-12 md:before:bottom-auto md:before:w-[75%] before:w-0.5 md:before:h-0.5 before:bg-white/10">
           {careerProcess.map((item: any, idx: number) => (
             <div key={item.id || idx} className="relative z-10 flex md:flex-col items-start md:items-center gap-6 md:gap-4 text-left md:text-center">
               <div className="w-16 h-16 rounded-full bg-[#0d0d0d] border border-gold flex items-center justify-center font-serif text-xl text-gold font-bold shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">

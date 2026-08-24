@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { CustomCursor } from "./components/CustomCursor";
 import { SmoothScroll } from "./components/SmoothScroll";
-import { IntroLoader } from "./components/IntroLoader";
 import { SceneContainer } from "./three/SceneContainer";
 import { Header } from "./layouts/Header";
 import { Footer } from "./layouts/Footer";
@@ -74,8 +73,7 @@ function App() {
     }
     return "home";
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const { dbData, isLoading: isDataLoading } = useData();
+  const { dbData } = useData();
 
   // Initialize Analytics once dbData is ready
   useEffect(() => {
@@ -197,21 +195,10 @@ function App() {
     }
   };
 
-  if (isDataLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-gold text-xs tracking-widest font-mono">
-        SYSTEM INITIALIZING...
-      </div>
-    );
-  }
-
   return (
     <>
       {/* 1. Dynamic Head Metadata, Canonicals, Open Graph & Structured Data */}
       <SEO pageId={activePage} dbSEO={dbData} />
-
-      {/* 2. Cinematic Intro Loading Screen */}
-      {isLoading && <IntroLoader onComplete={() => setIsLoading(false)} />}
 
       {/* 3. Custom Magnetic Cursor */}
       <CustomCursor />
@@ -235,28 +222,26 @@ function App() {
       <ScrollToTop />
 
       {/* 9. Smooth Scroll Chassis & Content Layout */}
-      {!isLoading && (
-        <SmoothScroll>
-          <div 
-            className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-gold selection:text-black"
-            style={{ zIndex: 10 }}
-          >
-            
-            {/* Header Sticky Navigation */}
-            <Header activePage={activePage} onChangePage={navigatePage} />
+      <SmoothScroll>
+        <div 
+          className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-gold selection:text-black"
+          style={{ zIndex: 10 }}
+        >
+          
+          {/* Header Sticky Navigation */}
+          <Header activePage={activePage} onChangePage={navigatePage} />
 
-            {/* Dynamic Page Views */}
-            <main className="flex-grow z-10">
-              {renderActivePage()}
-            </main>
+          {/* Dynamic Page Views */}
+          <main className="flex-grow z-10">
+            {renderActivePage()}
+          </main>
 
-            {/* Premium Multi-column Footer */}
-            {activePage !== "contact" && (
-              <Footer onChangePage={navigatePage} />
-            )}
-          </div>
-        </SmoothScroll>
-      )}
+          {/* Premium Multi-column Footer */}
+          {activePage !== "contact" && (
+            <Footer onChangePage={navigatePage} />
+          )}
+        </div>
+      </SmoothScroll>
     </>
   );
 }

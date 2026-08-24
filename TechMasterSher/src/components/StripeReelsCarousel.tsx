@@ -148,7 +148,11 @@ const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; display
 export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels, isHomePage = false }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const activeReels = (reels && Array.isArray(reels) && reels.length > 0) ? reels.filter(Boolean) : DEFAULT_REELS;
+  const rawReels = (reels && Array.isArray(reels) && reels.length > 0) ? reels.filter(Boolean) : DEFAULT_REELS;
+  const activeReels = rawReels.filter((r: any) => {
+    const ch = (r.channelName || r.author || r.handle || r.title || "").toLowerCase();
+    return !ch.includes("trendz");
+  });
 
   const changeActiveIndex = (newIndex: number) => {
     if (newIndex === activeIndex) return;
@@ -204,14 +208,14 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
         <>
           <button
             onClick={handlePrev}
-            className={`absolute left-1 sm:left-2 md:left-6 z-50 p-2 sm:p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-gold border backdrop-blur-md transition-all shadow-lg text-white cursor-pointer`}
+            className="absolute left-1 sm:left-2 md:left-6 z-50 p-2 sm:p-2.5 rounded-full border border-gold/40 hover:border-gold hover:scale-110 bg-black/70 hover:bg-black text-gold backdrop-blur-md transition-all shadow-lg cursor-pointer flex items-center justify-center"
             aria-label="Previous reel"
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={handleNext}
-            className={`absolute right-1 sm:right-2 md:right-6 z-50 p-2 sm:p-2.5 ${isHomePage ? "rounded-none border-black hover:border-black" : "rounded-full border-gold/40 hover:border-gold"} bg-black/60 hover:bg-black/90 text-gold border backdrop-blur-md transition-all shadow-lg text-white cursor-pointer`}
+            className="absolute right-1 sm:right-2 md:right-6 z-50 p-2 sm:p-2.5 rounded-full border border-gold/40 hover:border-gold hover:scale-110 bg-black/70 hover:bg-black text-gold backdrop-blur-md transition-all shadow-lg cursor-pointer flex items-center justify-center"
             aria-label="Next reel"
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />

@@ -245,9 +245,6 @@ export const Journey: React.FC = () => {
                 >
                   {item.year}
                 </motion.span>
-                <span className="text-gray-400 text-xs uppercase tracking-[2px] font-mono block">
-                  {item.subtitle}
-                </span>
               </div>
             );
 
@@ -300,9 +297,6 @@ export const Journey: React.FC = () => {
                     >
                       {item.year}
                     </motion.span>
-                    <span className="text-gray-400 text-xs uppercase tracking-[1px] font-mono">
-                      {item.subtitle}
-                    </span>
                   </div>
                   {cardBlock}
                 </div>

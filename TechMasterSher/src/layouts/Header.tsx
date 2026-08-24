@@ -171,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <img
             src={mediaUrl(websiteSettings?.companyLogo) || logo1}
             alt="Tech Master Logo"
-            className="h-10 sm:h-14 lg:h-20 w-auto object-contain -my-2 sm:-my-4 lg:-my-5"
+            className="h-14 sm:h-20 lg:h-28 w-auto object-contain -my-2 sm:-my-4 lg:-my-6 max-h-none"
             style={{
               imageRendering: "-webkit-optimize-contrast",
               filter: "none",

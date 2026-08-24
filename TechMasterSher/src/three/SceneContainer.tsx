@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
 import { GlassSphere } from "./GlassSphere";
 import { ParticleField } from "./ParticleField";
 
@@ -75,9 +74,6 @@ export const SceneContainer: React.FC<SceneContainerProps> = () => {
           distance={10}
           color="#aa3bff"
         />
-
-        {/* Premium high-end studio environment map for reflections */}
-        <Environment preset="studio" />
 
         {/* Render 3D Objects based on the current page context */}
         
