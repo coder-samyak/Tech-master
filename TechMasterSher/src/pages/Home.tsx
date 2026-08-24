@@ -587,7 +587,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     <div className="relative text-white min-h-screen">
       
       {/* 1. Hero Section */}
-      <section className="flex flex-col justify-center items-center px-6 sm:px-6 md:px-12 relative overflow-hidden pt-28 sm:pt-20 md:pt-24 pb-0 text-center">
+      <section className="flex flex-col justify-center items-center px-6 sm:px-6 md:px-12 relative overflow-hidden pt-24 sm:pt-20 md:pt-24 pb-0 text-center">
         {/* Main Title: TECH MASTER - Positioned just below navbar */}
         <div className="max-w-5xl mx-auto flex flex-col items-center relative z-20 mb-3">
           <motion.h1
@@ -686,7 +686,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* Intro & The Vision Animated Vertical Timeline Section */}
-      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-4xl mx-auto relative z-10">
+      <section className="scroll-section pt-8 pb-3 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-4xl mx-auto relative z-10">
         <div ref={timelineRef} className="intro-vision-timeline relative flex flex-col items-center gap-10 sm:gap-20">
           
           {/* Central Vertical Connecting Timeline Line (Journey Style) */}
@@ -757,7 +757,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
       </section>
 
       {/* About the CEO / Founder */}
-      <section className="scroll-section py-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10">
+      <section className="scroll-section pt-3 pb-10 sm:py-16 md:py-20 px-6 sm:px-6 md:px-12 max-w-7xl mx-auto relative z-10">
         <div className="glass-panel p-5 sm:p-12 rounded-2xl sm:rounded-3xl border border-gold/30 bg-black/60 backdrop-blur-xl relative overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]">
           <span className="typo-badge text-gold/80 border border-gold/30 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-black/40 font-mono font-semibold text-[10px] sm:text-xs inline-block mb-4 sm:mb-6">
             {founderBadge}
