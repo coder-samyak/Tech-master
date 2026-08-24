@@ -1075,211 +1075,87 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
           }).sort((a: any, b: any) => a.order - b.order);
 
           return (
-            <>
-              {/* Mobile View (2-Row Full-Width Infinite Marquee) */}
-              <div className="block sm:hidden w-screen -mx-6 overflow-hidden py-4 bg-black/40 border-y border-white/10 relative z-10 flex flex-col gap-4">
-                {/* Background Glow */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-purple-900/10 to-transparent blur-xl pointer-events-none" />
-                
-                {/* Row 1 */}
-                <div className="overflow-hidden w-full relative">
-                  <motion.div
-                    animate={{ x: ["0%", "-50%"] }}
-                    transition={{ ease: "linear", duration: 30, repeat: Infinity }}
-                    style={{ willChange: "transform", display: "flex", flexDirection: "row", width: "max-content" }}
-                    className="flex flex-row flex-nowrap items-center gap-6 shrink-0"
-                  >
-                    {[...displayCollabs.slice(0, Math.ceil(displayCollabs.length / 2)), ...displayCollabs.slice(0, Math.ceil(displayCollabs.length / 2))].map((brand: any, idx: number) => {
-                      const bName = brand.brandName;
-                      const isUltra = bName.toLowerCase().includes("ultraviolet");
-                      const isCashify = bName.toLowerCase() === "cashify";
-                      const isLenskart = bName.toLowerCase() === "lenskart";
+            <div className="relative max-w-6xl mx-auto px-2 sm:px-4 flex flex-col items-center justify-center">
+              {/* Background Ambient Aurora Glow behind Grid */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
 
-                      const imgClasses = isUltra
-                        ? "h-4 w-auto max-w-[85px]"
-                        : (isCashify
-                          ? "h-3.5 w-auto max-w-[75px]"
-                          : (isLenskart
-                            ? "h-6 w-auto max-w-[95px]"
-                            : "h-8 w-auto max-w-[110px]"));
+              {/* Luxury Apple + Linear Grid Wall Container */}
+              <div className="border border-white/5 rounded-2xl sm:rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-2 sm:p-5 w-full">
+                <motion.div 
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: "-50px" }}
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.04 }
+                    }
+                  }}
+                  className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full items-center justify-items-center"
+                >
+                  {displayCollabs.map((brand: any, idx: number) => {
+                    const bName = brand.brandName;
+                    const isUltra = bName.toLowerCase().includes("ultraviolet");
+                    const isCashify = bName.toLowerCase() === "cashify";
+                    const isLenskart = bName.toLowerCase() === "lenskart";
 
-                      const logoFilter = isCashify
-                        ? "brightness(2.8) contrast(150%) grayscale(1)"
-                        : "grayscale(1) brightness(1.2)";
+                    const imgClasses = isUltra
+                      ? "h-4 sm:h-6 md:h-7 w-auto max-w-[80px] sm:max-w-[130px] md:max-w-[150px]"
+                      : (isCashify
+                        ? "h-3.5 sm:h-5 md:h-6 w-auto max-w-[70px] sm:max-w-[105px] md:max-w-[125px]"
+                        : (isLenskart
+                          ? "h-6 sm:h-9 md:h-11 w-auto max-w-[90px] sm:max-w-[160px] md:max-w-[200px]"
+                          : "h-9 sm:h-14 md:h-18 w-auto max-w-[110px] sm:max-w-[220px] md:max-w-[280px]"));
 
-                      return (
-                        <div key={`${bName}-m1-${idx}`} className="shrink-0 px-4 py-2 flex items-center justify-center min-w-[100px]">
-                          <img
-                            src={brand.logo}
-                            alt={bName}
-                            loading="eager"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              if (brand.fallbackLogo === 'TEXT_FALLBACK') {
-                                target.style.display = 'none';
-                                if (target.nextElementSibling) {
-                                  (target.nextElementSibling as HTMLElement).style.display = 'block';
-                                }
-                              } else if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
-                                target.src = brand.fallbackLogo;
+                    const logoFilter = isCashify
+                      ? "brightness(2.8) contrast(150%) grayscale(1)"
+                      : "grayscale(1) brightness(1.2)";
+
+                    return (
+                      <motion.div
+                        key={`${bName}-${idx}`}
+                        variants={{
+                          hidden: { opacity: 0, y: 15, scale: 0.96 },
+                          show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
+                        }}
+                        whileHover={{ y: -3, scale: 1.04 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        className="group relative flex items-center justify-center p-1 sm:p-4 h-18 sm:h-28 md:h-32 w-full rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                      >
+                        {/* Subtle Cell Hover Ambient Light Sweep */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                        <img
+                          src={brand.logo}
+                          alt={bName}
+                          loading="eager"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (brand.fallbackLogo === 'TEXT_FALLBACK') {
+                              target.style.display = 'none';
+                              if (target.nextElementSibling) {
+                                (target.nextElementSibling as HTMLElement).style.display = 'block';
                               }
-                            }}
-                            className={`${imgClasses} object-contain opacity-80 mix-blend-screen`}
-                            style={{ filter: logoFilter }}
-                          />
-                          <span 
-                            className="text-white font-sans font-bold text-sm tracking-[2px] uppercase text-center"
-                            style={{ display: 'none' }}
-                          >
-                            {bName}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </motion.div>
-                </div>
-
-                {/* Row 2 */}
-                <div className="overflow-hidden w-full relative">
-                  <motion.div
-                    animate={{ x: ["-50%", "0%"] }}
-                    transition={{ ease: "linear", duration: 30, repeat: Infinity }}
-                    style={{ willChange: "transform", display: "flex", flexDirection: "row", width: "max-content" }}
-                    className="flex flex-row flex-nowrap items-center gap-6 shrink-0"
-                  >
-                    {[...displayCollabs.slice(Math.ceil(displayCollabs.length / 2)), ...displayCollabs.slice(Math.ceil(displayCollabs.length / 2))].map((brand: any, idx: number) => {
-                      const bName = brand.brandName;
-                      const isUltra = bName.toLowerCase().includes("ultraviolet");
-                      const isCashify = bName.toLowerCase() === "cashify";
-                      const isLenskart = bName.toLowerCase() === "lenskart";
-
-                      const imgClasses = isUltra
-                        ? "h-4 w-auto max-w-[85px]"
-                        : (isCashify
-                          ? "h-3.5 w-auto max-w-[75px]"
-                          : (isLenskart
-                            ? "h-6 w-auto max-w-[95px]"
-                            : "h-8 w-auto max-w-[110px]"));
-
-                      const logoFilter = isCashify
-                        ? "brightness(2.8) contrast(150%) grayscale(1)"
-                        : "grayscale(1) brightness(1.2)";
-
-                      return (
-                        <div key={`${bName}-m2-${idx}`} className="shrink-0 px-4 py-2 flex items-center justify-center min-w-[100px]">
-                          <img
-                            src={brand.logo}
-                            alt={bName}
-                            loading="eager"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              if (brand.fallbackLogo === 'TEXT_FALLBACK') {
-                                target.style.display = 'none';
-                                if (target.nextElementSibling) {
-                                  (target.nextElementSibling as HTMLElement).style.display = 'block';
-                                }
-                              } else if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
-                                target.src = brand.fallbackLogo;
-                              }
-                            }}
-                            className={`${imgClasses} object-contain opacity-80 mix-blend-screen`}
-                            style={{ filter: logoFilter }}
-                          />
-                          <span 
-                            className="text-white font-sans font-bold text-sm tracking-[2px] uppercase text-center"
-                            style={{ display: 'none' }}
-                          >
-                            {bName}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </motion.div>
-                </div>
-              </div>
-
-              {/* Desktop / Tablet View (Original Grid Wall UNTOUCHED) */}
-              <div className="hidden sm:flex relative max-w-6xl mx-auto px-2 sm:px-4 flex-col items-center justify-center w-full">
-                {/* Background Ambient Aurora Glow behind Grid */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
-
-                {/* Luxury Apple + Linear Grid Wall Container */}
-                <div className="border border-white/5 rounded-2xl sm:rounded-3xl overflow-hidden bg-black/30 backdrop-blur-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative z-10 p-2 sm:p-5 w-full">
-                  <motion.div 
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, margin: "-50px" }}
-                    variants={{
-                      hidden: { opacity: 0 },
-                      show: {
-                        opacity: 1,
-                        transition: { staggerChildren: 0.04 }
-                      }
-                    }}
-                    className="grid grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full items-center justify-items-center"
-                  >
-                    {displayCollabs.map((brand: any, idx: number) => {
-                      const bName = brand.brandName;
-                      const isUltra = bName.toLowerCase().includes("ultraviolet");
-                      const isCashify = bName.toLowerCase() === "cashify";
-                      const isLenskart = bName.toLowerCase() === "lenskart";
-
-                      const imgClasses = isUltra
-                        ? "sm:h-6 md:h-7 w-auto sm:max-w-[130px] md:max-w-[150px]"
-                        : (isCashify
-                          ? "sm:h-5 md:h-6 w-auto sm:max-w-[105px] md:max-w-[125px]"
-                          : (isLenskart
-                            ? "sm:h-9 md:h-11 w-auto sm:max-w-[160px] md:max-w-[200px]"
-                            : "sm:h-14 md:h-18 w-auto sm:max-w-[220px] md:max-w-[280px]"));
-
-                      const logoFilter = isCashify
-                        ? "brightness(2.8) contrast(150%) grayscale(1)"
-                        : "grayscale(1) brightness(1.2)";
-
-                      return (
-                        <motion.div
-                          key={`${bName}-${idx}`}
-                          variants={{
-                            hidden: { opacity: 0, y: 15, scale: 0.96 },
-                            show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
+                            } else if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
+                              target.src = brand.fallbackLogo;
+                            }
                           }}
-                          whileHover={{ y: -3, scale: 1.04 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                          className="group relative flex items-center justify-center p-1 sm:p-4 h-18 sm:h-28 md:h-32 w-full rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:shadow-[inset_0_0_35px_rgba(255,255,255,0.03)] select-none cursor-pointer overflow-hidden"
+                          className={`${imgClasses} object-contain transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10 mix-blend-screen`}
+                          style={{ filter: logoFilter }}
+                        />
+                        <span 
+                          className="text-white font-sans font-bold text-lg sm:text-2xl tracking-[4px] uppercase text-center transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10"
+                          style={{ display: 'none' }}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                          <img
-                            src={brand.logo}
-                            alt={bName}
-                            loading="eager"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              if (brand.fallbackLogo === 'TEXT_FALLBACK') {
-                                target.style.display = 'none';
-                                if (target.nextElementSibling) {
-                                  (target.nextElementSibling as HTMLElement).style.display = 'block';
-                                }
-                              } else if (brand.fallbackLogo && target.src !== brand.fallbackLogo) {
-                                target.src = brand.fallbackLogo;
-                              }
-                            }}
-                            className={`${imgClasses} object-contain transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10 mix-blend-screen`}
-                            style={{ filter: logoFilter }}
-                          />
-                          <span 
-                            className="text-white font-sans font-bold text-lg sm:text-2xl tracking-[4px] uppercase text-center transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] relative z-10"
-                            style={{ display: 'none' }}
-                          >
-                            {bName}
-                          </span>
-                        </motion.div>
-                      );
-                    })}
-                  </motion.div>
-                </div>
+                          {bName}
+                        </span>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
               </div>
-            </>
+            </div>
           );
         })()}
       </section>
