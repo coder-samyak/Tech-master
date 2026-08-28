@@ -106,27 +106,78 @@ export const DatabaseProvider = ({ children }) => {
     }
   };
 
-  // Sync with MongoDB backend on initial mount
-  useEffect(() => {
-    const fetchCMSData = async () => {
+  const fetchCMSData = async () => {
+    try {
+      let localParsed = {};
       try {
-        const res = await apiFetch("/cms");
-        if (res.success && res.data) {
+        const saved = localStorage.getItem('zenvora_db');
+        if (saved) localParsed = JSON.parse(saved);
+      } catch (e) {}
+
+      const res = await apiFetch("/cms").catch(() => null);
+      const backendData = (res && res.success && res.data) ? res.data : {};
+
+      setDb(prev => {
+        const merged = {
+          ...initialData,
+          ...prev,
+          ...localParsed,
+          ...backendData
+        };
+        localStorage.setItem('zenvora_db', JSON.stringify(merged));
+        return merged;
+      });
+    } catch (error) {
+      console.error("Failed to fetch CMS state:", error);
+    }
+  };
+
+  // Sync with MongoDB backend, BroadcastChannel cross-tab sync & local changes with periodic polling
+  useEffect(() => {
+    fetchCMSData();
+    const interval = setInterval(fetchCMSData, 5000);
+
+    let channel;
+    try {
+      channel = new BroadcastChannel("zenvora_cms_sync");
+      channel.onmessage = (event) => {
+        if (event.data && event.data.type === "NEW_ENQUIRY" && event.data.enquiry) {
+          const newLead = event.data.enquiry;
           setDb(prev => {
-            const merged = {
-              ...initialData,
+            const currentContactEnquiries = Array.isArray(prev.contactEnquiries) ? prev.contactEnquiries : [];
+            const currentEnquiries = Array.isArray(prev.enquiries) ? prev.enquiries : [];
+            
+            const updatedContactEnquiries = [newLead, ...currentContactEnquiries.filter(e => e.id !== newLead.id)];
+            const updatedEnquiries = [newLead, ...currentEnquiries.filter(e => e.id !== newLead.id)];
+
+            const nextDb = {
               ...prev,
-              ...res.data
+              contactEnquiries: updatedContactEnquiries,
+              enquiries: updatedEnquiries
             };
-            localStorage.setItem('zenvora_db', JSON.stringify(merged));
-            return merged;
+            localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
+            return nextDb;
           });
         }
-      } catch (error) {
-        console.error("Failed to fetch CMS state from backend, using local fallback:", error);
+      };
+    } catch (e) {
+      console.warn("BroadcastChannel listener setup error:", e);
+    }
+
+    const handleStorage = (e) => {
+      if (e.key === 'zenvora_db' || e.key === 'techmaster-cms-last-updated') {
+        fetchCMSData();
       }
     };
-    fetchCMSData();
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', fetchCMSData);
+
+    return () => {
+      clearInterval(interval);
+      if (channel) channel.close();
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', fetchCMSData);
+    };
   }, [auth.isLoggedIn]);
 
   // Login handler
@@ -363,6 +414,7 @@ export const DatabaseProvider = ({ children }) => {
       updateProfile,
       markNotificationRead,
       clearAllNotifications,
+      refreshDatabase: fetchCMSData,
       apiFetch
     }}>
       {children}

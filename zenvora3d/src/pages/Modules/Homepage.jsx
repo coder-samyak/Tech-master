@@ -635,7 +635,7 @@ export const Homepage = () => {
     { id: 'sec-8', label: 'Section 8: Featured Shorts & Reels' },
     { id: 'sec-9', label: 'Section 9: Featured Long Videos' },
     { id: 'sec-10', label: 'Section 10: Brand Collaborations Wall' },
-    { id: 'sec-11', label: 'Section 11: Newsletter & Contact CTA' }
+    { id: 'sec-11', label: 'Section 11: Contact CTA Settings' }
   ];
 
   return (
@@ -1226,80 +1226,9 @@ export const Homepage = () => {
         </div>
       )}
 
-      {/* SECTION 11: NEWSLETTER & CONTACT PREVIEW */}
+      {/* SECTION 11: CONTACT PREVIEW CTA */}
       {activeSection === 'sec-11' && (
         <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-6 text-xs">
-          {/* Newsletter Box */}
-          <div className="space-y-4 border-b border-zinc-800/80 pb-6">
-            <h3 className="text-sm font-serif font-bold text-luxury-gold uppercase tracking-wider">Newsletter Subscription CMS</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Tag / Badge</label>
-                <input
-                  type="text"
-                  value={formData?.newsletterContact?.newsletter?.tag || formData?.newsletter?.tag || formData?.newsletterContact?.newsletterBadge || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    persistChanges({
-                      ...formData,
-                      newsletter: { ...(formData.newsletter || {}), tag: val, badge: val },
-                      newsletterContact: { ...(formData.newsletterContact || {}), newsletterBadge: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), tag: val } }
-                    });
-                  }}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono"
-                />
-              </div>
-              <div>
-                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Subscribe Button Text</label>
-                <input
-                  type="text"
-                  value={formData?.newsletterContact?.newsletter?.buttonText || formData?.newsletter?.buttonText || formData?.newsletterContact?.buttonText || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    persistChanges({
-                      ...formData,
-                      newsletter: { ...(formData.newsletter || {}), buttonText: val },
-                      newsletterContact: { ...(formData.newsletterContact || {}), buttonText: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), buttonText: val } }
-                    });
-                  }}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-luxury-gold font-mono font-bold"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Heading</label>
-              <input
-                type="text"
-                value={formData?.newsletterContact?.newsletter?.heading || formData?.newsletter?.heading || formData?.newsletterContact?.newsletterHeading || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  persistChanges({
-                    ...formData,
-                    newsletter: { ...(formData.newsletter || {}), heading: val },
-                    newsletterContact: { ...(formData.newsletterContact || {}), newsletterHeading: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), heading: val } }
-                  });
-                }}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-serif font-bold text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Newsletter Description</label>
-              <textarea
-                rows={2}
-                value={formData?.newsletterContact?.newsletter?.description || formData?.newsletter?.description || formData?.newsletterContact?.newsletterDescription || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  persistChanges({
-                    ...formData,
-                    newsletter: { ...(formData.newsletter || {}), description: val },
-                    newsletterContact: { ...(formData.newsletterContact || {}), newsletterDescription: val, newsletter: { ...(formData.newsletterContact?.newsletter || {}), description: val } }
-                  });
-                }}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 font-light"
-              />
-            </div>
-          </div>
-
           {/* Contact Preview Box */}
           <div className="space-y-4">
             <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Contact Preview CTA Settings</h3>

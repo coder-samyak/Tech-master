@@ -124,6 +124,57 @@ router.post("/public/resume", parseDocument, async (req: any, res: any, next: an
   }
 });
 
+// Public endpoint for submitting a business inquiry / contact form submission
+const handleEnquirySubmission = async (req: any, res: any, next: any) => {
+  try {
+    const { name, candidateName, email, phone, company, brand, category, subject, message, outline } = req.body;
+    
+    const doc = await CMSData.findOne({ key: "contactEnquiries" });
+    let enquiries = [];
+    if (doc && Array.isArray(doc.value)) {
+      enquiries = doc.value;
+    } else {
+      enquiries = [];
+    }
+
+    const newEnquiry = {
+      id: `enq-${Date.now()}`,
+      name: name || candidateName || "Anonymous Lead",
+      email: email || "",
+      phone: phone || "",
+      company: company || brand || "",
+      category: category || subject || "Business Inquiry",
+      subject: category || subject || "Business Inquiry",
+      message: message || outline || "",
+      date: new Date().toISOString().split('T')[0],
+      status: "New",
+      createdAt: new Date().toISOString()
+    };
+
+    enquiries.unshift(newEnquiry);
+
+    await CMSData.findOneAndUpdate(
+      { key: "contactEnquiries" },
+      { value: enquiries },
+      { upsert: true, new: true }
+    );
+    
+    await CMSData.findOneAndUpdate(
+      { key: "enquiries" },
+      { value: enquiries },
+      { upsert: true, new: true }
+    );
+
+    ApiResponse.success(res, "Inquiry submitted successfully", newEnquiry);
+  } catch (error) {
+    next(error);
+  }
+};
+
+router.post("/public/enquiry", handleEnquirySubmission);
+router.post("/public/contact", handleEnquirySubmission);
+router.post("/enquiry", handleEnquirySubmission);
+
 // Aggregate endpoint for the public frontends
 router.get("/", async (req, res, next) => {
   try {

@@ -1,34 +1,67 @@
 import React, { useState } from 'react';
 import { useDatabase } from '../../context/DatabaseContext';
-import { PhoneCall, Mail, Search, Filter, Trash2, Eye, CheckCircle2, Clock } from 'lucide-react';
+import { PhoneCall, Mail, Search, Filter, Trash2, Eye, CheckCircle2, Clock, RefreshCw } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 
 export const ContactsManager = () => {
-  const { db, updateSection } = useDatabase();
+  const { db, updateSection, refreshDatabase } = useDatabase();
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const defaultEnquiries = [
     { id: 'enq-1', name: 'Gabriella Rossi', email: 'gabriella@dolcegabbana.it', phone: '+39 02 7741', company: 'Dolce & Gabbana', subject: 'Brand Collaboration & Production', message: 'We would like to inquire about a sponsored production shoot for our tech collection.', date: '2026-07-28', status: 'New' },
     { id: 'enq-2', name: 'Vikramaditya Singh', email: 'vikram@tata.com', phone: '+91 98765 43210', company: 'Tata Motors', subject: 'Master Wheels Shoot Inquiry', message: 'Inquiring regarding upcoming EV shoot availability and studio rental in Jaipur.', date: '2026-07-27', status: 'In Progress' }
   ];
 
-  const list = db?.contactEnquiries || defaultEnquiries;
+  let localEnquiries = [];
+  try {
+    const saved = localStorage.getItem('zenvora_db');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      localEnquiries = [...(parsed.contactEnquiries || []), ...(parsed.enquiries || [])];
+    }
+  } catch (e) {}
+
+  const rawList = [
+    ...(Array.isArray(db?.contactEnquiries) ? db.contactEnquiries : []),
+    ...(Array.isArray(db?.enquiries) ? db.enquiries : []),
+    ...localEnquiries,
+    ...defaultEnquiries
+  ];
+
+  const map = new Map();
+  rawList.forEach(item => {
+    if (item && item.id && !map.has(item.id)) {
+      map.set(item.id, item);
+    }
+  });
+
+  const list = Array.from(map.values());
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    if (refreshDatabase) await refreshDatabase();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   const filtered = list.filter(e => 
     (e.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
     (e.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (e.company || '').toLowerCase().includes(searchQuery.toLowerCase())
+    (e.company || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (e.category || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleToggleStatus = (id) => {
     const updated = list.map(e => e.id === id ? { ...e, status: e.status === 'New' ? 'In Progress' : e.status === 'In Progress' ? 'Completed' : 'New' } : e);
     updateSection('contactEnquiries', updated);
+    updateSection('enquiries', updated);
   };
 
   const handleDelete = (id) => {
     const updated = list.filter(e => e.id !== id);
     updateSection('contactEnquiries', updated);
+    updateSection('enquiries', updated);
     if (selectedEnquiry?.id === id) setSelectedEnquiry(null);
   };
 
@@ -44,6 +77,16 @@ export const ContactsManager = () => {
             Centralized Business Enquiries, Brand Partnerships & Contact Submissions.
           </p>
         </div>
+
+        <Button 
+          onClick={handleManualRefresh} 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-2 text-xs uppercase font-mono cursor-pointer"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-luxury-gold' : ''}`} />
+          <span>Refresh Leads</span>
+        </Button>
       </div>
 
       <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-3 backdrop-blur-xl flex items-center justify-between">

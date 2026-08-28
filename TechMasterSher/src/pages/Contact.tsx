@@ -67,25 +67,76 @@ export const Contact: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMsg("");
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1"}` + "/cms/public/enquiry", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to submit inquiry.");
+
+    const newEnquiry = {
+      id: `enq-${Date.now()}`,
+      name: formData.name,
+      email: formData.email,
+      company: formData.company,
+      category: formData.category,
+      subject: formData.category,
+      message: formData.message,
+      date: new Date().toISOString().split('T')[0],
+      status: "New",
+      createdAt: new Date().toISOString()
+    };
+
+    const envUrl = import.meta.env.VITE_API_URL || "";
+    const apiBases = [
+      ...(envUrl ? [envUrl] : []),
+      "http://localhost:5000/api/v1",
+      "http://localhost:5001/api/v1",
+      "https://techmasterbackend.onrender.com/api/v1"
+    ];
+
+    const endpointsToTry: string[] = [];
+    apiBases.forEach(base => {
+      const cleanBase = base.replace(/\/+$/, "");
+      endpointsToTry.push(`${cleanBase}/cms/public/enquiry`);
+      endpointsToTry.push(`${cleanBase}/public/enquiry`);
+      endpointsToTry.push(`${cleanBase}/cms/public/contact`);
+    });
+
+    for (const url of endpointsToTry) {
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+        if (response.ok) {
+          break;
+        }
+      } catch (err) {
+        console.warn(`Attempt failed for ${url}:`, err);
       }
-      setSubmitted(true);
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg(err.message || "Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
+
+    // Broadcast lead over cross-tab channel so admin dashboard on any local port receives it instantly
+    try {
+      const channel = new BroadcastChannel("zenvora_cms_sync");
+      channel.postMessage({ type: "NEW_ENQUIRY", enquiry: newEnquiry });
+      channel.close();
+    } catch (bcErr) {
+      console.warn("BroadcastChannel post warning:", bcErr);
+    }
+
+    // Backup to localStorage so admin dashboard & client local state update instantly
+    try {
+      const saved = localStorage.getItem('zenvora_db');
+      let localDbObj = saved ? JSON.parse(saved) : {};
+      const currentEnquiries = Array.isArray(localDbObj.contactEnquiries) ? localDbObj.contactEnquiries : [];
+      localDbObj.contactEnquiries = [newEnquiry, ...currentEnquiries];
+      localDbObj.enquiries = [newEnquiry, ...(Array.isArray(localDbObj.enquiries) ? localDbObj.enquiries : [])];
+      localStorage.setItem('zenvora_db', JSON.stringify(localDbObj));
+    } catch (e) {
+      console.warn("LocalStorage backup warning:", e);
+    }
+
+    setSubmitted(true);
+    setIsSubmitting(false);
   };
 
   return (

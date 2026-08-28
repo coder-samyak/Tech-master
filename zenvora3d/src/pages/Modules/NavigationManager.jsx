@@ -16,19 +16,16 @@ export const NavigationManager = () => {
     { id: 'nav-1', label: 'Home', url: '/', target: '_self', order: 1, visible: true, external: false },
     { id: 'nav-2', label: 'About', url: '/about', target: '_self', order: 2, visible: true, external: false },
     { id: 'nav-3', label: 'Journey', url: '/journey', target: '_self', order: 3, visible: true, external: false },
-    { id: 'nav-4', label: 'What We Do', url: '/what-we-do', target: '_self', order: 4, visible: true, external: false },
-    { id: 'nav-5', label: 'Services', url: '/services', target: '_self', order: 5, visible: true, external: false },
-    { id: 'nav-6', label: 'Our Work', url: '/portfolio', target: '_self', order: 6, visible: true, external: false },
-    { id: 'nav-7', label: 'Contact', url: '/contact', target: '_self', order: 7, visible: true, external: false }
+    { id: 'nav-6', label: 'Our Work', url: '/portfolio', target: '_self', order: 4, visible: true, external: false },
+    { id: 'nav-7', label: 'Contact', url: '/contact', target: '_self', order: 5, visible: true, external: false }
   ];
 
   const defaultFooterLinks = [
     { id: 'foot-1', label: 'Home', url: '/', category: 'Quick Links', order: 1, visible: true },
     { id: 'foot-2', label: 'About Us', url: '/about', category: 'Quick Links', order: 2, visible: true },
-    { id: 'foot-3', label: 'Services', url: '/services', category: 'Quick Links', order: 3, visible: true },
-    { id: 'foot-4', label: 'Our Work', url: '/portfolio', category: 'Quick Links', order: 4, visible: true },
-    { id: 'foot-5', label: 'Privacy Policy', url: '/privacy-policy', category: 'Legal', order: 5, visible: true },
-    { id: 'foot-6', label: 'Terms & Conditions', url: '/terms-conditions', category: 'Legal', order: 6, visible: true }
+    { id: 'foot-4', label: 'Our Work', url: '/portfolio', category: 'Quick Links', order: 3, visible: true },
+    { id: 'foot-5', label: 'Privacy Policy', url: '/privacy-policy', category: 'Legal', order: 4, visible: true },
+    { id: 'foot-6', label: 'Terms & Conditions', url: '/terms-conditions', category: 'Legal', order: 5, visible: true }
   ];
 
   const navbarLinks = db?.navigationNavbar || defaultNavbarLinks;

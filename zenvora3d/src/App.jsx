@@ -10,19 +10,9 @@ import { Homepage } from './pages/Modules/Homepage';
 import { About } from './pages/Modules/About';
 import { FounderJourney } from './pages/Modules/FounderJourney';
 import { MissionVision } from './pages/Modules/MissionVision';
-import { WhatWeDo } from './pages/Modules/WhatWeDo';
-import { CoreServices } from './pages/Modules/CoreServices';
-import { Services } from './pages/Modules/Services';
-import { Collaborations } from './pages/Modules/Collaborations';
-import { Campaigns } from './pages/Modules/Campaigns';
-import { ProductLaunches } from './pages/Modules/ProductLaunches';
 import { Portfolio } from './pages/Modules/Portfolio';
-import { MediaGallery } from './pages/Modules/MediaGallery';
-import { Testimonials } from './pages/Modules/Testimonials';
-import { Events } from './pages/Modules/Events';
 import { Blogs } from './pages/Modules/Blogs';
 import { Careers } from './pages/Modules/Careers';
-import { FAQ } from './pages/Modules/FAQ';
 import { Contact } from './pages/Modules/Contact';
 import { PrivacyPolicy } from './pages/Modules/PrivacyPolicy';
 import { TermsConditions } from './pages/Modules/TermsConditions';
@@ -66,30 +56,10 @@ function AppContent() {
         return <FounderJourney />;
       case 'mission-vision':
         return <MissionVision />;
-      case 'what-we-do':
-        return <WhatWeDo />;
-      case 'core-services':
-        return <CoreServices />;
-      case 'services':
-        return <Services />;
-      case 'brand-collaborations':
-        return <Collaborations />;
-      case 'campaigns':
-        return <Campaigns />;
-      case 'product-launches':
-        return <ProductLaunches />;
       case 'portfolio':
       case 'our-work':
       case 'ourWork':
         return <Portfolio />;
-      case 'media-gallery':
-        return <MediaGallery />;
-      case 'testimonials':
-        return <Testimonials />;
-      case 'events':
-        return <Events />;
-      case 'faq':
-        return <FAQ />;
       case 'contact':
       case 'contact-cms':
         return <Contact />;

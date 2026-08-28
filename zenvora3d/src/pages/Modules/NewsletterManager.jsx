@@ -8,7 +8,7 @@ export const NewsletterManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const defaultSubscribers = [
-    { id: 'sub-1', email: 'gabriella@dolcegabbana.it', date: '2026-07-28', status: 'Active', source: 'Homepage Footer' },
+    { id: 'sub-1', email: 'alex.creator@mediahub.com', date: '2026-07-28', status: 'Active', source: 'Homepage Footer' },
     { id: 'sub-2', email: 'rohan.v@techstudio.com', date: '2026-07-27', status: 'Active', source: 'Services CTA' },
     { id: 'sub-3', email: 'sarah.j@vercel.com', date: '2026-07-25', status: 'Active', source: 'Newsletter Modal' },
     { id: 'sub-4', email: 'david.chen@google.com', date: '2026-07-24', status: 'Active', source: 'Homepage Footer' }

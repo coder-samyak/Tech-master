@@ -25,12 +25,7 @@ export const Dashboard = ({ setCurrentView }) => {
   const summaryCards = [
     { title: "Managed Pages", value: pagesCount, icon: FileText, color: "from-amber-500/10 to-amber-500/20", label: "Active website views", viewKey: "pages" },
     { title: "Blogs Published", value: (db?.blogs || []).length, icon: FileText, color: "from-emerald-500/10 to-emerald-500/20", label: "Creator journal posts", viewKey: "blogs" },
-    { title: "Brand Partners", value: collaborationCount, icon: Handshake, color: "from-blue-500/10 to-blue-500/20", label: "Active collaborations", viewKey: "brand-collaborations" },
-    { title: "Campaign Drops", value: (db?.campaigns || []).length, icon: Activity, color: "from-purple-500/10 to-purple-500/20", label: "Live campaigns", viewKey: "campaigns" },
     { title: "Showcase Projects", value: portfolioCount, icon: Briefcase, color: "from-pink-500/10 to-pink-500/20", label: "Curated work items", viewKey: "portfolio" },
-    { title: "Core Services", value: (db?.services || []).length, icon: Layers, color: "from-indigo-500/10 to-indigo-500/20", label: "Client packages", viewKey: "services" },
-    { title: "Global Events", value: (db?.events || []).length, icon: Calendar, color: "from-teal-500/10 to-teal-500/20", label: "Keynotes & summits", viewKey: "events" },
-    { title: "Testimonials", value: (db?.testimonials || []).length, icon: Award, color: "from-orange-500/10 to-orange-500/20", label: "Student & partner feedback", viewKey: "testimonials" },
     { title: "Client Enquiries", value: enquiriesList.length, icon: MessageSquare, color: "from-rose-500/10 to-rose-500/20", label: "Total contact submissions", viewKey: "contacts" },
     { title: "Career Resumes", value: (db?.resumes || []).length, icon: FileSpreadsheet, color: "from-cyan-500/10 to-cyan-500/20", label: "Applications received", viewKey: "careers" }
   ];
@@ -45,28 +40,6 @@ export const Dashboard = ({ setCurrentView }) => {
         text: `Blog published: '${blog.title || "Untitled"}' in category '${blog.category || "General"}'.`,
         type: "blog",
         time: blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : "Recently"
-      });
-    });
-  }
-
-  if (Array.isArray(db?.campaigns) && db.campaigns.length > 0) {
-    db.campaigns.slice(0, 2).forEach((camp, idx) => {
-      dynamicActivities.push({
-        id: `camp-${camp.id || idx}`,
-        text: `Campaign '${camp.title}' status synced with brand partner '${camp.brandPartner || "Self"}'.`,
-        type: "campaign",
-        time: camp.createdAt ? new Date(camp.createdAt).toLocaleDateString() : "Recently"
-      });
-    });
-  }
-
-  if (Array.isArray(db?.collaborations) && db.collaborations.length > 0) {
-    db.collaborations.slice(0, 2).forEach((collab, idx) => {
-      dynamicActivities.push({
-        id: `collab-${collab.id || idx}`,
-        text: `${collab.brandName} brand collaboration logged into database.`,
-        type: "collab",
-        time: collab.createdAt ? new Date(collab.createdAt).toLocaleDateString() : "Recently"
       });
     });
   }
@@ -171,18 +144,18 @@ export const Dashboard = ({ setCurrentView }) => {
               <span className="text-xs text-zinc-300 font-medium">Portfolio</span>
             </button>
             <button 
-              onClick={() => setCurrentView('campaigns')}
+              onClick={() => setCurrentView('blogs')}
               className="p-4 rounded-md border border-zinc-900 bg-zinc-950/40 hover:bg-zinc-900/30 hover:border-luxury-gold/30 transition-all duration-300 flex flex-col items-center justify-center gap-2 cursor-pointer group"
             >
-              <Globe className="w-5 h-5 text-zinc-400 group-hover:text-luxury-gold transition-colors" />
-              <span className="text-xs text-zinc-300 font-medium">Campaigns</span>
+              <FileText className="w-5 h-5 text-zinc-400 group-hover:text-luxury-gold transition-colors" />
+              <span className="text-xs text-zinc-300 font-medium">Blogs</span>
             </button>
             <button 
-              onClick={() => setCurrentView('testimonials')}
+              onClick={() => setCurrentView('contacts')}
               className="p-4 rounded-md border border-zinc-900 bg-zinc-950/40 hover:bg-zinc-900/30 hover:border-luxury-gold/30 transition-all duration-300 flex flex-col items-center justify-center gap-2 cursor-pointer group"
             >
               <MessageSquare className="w-5 h-5 text-zinc-400 group-hover:text-luxury-gold transition-colors" />
-              <span className="text-xs text-zinc-300 font-medium">Testimonials</span>
+              <span className="text-xs text-zinc-300 font-medium">Contacts</span>
             </button>
             <button 
               onClick={() => setCurrentView('settings')}
