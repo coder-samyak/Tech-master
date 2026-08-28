@@ -54,6 +54,7 @@ app.use(cookieParser());
 // 5. Mount API Routes
 app.use("/api/v1/cms", cmsRouter);
 app.use("/api/v1", cmsRouter);
+app.use("/cms", cmsRouter);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/media", uploadRoutes);
@@ -81,6 +82,9 @@ app.get("/health", (req: Request, res: Response) => {
 app.get("/favicon.ico", (req: Request, res: Response) => {
   res.status(204).end();
 });
+
+// Root-level CMS router fallback for direct endpoints (/portfolio, /founder-journey, /campaigns, etc.)
+app.use("/", cmsRouter);
 
 // 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {
