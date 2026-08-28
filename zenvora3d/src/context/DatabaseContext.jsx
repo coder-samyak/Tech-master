@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialData } from '../utils/initialData';
 
-const DEFAULT_API_URL = "https://techmasterbackend.onrender.com/api/v1";
+const DEFAULT_API_URL = "https://tech-master-afhx.onrender.com/api/v1";
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL?.trim();
   if (!envUrl) return DEFAULT_API_URL;

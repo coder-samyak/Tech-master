@@ -60,13 +60,26 @@ app.use("/api/media", uploadRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/media", uploadRoutes);
 
-// 6. Health Check Route
+// 6. Health & Root Welcome Routes
+app.get("/", (req: Request, res: Response) => {
+  ApiResponse.success(res, "TechMaster CMS Backend API is running live.", {
+    service: "TechMaster CMS Backend",
+    status: "OK",
+    documentation: "/api/v1/cms",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.get("/health", (req: Request, res: Response) => {
   ApiResponse.success(res, "TechMaster CMS Backend is healthy.", {
     status: "OK",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
+});
+
+app.get("/favicon.ico", (req: Request, res: Response) => {
+  res.status(204).end();
 });
 
 // 7. 404 Route Handler

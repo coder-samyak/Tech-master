@@ -86,6 +86,7 @@ export const Contact: React.FC = () => {
       ...(envUrl ? [envUrl] : []),
       "http://localhost:5000/api/v1",
       "http://localhost:5001/api/v1",
+      "https://tech-master-afhx.onrender.com/api/v1",
       "https://techmasterbackend.onrender.com/api/v1"
     ];
 
