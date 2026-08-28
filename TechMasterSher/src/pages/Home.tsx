@@ -51,7 +51,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
         const envUrl = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
           ? "http://localhost:5000/api/v1"
           : import.meta.env.VITE_API_URL?.trim();
-        const base = envUrl ? (envUrl.replace(/\/+$|\/api\/v1\/*$/i, "").endsWith("/api/v1") ? envUrl.replace(/\/+$|\/api\/v1\/*$/i, "") : `${envUrl.replace(/\/+$|\/api\/v1\/*$/i, "")}/api/v1`) : "https://techmasterbackend.onrender.com/api/v1";
+        const base = envUrl ? (envUrl.replace(/\/+$|\/api\/v1\/*$/i, "").endsWith("/api/v1") ? envUrl.replace(/\/+$|\/api\/v1\/*$/i, "") : `${envUrl.replace(/\/+$|\/api\/v1\/*$/i, "")}/api/v1`) : "https://tech-master-afhx.onrender.com/api/v1";
         const res = await fetch(`${base}/homepage?t=${Date.now()}`);
         if (res.ok) {
           const json = await res.json();

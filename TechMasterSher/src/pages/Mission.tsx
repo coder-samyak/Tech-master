@@ -12,7 +12,7 @@ export const Mission: React.FC = () => {
   React.useEffect(() => {
     const fetchMissionVision = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
         const res = await fetch(`${baseUrl}/missionVision`);
         if (res.ok) {
           const json = await res.json();

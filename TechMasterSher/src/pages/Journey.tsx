@@ -15,7 +15,7 @@ export const Journey: React.FC = () => {
   useEffect(() => {
     const fetchFounderJourney = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
         const res = await fetch(`${baseUrl}/founder-journey`);
         if (res.ok) {
           const json = await res.json();

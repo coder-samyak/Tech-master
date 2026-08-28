@@ -13,7 +13,7 @@ export const Services: React.FC = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
         const res = await fetch(`${baseUrl}/services`);
         if (res.ok) {
           const json = await res.json();

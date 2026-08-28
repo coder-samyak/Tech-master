@@ -67,7 +67,7 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
 
       setUploadProgress(50);
 
-      const baseHost = (import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com").replace(/\/api\/v1\/?$/i, "");
+      const baseHost = (import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com").replace(/\/api\/v1\/?$/i, "");
       const uploadPath = selectedFile.type.startsWith("video/") ? "/api/upload/video" : "/api/upload/image";
       
       const response = await fetch(`${baseHost}${uploadPath}`, {

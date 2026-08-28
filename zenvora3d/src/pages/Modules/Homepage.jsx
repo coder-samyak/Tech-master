@@ -338,7 +338,7 @@ export const Homepage = () => {
       const formDataUpload = new FormData();
       formDataUpload.append("file", file);
 
-      const baseHost = (import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com").replace(/\/api\/v1\/?$/i, "");
+      const baseHost = (import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com").replace(/\/api\/v1\/?$/i, "");
       const uploadPath = file.type.startsWith("video") ? "/api/upload/video" : "/api/upload/image";
       const response = await fetch(`${baseHost}${uploadPath}`, {
         method: "POST",

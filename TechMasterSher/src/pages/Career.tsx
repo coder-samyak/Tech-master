@@ -120,7 +120,7 @@ export const Career: React.FC = () => {
       dataPayload.append("coverLetter", formData.coverLetter);
       dataPayload.append("resume", formData.resumeFile);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1"}` + "/cms/public/resume", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1"}` + "/cms/public/resume", {
         method: "POST",
         body: dataPayload
       });

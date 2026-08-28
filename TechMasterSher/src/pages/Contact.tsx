@@ -13,7 +13,7 @@ export const Contact: React.FC = () => {
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend.onrender.com/api/v1";
+        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
         const res = await fetch(`${baseUrl}/contact`);
         if (res.ok) {
           const json = await res.json();
@@ -87,7 +87,7 @@ export const Contact: React.FC = () => {
       "http://localhost:5000/api/v1",
       "http://localhost:5001/api/v1",
       "https://tech-master-afhx.onrender.com/api/v1",
-      "https://techmasterbackend.onrender.com/api/v1"
+      "https://tech-master-afhx.onrender.com/api/v1"
     ];
 
     const endpointsToTry: string[] = [];
