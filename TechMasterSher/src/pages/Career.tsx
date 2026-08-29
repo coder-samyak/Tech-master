@@ -110,6 +110,17 @@ export const Career: React.FC = () => {
     }
 
     try {
+      const fileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = error => reject(error);
+        });
+      };
+
+      const resumeBase64 = await fileToBase64(formData.resumeFile);
+
       const dataPayload = new FormData();
       dataPayload.append("name", formData.name);
       dataPayload.append("email", formData.email);
@@ -119,6 +130,7 @@ export const Career: React.FC = () => {
       dataPayload.append("message", formData.whyJoin);
       dataPayload.append("coverLetter", formData.coverLetter);
       dataPayload.append("resume", formData.resumeFile);
+      dataPayload.append("resumeBase64", resumeBase64);
 
       const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
       const endpoints = [
@@ -158,7 +170,8 @@ export const Career: React.FC = () => {
         message: formData.whyJoin,
         whyJoin: formData.whyJoin,
         coverLetter: formData.coverLetter,
-        resumeFileUrl: result?.data?.resumeFileUrl || "",
+        resumeFileUrl: result?.data?.resumeFileUrl || resumeBase64,
+        resumeUrl: result?.data?.resumeFileUrl || resumeBase64,
         resumeFileName: formData.resumeFile?.name || "resume.pdf",
         status: "New",
         date: new Date().toISOString().split('T')[0],

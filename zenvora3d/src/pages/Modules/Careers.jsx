@@ -178,7 +178,7 @@ export const Careers = () => {
     let ext = ".pdf";
     if (originalFileName && originalFileName.lastIndexOf('.') !== -1) {
       ext = originalFileName.substring(originalFileName.lastIndexOf('.'));
-    } else if (rawUrl.lastIndexOf('.') !== -1) {
+    } else if (rawUrl.lastIndexOf('.') !== -1 && !rawUrl.startsWith('data:')) {
       const urlExt = rawUrl.substring(rawUrl.lastIndexOf('.'));
       if (['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt', '.rtf'].includes(urlExt.toLowerCase())) {
         ext = urlExt;
@@ -187,9 +187,39 @@ export const Careers = () => {
 
     const cleanCandidateName = (candidateName || "Applicant").replace(/[^a-zA-Z0-9]/g, "_");
     const downloadFileName = `${cleanCandidateName}_Resume${ext}`;
-    const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
 
-    // Format final download URL (handles local uploads as well as full URLs)
+    // CASE 1: Resume is stored as a permanent Base64 Data URI (Instant 1ms download, zero server dependency)
+    if (rawUrl.startsWith("data:")) {
+      try {
+        const parts = rawUrl.split(",");
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        const mimeType = mimeMatch ? mimeMatch[1] : getMimeType(ext);
+        const bstr = atob(parts[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mimeType });
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = blobUrl;
+        a.download = downloadFileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(blobUrl), 10000);
+        showToast(`Downloaded ${downloadFileName} successfully!`, "success");
+        return;
+      } catch (err) {
+        console.error("Base64 Data URI decoding failed, trying API fallback:", err);
+      }
+    }
+
+    // CASE 2: Resume is a URL (Legacy / External link / Server Path)
+    const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
     let fullRawUrl = rawUrl;
     if (rawUrl.startsWith("/uploads/")) {
       fullRawUrl = `${baseUrl.replace(/\/api\/v1\/?$/, "")}${rawUrl}`;

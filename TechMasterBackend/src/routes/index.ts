@@ -82,20 +82,24 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
     
     if (req.file) {
       const origName = req.file.originalname || "resume.pdf";
+      const mimeType = req.file.mimetype || "application/pdf";
       const ext = path.extname(origName) || ".pdf";
       const baseName = path.basename(origName, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
       const uniqueFileName = `${baseName}_${Date.now()}${ext}`;
 
-      const resumesDir = path.join(process.cwd(), "uploads", "resumes");
-      if (!fs.existsSync(resumesDir)) {
-        fs.mkdirSync(resumesDir, { recursive: true });
-      }
-
-      const filePath = path.join(resumesDir, uniqueFileName);
-      fs.writeFileSync(filePath, req.file.buffer);
-
-      resumeUrl = `/uploads/resumes/${uniqueFileName}`;
+      // Store resume directly as permanent Base64 Data URI in MongoDB (zero cloud/disk dependency)
+      const base64Data = req.file.buffer.toString("base64");
+      resumeUrl = `data:${mimeType};base64,${base64Data}`;
       publicId = uniqueFileName;
+
+      // Optional local filesystem backup
+      try {
+        const resumesDir = path.join(process.cwd(), "uploads", "resumes");
+        if (!fs.existsSync(resumesDir)) {
+          fs.mkdirSync(resumesDir, { recursive: true });
+        }
+        fs.writeFileSync(path.join(resumesDir, uniqueFileName), req.file.buffer);
+      } catch (e) {}
     }
 
     // Append to CMSData 'resumes' and 'careerApplications' array
@@ -196,6 +200,18 @@ const handleResumeDownload = async (req: any, res: any) => {
 
     if (!rawUrl) {
       return res.status(400).json({ success: false, message: "Missing resume file parameter" });
+    }
+
+    // 0. Handle Base64 Data URIs directly
+    if (rawUrl.startsWith("data:")) {
+      const matches = rawUrl.match(/^data:(.*?);base64,(.*)$/);
+      if (matches && matches.length === 3) {
+        const mimeType = matches[1];
+        const buffer = Buffer.from(matches[2], "base64");
+        res.setHeader("Content-Type", mimeType);
+        res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadFileName)}"`);
+        return res.send(buffer);
+      }
     }
 
     // 1. Check local uploads folder first for local resume files (/uploads/resumes/...)
