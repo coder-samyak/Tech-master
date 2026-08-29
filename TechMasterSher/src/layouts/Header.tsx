@@ -13,23 +13,27 @@ interface HeaderProps {
   onChangePage: (page: string) => void;
 }
 
-const ScrollCounter = ({ viewsLabel }: { viewsLabel?: string }) => {
+const ScrollCounter = ({ viewsLabel, targetViews }: { viewsLabel?: string; targetViews?: number | string }) => {
   const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
+    const numericTarget = typeof targetViews === 'number' && targetViews > 0 
+      ? targetViews 
+      : (parseInt(String(targetViews).replace(/[^0-9]/g, ''), 10) || 25000000000);
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       let scrollPercent = docHeight > 0 ? Math.max(0, Math.min(1, scrollY / docHeight)) : 0;
       if (scrollPercent > 0.98) scrollPercent = 1;
-      setViewsCount(Math.floor(scrollPercent * 25000000000));
+      setViewsCount(Math.floor(scrollPercent * numericTarget));
     };
     
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [targetViews]);
 
   return (
     <div className="h-7 px-3.5 rounded-full border border-gold/30 bg-[#0a0a0a]/95 backdrop-blur-xl flex items-center justify-center gap-1.5 shadow-sm pointer-events-auto select-none">
@@ -52,6 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
 
   const activeHome = { ...(dbData?.homepageCMS || dbData?.homepage || {}), ...(homeData || {}) };
   const viewsLabel = activeHome?.navbar?.viewsText || (websiteSettings as any)?.viewsText || "VIEWS";
+  const targetViews = activeHome?.navbar?.targetViews || (websiteSettings as any)?.targetViews || 25000000000;
   const navBtnText = activeHome?.navbar?.buttonText || (websiteSettings as any)?.buttonText || "LET'S TALK";
   const navBtnLink = activeHome?.navbar?.buttonLink || (websiteSettings as any)?.buttonLink || "contact";
 
@@ -206,7 +211,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         {/* Action Button & Hamburger Toggle */}
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
           <div className="hidden md:flex items-center justify-center">
-            <ScrollCounter viewsLabel={viewsLabel} />
+            <ScrollCounter viewsLabel={viewsLabel} targetViews={targetViews} />
           </div>
           <div className={`transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <Magnetic strength={0.3}>

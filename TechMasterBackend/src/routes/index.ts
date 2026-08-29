@@ -1,4 +1,6 @@
 import { Router } from "express";
+import path from "path";
+import fs from "fs";
 import { ApiResponse } from "../utils/apiResponse";
 import { authenticate } from "../middlewares/auth";
 import { parseDocument } from "../middlewares/upload.middleware";
@@ -79,17 +81,21 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
     let publicId = "";
     
     if (req.file) {
-      const isDoc = (req.file.mimetype && (req.file.mimetype.includes("pdf") || req.file.mimetype.includes("document"))) || 
-                    (req.file.originalname && (req.file.originalname.endsWith(".pdf") || req.file.originalname.endsWith(".doc") || req.file.originalname.endsWith(".docx")));
-      const resourceType = isDoc ? "raw" : "auto";
-      const result = await CloudinaryService.uploadBuffer(req.file.buffer, "techmaster/resumes", resourceType as any);
-      
-      let url = result.secure_url;
-      if (isDoc && !url.endsWith(".pdf") && req.file.originalname?.endsWith(".pdf")) {
-        url = `${url}.pdf`;
+      const origName = req.file.originalname || "resume.pdf";
+      const ext = path.extname(origName) || ".pdf";
+      const baseName = path.basename(origName, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
+      const uniqueFileName = `${baseName}_${Date.now()}${ext}`;
+
+      const resumesDir = path.join(process.cwd(), "uploads", "resumes");
+      if (!fs.existsSync(resumesDir)) {
+        fs.mkdirSync(resumesDir, { recursive: true });
       }
-      resumeUrl = url;
-      publicId = result.public_id;
+
+      const filePath = path.join(resumesDir, uniqueFileName);
+      fs.writeFileSync(filePath, req.file.buffer);
+
+      resumeUrl = `/uploads/resumes/${uniqueFileName}`;
+      publicId = uniqueFileName;
     }
 
     // Append to CMSData 'resumes' and 'careerApplications' array
@@ -181,6 +187,81 @@ const handleDeleteResume = async (req: any, res: any, next: any) => {
 
 router.delete("/resumes/:id", handleDeleteResume);
 router.delete("/public/resume/:id", handleDeleteResume);
+
+// Proxy & direct local file downloader for resumes (PDF, DOCX, PPT, etc.)
+const handleResumeDownload = async (req: any, res: any) => {
+  try {
+    let rawUrl = (req.query.url as string) || (req.query.file as string) || "";
+    let downloadFileName = (req.query.filename as string) || "candidate_resume.pdf";
+
+    if (!rawUrl) {
+      return res.status(400).json({ success: false, message: "Missing resume file parameter" });
+    }
+
+    // 1. Check local uploads folder first for local resume files (/uploads/resumes/...)
+    const cleanFileName = path.basename(rawUrl);
+    const localPath = path.join(process.cwd(), "uploads", "resumes", cleanFileName);
+
+    if (fs.existsSync(localPath)) {
+      res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadFileName)}"`);
+      return res.sendFile(localPath);
+    }
+
+    // Also check if rawUrl has full relative path inside process.cwd()
+    if (rawUrl.startsWith("/uploads/")) {
+      const fullRelativePath = path.join(process.cwd(), rawUrl);
+      if (fs.existsSync(fullRelativePath)) {
+        res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadFileName)}"`);
+        return res.sendFile(fullRelativePath);
+      }
+    }
+
+    // 2. Fallback for legacy Cloudinary resume URLs
+    let response: any = null;
+    try {
+      response = await fetch(rawUrl);
+    } catch (e) {}
+
+    if ((!response || !response.ok) && rawUrl.includes("cloudinary.com")) {
+      const fallbackCandidates: string[] = [];
+      if (rawUrl.endsWith(".pdf")) {
+        fallbackCandidates.push(rawUrl.slice(0, -4));
+      }
+      if (!rawUrl.includes(".")) {
+        fallbackCandidates.push(`${rawUrl}.pdf`);
+      }
+
+      for (const altUrl of fallbackCandidates) {
+        try {
+          const altResp = await fetch(altUrl);
+          if (altResp.ok) {
+            response = altResp;
+            break;
+          }
+        } catch (e) {}
+      }
+    }
+
+    if (response && response.ok) {
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const contentType = response.headers.get("content-type") || "application/octet-stream";
+
+      res.setHeader("Content-Type", contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadFileName)}"`);
+      return res.send(buffer);
+    }
+
+    return res.status(404).json({ success: false, message: "Resume file not found on server storage" });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+router.get("/resumes/download", handleResumeDownload);
+router.get("/public/resumes/download", handleResumeDownload);
+router.get("/api/v1/resumes/download", handleResumeDownload);
+router.get("/cms/resumes/download", handleResumeDownload);
 
 // Public endpoint for submitting a business inquiry / contact form submission
 const handleEnquirySubmission = async (req: any, res: any, next: any) => {

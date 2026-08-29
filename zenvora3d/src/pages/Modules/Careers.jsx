@@ -155,10 +155,57 @@ export const Careers = () => {
 
   const getSafeResumeUrl = (rawUrl) => {
     if (!rawUrl) return "";
-    if (rawUrl.includes("cloudinary.com") && rawUrl.includes("/image/upload/")) {
-      return rawUrl.replace("/image/upload/", "/raw/upload/");
-    }
     return rawUrl;
+  };
+
+  const getMimeType = (extension) => {
+    const e = (extension || '').toLowerCase();
+    if (e === '.pdf') return 'application/pdf';
+    if (e === '.docx') return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    if (e === '.doc') return 'application/msword';
+    if (e === '.pptx') return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    if (e === '.ppt') return 'application/vnd.ms-powerpoint';
+    if (e === '.txt') return 'text/plain';
+    return 'application/octet-stream';
+  };
+
+  const handleDownloadResume = (rawUrl, candidateName, originalFileName) => {
+    if (!rawUrl) {
+      showToast("No resume file available for this applicant", "info");
+      return;
+    }
+
+    let ext = ".pdf";
+    if (originalFileName && originalFileName.lastIndexOf('.') !== -1) {
+      ext = originalFileName.substring(originalFileName.lastIndexOf('.'));
+    } else if (rawUrl.lastIndexOf('.') !== -1) {
+      const urlExt = rawUrl.substring(rawUrl.lastIndexOf('.'));
+      if (['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt', '.rtf'].includes(urlExt.toLowerCase())) {
+        ext = urlExt;
+      }
+    }
+
+    const cleanCandidateName = (candidateName || "Applicant").replace(/[^a-zA-Z0-9]/g, "_");
+    const downloadFileName = `${cleanCandidateName}_Resume${ext}`;
+    const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+
+    // Format final download URL (handles local uploads as well as full URLs)
+    let fullRawUrl = rawUrl;
+    if (rawUrl.startsWith("/uploads/")) {
+      fullRawUrl = `${baseUrl.replace(/\/api\/v1\/?$/, "")}${rawUrl}`;
+    }
+
+    const downloadApiUrl = `${baseUrl}/resumes/download?url=${encodeURIComponent(fullRawUrl)}&filename=${encodeURIComponent(downloadFileName)}`;
+
+    // Create temporary link to trigger native browser save dialog
+    const link = document.createElement("a");
+    link.href = downloadApiUrl;
+    link.target = "_blank";
+    link.download = downloadFileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Downloading ${downloadFileName}...`, "success");
   };
 
   const fetchResumesFromBackend = async () => {
@@ -587,15 +634,14 @@ export const Careers = () => {
                           <td className="py-2.5 px-4 font-mono text-zinc-300">{r.email || 'N/A'}</td>
                           <td className="py-2.5 px-4 font-mono text-zinc-500 text-[10px]">{dateStr}</td>
                           <td className="py-2.5 px-4">
-                            {resumeLink ? (
-                              <a 
-                                href={resumeLink} 
-                                target="_blank" 
-                                rel="noreferrer" 
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500 hover:text-white transition-colors font-mono text-[10px]"
+                            {rawResume ? (
+                              <button 
+                                onClick={() => handleDownloadResume(rawResume, name, resumeName)}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-luxury-gold/10 text-luxury-gold border border-luxury-gold/30 hover:bg-luxury-gold hover:text-black transition-all cursor-pointer font-mono text-[10px] font-bold"
+                                title="Click to download resume file onto PC"
                               >
-                                <FileText className="w-3 h-3 text-luxury-gold" /> {resumeName}
-                              </a>
+                                <Download className="w-3.5 h-3.5" /> Download {resumeName}
+                              </button>
                             ) : (
                               <span className="text-zinc-600 font-mono text-[10px]">No File</span>
                             )}
@@ -776,17 +822,16 @@ export const Careers = () => {
                     </div>
                   )}
 
-                  {resumeLink && (
+                  {rawResume && (
                     <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
                       <span className="text-zinc-400 font-mono uppercase text-[10px] block mb-1.5 font-bold">Uploaded Resume Document</span> 
-                      <a 
-                        href={resumeLink} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-luxury-gold text-black font-bold font-mono text-xs hover:bg-yellow-400 transition-colors shadow-gold-glow"
+                      <button 
+                        type="button"
+                        onClick={() => handleDownloadResume(rawResume, name, resumeName)}
+                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-luxury-gold text-black font-bold font-mono text-xs hover:bg-yellow-400 transition-colors shadow-gold-glow cursor-pointer"
                       >
-                        <FileText className="w-4 h-4 text-black" /> View / Download {resumeName}
-                      </a>
+                        <Download className="w-4 h-4 text-black" /> Download Resume ({resumeName})
+                      </button>
                     </div>
                   )}
 

@@ -1,3 +1,4 @@
+import path from "path";
 import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -50,6 +51,7 @@ if (process.env.NODE_ENV === "production") {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // 5. Mount API Routes
 app.use("/api/v1/cms", cmsRouter);

@@ -699,7 +699,7 @@ export const Homepage = () => {
         <div className="space-y-6">
           <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4">
             <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Navbar Global Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
               <div>
                 <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Button Text</label>
                 <input
@@ -719,12 +719,23 @@ export const Homepage = () => {
                 />
               </div>
               <div>
-                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Views Badge</label>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Views Badge Label</label>
                 <input
                   type="text"
                   value={formData?.navbar?.viewsText || ''}
                   onChange={(e) => persistChanges({ ...formData, navbar: { ...(formData.navbar || {}), viewsText: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                  placeholder="e.g. VIEWS"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Target Views Count Number</label>
+                <input
+                  type="number"
+                  value={formData?.navbar?.targetViews ?? 25000000000}
+                  onChange={(e) => persistChanges({ ...formData, navbar: { ...(formData.navbar || {}), targetViews: Number(e.target.value) } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono focus:outline-none"
+                  placeholder="e.g. 25000000000"
                 />
               </div>
             </div>

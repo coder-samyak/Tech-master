@@ -12,12 +12,14 @@ export class CloudinaryService {
   static async uploadBuffer(
     fileBuffer: Buffer,
     folder: string = "techmaster",
-    resourceType: "image" | "video" | "auto" = "auto"
+    resourceType: "image" | "video" | "raw" | "auto" = "auto",
+    extraOptions: any = {}
   ): Promise<UploadApiResponse> {
     return new Promise((resolve, reject) => {
       const uploadOptions: any = {
         folder,
         resource_type: resourceType,
+        ...extraOptions
       };
 
       // Optimize images on the fly
