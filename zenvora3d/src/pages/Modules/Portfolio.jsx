@@ -36,6 +36,7 @@ export const Portfolio = () => {
         id: "ch-1",
         number: "1",
         name: "1. Tech Master",
+        circleImage: "/TechMaster.jpeg",
         desc: "High-scale technology breakdowns, hardware reviews, and cinematic teardowns.",
         ytSubs: "33M Subs on YT",
         igFollowers: "5.8M Followers on IG",
@@ -50,6 +51,7 @@ export const Portfolio = () => {
         id: "ch-2",
         number: "2",
         name: "2. Next Univerz",
+        circleImage: "/NextUniverz.jpeg",
         desc: "Engineering insights, software masterclasses, and digital transformation.",
         ytSubs: "5.5M Subs on YT",
         igFollowers: "",
@@ -64,6 +66,7 @@ export const Portfolio = () => {
         id: "ch-3",
         number: "3",
         name: "3. Master Wheels",
+        circleImage: "/MasterWheels.jpeg",
         desc: "Supercar testing, EV innovations, and automotive engineering marvels.",
         ytSubs: "4.6M Subs on YT",
         igFollowers: "1.2M Followers on IG",
@@ -78,6 +81,7 @@ export const Portfolio = () => {
         id: "ch-4",
         number: "4",
         name: "4. Full Circle",
+        circleImage: "/First circle.jpg.jpeg",
         desc: "Deep-dive conversations, creator podcasts, and behind-the-scenes stories.",
         ytSubs: "300K Subs on YT",
         igFollowers: "",
@@ -92,6 +96,7 @@ export const Portfolio = () => {
         id: "ch-5",
         number: "5",
         name: "5. Trendz Talk",
+        circleImage: "/Trendz talk logo.png",
         desc: "Viral tech trends, short-form pop tech, and culture storytelling.",
         ytSubs: "",
         igFollowers: "15K Followers on IG",
@@ -469,23 +474,11 @@ export const Portfolio = () => {
       {/* TAB 1: OVERVIEW */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
             <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-5 backdrop-blur-xl">
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block mb-1">Multiverse Channels</span>
               <p className="text-xl font-serif font-bold text-luxury-gold">{formData.channels.length} Channels</p>
               <p className="text-xs text-zinc-400 mt-1">Tech Master, Next Univerz, Master Wheels...</p>
-            </div>
-
-            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-5 backdrop-blur-xl">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block mb-1">Work Cards / Projects</span>
-              <p className="text-xl font-serif font-bold text-white">{formData.projects.length} Active Projects</p>
-              <p className="text-xs text-zinc-400 mt-1">Commercial shoots & video case studies</p>
-            </div>
-
-            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-5 backdrop-blur-xl">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block mb-1">Categories</span>
-              <p className="text-xl font-serif font-bold text-emerald-400">{formData.categories.length} Filters</p>
-              <p className="text-xs text-zinc-400 mt-1">Videos, Photos, Projects, Reels...</p>
             </div>
           </div>
         </div>
@@ -498,9 +491,7 @@ export const Portfolio = () => {
           <div className="flex items-center gap-2 bg-zinc-900/60 p-1.5 rounded-xl border border-zinc-800/80 w-fit">
             {[
               { id: 'hero', label: 'Hero Header' },
-              { id: 'channels', label: 'Multiverse Channels (5 Cards)' },
-              { id: 'categories', label: 'Category Navigation' },
-              { id: 'projects', label: 'Work Cards / Projects Grid' }
+              { id: 'channels', label: 'Multiverse Channels (5 Cards)' }
             ].map(sub => (
               <button
                 key={sub.id}
@@ -571,7 +562,7 @@ export const Portfolio = () => {
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Multiverse Channel Cards ({formData.channels.length})</h3>
                 <Button 
-                  onClick={() => setModalConfig({ listKey: 'channels', item: { name: '', desc: '', ytSubs: '', igFollowers: '', popular: '', link: '', accent: '#D4AF37' } })} 
+                  onClick={() => setModalConfig({ listKey: 'channels', item: { circleImage: '', name: '', desc: '', ytSubs: '', igFollowers: '', popular: '', link: '', accent: '#D4AF37' } })} 
                   variant="gold" 
                   size="sm" 
                   className="text-xs uppercase"
@@ -584,15 +575,55 @@ export const Portfolio = () => {
                 {formData.channels.map((ch, idx) => (
                   <div key={ch.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3 relative group">
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: ch.accent }} />
-                        <h4 className="font-serif font-bold text-white text-sm">{ch.name}</h4>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full overflow-hidden border border-luxury-gold/50 bg-black shrink-0 flex items-center justify-center">
+                          {(ch.circleImage || ch.imageUrl || ch.logoUrl) ? (
+                            <img src={ch.circleImage || ch.imageUrl || ch.logoUrl} alt={ch.name} className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            <span className="text-luxury-gold font-mono text-[9px]">#{idx + 1}</span>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-serif font-bold text-white text-sm">{ch.name}</h4>
+                          <span className="text-[9px] font-mono text-zinc-500 block">Channel Card #{idx + 1}</span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1">
                         <button onClick={() => swapOrder('channels', idx, -1)} className="text-zinc-500 hover:text-luxury-gold"><ArrowUp className="w-3 h-3" /></button>
                         <button onClick={() => swapOrder('channels', idx, 1)} className="text-zinc-500 hover:text-luxury-gold"><ArrowDown className="w-3 h-3" /></button>
                         <button onClick={() => handleItemDuplicate('channels', ch)} className="text-zinc-400 hover:text-white"><Copy className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => setModalConfig({ listKey: 'channels', item: ch })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                        <button 
+                          onClick={() => {
+                            const lowName = (ch.name || "").toLowerCase();
+                            const fallbackImg = 
+                              lowName.includes("tech master") ? "/TechMaster.jpeg" :
+                              lowName.includes("next univerz") ? "/NextUniverz.jpeg" :
+                              lowName.includes("master wheels") ? "/MasterWheels.jpeg" :
+                              lowName.includes("full circle") ? "/First circle.jpg.jpeg" :
+                              lowName.includes("trendz talk") ? "/Trendz talk logo.png" : "";
+
+                            const activeImg = ch.circleImage || ch.imageUrl || ch.logoUrl || ch.image || fallbackImg;
+
+                            setModalConfig({
+                              listKey: 'channels',
+                              item: {
+                                circleImage: activeImg,
+                                name: ch.name || '',
+                                desc: ch.desc || '',
+                                ytSubs: ch.ytSubs || '',
+                                igFollowers: ch.igFollowers || '',
+                                popular: ch.popular || '',
+                                link: ch.link || '',
+                                accent: ch.accent || '#D4AF37',
+                                ...ch,
+                                circleImage: activeImg
+                              }
+                            });
+                          }} 
+                          className="text-zinc-400 hover:text-luxury-gold"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
                         <button onClick={() => handleItemDelete('channels', ch.id, true)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </div>
@@ -612,84 +643,6 @@ export const Portfolio = () => {
                     <a href={ch.link} target="_blank" rel="noreferrer" className="text-luxury-gold text-[10px] font-mono uppercase inline-flex items-center gap-1 hover:underline">
                       Visit Channel <LinkIcon className="w-3 h-3" />
                     </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Sub-Tab 3: CATEGORIES */}
-          {contentSubTab === 'categories' && (
-            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Category Navigation Filters ({formData.categories.length})</h3>
-                <Button 
-                  onClick={() => setModalConfig({ listKey: 'categories', item: { name: '' } })} 
-                  variant="gold" 
-                  size="sm" 
-                  className="text-xs uppercase"
-                >
-                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Category
-                </Button>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {formData.categories.map((cat, idx) => (
-                  <div key={cat.id} className="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-3">
-                    <span className="font-semibold text-zinc-200">{cat.name}</span>
-                    <div className="flex items-center gap-1 border-l border-zinc-800 pl-2">
-                      <button onClick={() => setModalConfig({ listKey: 'categories', item: cat })} className="text-zinc-500 hover:text-luxury-gold"><Edit3 className="w-3 h-3" /></button>
-                      <button onClick={() => handleItemDelete('categories', cat.id, true)} className="text-zinc-500 hover:text-rose-400"><Trash2 className="w-3 h-3" /></button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Sub-Tab 4: WORK CARDS / PROJECTS */}
-          {contentSubTab === 'projects' && (
-            <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-6 backdrop-blur-xl space-y-4 text-xs">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Work Cards / Projects Grid ({formData.projects.length})</h3>
-                <Button 
-                  onClick={() => setModalConfig({ listKey: 'projects', item: { title: '', category: 'Videos', client: '', year: '2026', description: '', imageUrl: '', tags: ['Commercial'], buttonText: 'Review Case', buttonUrl: '#' } })} 
-                  variant="gold" 
-                  size="sm" 
-                  className="text-xs uppercase"
-                >
-                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Work Card
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {formData.projects.map((proj, idx) => (
-                  <div key={proj.id} className="p-5 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3 relative group">
-                    <div className="aspect-video w-full rounded-lg overflow-hidden bg-black border border-zinc-800 relative">
-                      {proj.imageUrl ? (
-                        <img src={proj.imageUrl} alt={proj.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="flex items-center justify-center h-full text-zinc-600">No Image</div>
-                      )}
-                      <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded bg-black/80 text-luxury-gold text-[9px] font-mono border border-zinc-700">
-                        {proj.category}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-serif font-bold text-white text-base">{proj.title}</h4>
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => setModalConfig({ listKey: 'projects', item: proj })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleItemDelete('projects', proj.id, true)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </div>
-                    </div>
-
-                    <p className="text-zinc-400 font-light text-xs leading-relaxed">{proj.description}</p>
-
-                    <div className="flex items-center justify-between font-mono text-[10px] text-zinc-500 pt-2 border-t border-zinc-800">
-                      <span>Client: <strong className="text-zinc-300">{proj.client}</strong></span>
-                      <span>Year: <strong className="text-luxury-gold">{proj.year}</strong></span>
-                    </div>
                   </div>
                 ))}
               </div>
@@ -788,21 +741,93 @@ export const Portfolio = () => {
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
-                <div key={key}>
-                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
-                  <input
-                    type="text"
-                    value={modalConfig.item[key] || ''}
-                    onChange={(e) => setModalConfig({
-                      ...modalConfig,
-                      item: { ...modalConfig.item, [key]: e.target.value }
-                    })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
-                  />
-                </div>
-              ))}
+            <div className="space-y-3 text-xs max-h-[60vh] overflow-y-auto pr-1">
+              {(() => {
+                let keys = Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k));
+                if (modalConfig.listKey === 'channels' && !keys.includes('circleImage')) {
+                  keys.unshift('circleImage');
+                }
+                return keys.map(key => {
+                  const isImageField = ['circleImage', 'imageUrl', 'logoUrl', 'image', 'avatarUrl'].includes(key);
+                if (isImageField) {
+                  const currentImg = modalConfig.item[key] || '';
+                  return (
+                    <div key={key} className="space-y-1.5 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800/80">
+                      <label className="text-luxury-gold block font-mono uppercase text-[10px] font-bold">
+                        {key === 'circleImage' ? 'Channel Circle Avatar Image' : key}
+                      </label>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border border-luxury-gold/50 bg-black shrink-0 flex items-center justify-center">
+                          {currentImg ? (
+                            <img src={currentImg} alt="Preview" className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            <ImageIcon className="w-5 h-5 text-zinc-600" />
+                          )}
+                        </div>
+
+                        <div className="flex-1 space-y-1.5">
+                          <input
+                            type="text"
+                            placeholder="Enter image URL or choose file..."
+                            value={currentImg}
+                            onChange={(e) => setModalConfig({
+                              ...modalConfig,
+                              item: { ...modalConfig.item, [key]: e.target.value }
+                            })}
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-200 text-xs focus:outline-none"
+                          />
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-[10px] py-1 px-2.5 uppercase font-mono"
+                              onClick={() => openMediaManager({ 
+                                onSelect: (url) => setModalConfig({
+                                  ...modalConfig,
+                                  item: { ...modalConfig.item, [key]: url }
+                                })
+                              })}
+                            >
+                              <ImageIcon className="w-3 h-3 mr-1 text-luxury-gold" /> Media Library
+                            </Button>
+
+                            <label className="cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2.5 py-1 rounded-md text-[10px] uppercase font-mono border border-zinc-700 flex items-center gap-1">
+                              <Upload className="w-3 h-3 text-luxury-gold" /> Upload
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                onChange={(e) => handleFileUpload(e, (url) => setModalConfig({
+                                  ...modalConfig,
+                                  item: { ...modalConfig.item, [key]: url }
+                                }))} 
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={key}>
+                    <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
+                    <input
+                      type="text"
+                      value={modalConfig.item[key] || ''}
+                      onChange={(e) => setModalConfig({
+                        ...modalConfig,
+                        item: { ...modalConfig.item, [key]: e.target.value }
+                      })}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                    />
+                  </div>
+                );
+              });
+            })()}
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">

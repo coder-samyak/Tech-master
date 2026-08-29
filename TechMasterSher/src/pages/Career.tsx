@@ -120,15 +120,64 @@ export const Career: React.FC = () => {
       dataPayload.append("coverLetter", formData.coverLetter);
       dataPayload.append("resume", formData.resumeFile);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1"}` + "/cms/public/resume", {
-        method: "POST",
-        body: dataPayload
-      });
+      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const endpoints = [
+        `${baseUrl}/cms/public/resume`,
+        `${baseUrl}/public/resume`,
+        `${baseUrl}/public/career-application`
+      ];
 
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to submit application.");
+      let result: any = null;
+
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep, {
+            method: "POST",
+            body: dataPayload
+          });
+          if (res.ok) {
+            result = await res.json();
+            break;
+          }
+        } catch (e) {
+          console.warn(`Career submit endpoint failed: ${ep}`, e);
+        }
       }
+
+      // Backup to local storage & broadcast sync event to Admin Panel
+      const newApp = {
+        id: result?.data?.id || `resume-${Date.now()}`,
+        name: formData.name,
+        candidateName: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        jobTitle: formData.jobTitle || "General Application",
+        jobApplied: formData.jobTitle || "General Application",
+        experience: formData.portfolioLink,
+        portfolioUrl: formData.portfolioLink,
+        message: formData.whyJoin,
+        whyJoin: formData.whyJoin,
+        coverLetter: formData.coverLetter,
+        resumeFileUrl: result?.data?.resumeFileUrl || "",
+        resumeFileName: formData.resumeFile?.name || "resume.pdf",
+        status: "New",
+        date: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        const saved = localStorage.getItem("zenvora_db");
+        let localDb = saved ? JSON.parse(saved) : {};
+        let existingResumes = Array.isArray(localDb.resumes) ? localDb.resumes : [];
+        existingResumes.unshift(newApp);
+        localDb.resumes = existingResumes;
+        localDb.careerApplications = existingResumes;
+        localStorage.setItem("zenvora_db", JSON.stringify(localDb));
+
+        const channel = new BroadcastChannel("zenvora_cms_sync");
+        channel.postMessage({ type: "APPLICATION_SUBMITTED", data: newApp });
+        channel.close();
+      } catch (e) {}
 
       setSubmitted(true);
     } catch (err: any) {

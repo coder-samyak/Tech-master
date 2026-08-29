@@ -43,6 +43,28 @@ export const Contact = () => {
   const [mapForm, setMapForm] = useState(rawData.map || defaultContactData.map);
   const [socialsForm, setSocialsForm] = useState(rawData.socials || defaultContactData.socials);
   const [categoriesForm, setCategoriesForm] = useState(rawData.categories || defaultContactData.categories);
+  const [socialTitle, setSocialTitle] = useState(rawData.socialTitle || "Connect Internationally");
+  const [socialModal, setSocialModal] = useState({ isOpen: false, mode: 'add', item: { platform: '', handle: '', url: '' }, index: null });
+
+  const handleDeleteSocialCard = (index) => {
+    if (!window.confirm("Delete this social card?")) return;
+    const updated = socialsForm.filter((_, i) => i !== index);
+    setSocialsForm(updated);
+    handleSaveData('socials', updated);
+  };
+
+  const handleSaveSocialModal = (e) => {
+    e.preventDefault();
+    let updated = [...socialsForm];
+    if (socialModal.mode === 'edit' && socialModal.index !== null) {
+      updated[socialModal.index] = socialModal.item;
+    } else {
+      updated.push(socialModal.item);
+    }
+    setSocialsForm(updated);
+    handleSaveData('socials', updated);
+    setSocialModal({ isOpen: false, mode: 'add', item: { platform: '', handle: '', url: '' }, index: null });
+  };
 
   useEffect(() => {
     const fetchLatestContact = async () => {
@@ -55,6 +77,7 @@ export const Contact = () => {
             if (data.info) setInfoForm(data.info);
             if (data.map) setMapForm(data.map);
             if (data.socials && data.socials.length > 0) setSocialsForm(data.socials);
+            if (data.socialTitle) setSocialTitle(data.socialTitle);
             if (data.categories && data.categories.length > 0) setCategoriesForm(data.categories);
           }
         }
@@ -72,6 +95,7 @@ export const Contact = () => {
       info: infoForm,
       map: mapForm,
       socials: socialsForm,
+      socialTitle: socialTitle,
       categories: categoriesForm
     };
     if (updateSection) {
@@ -102,6 +126,7 @@ export const Contact = () => {
       info: infoForm,
       map: mapForm,
       socials: socialsForm,
+      socialTitle: socialTitle,
       categories: categoriesForm,
       [section]: data
     };
@@ -224,14 +249,94 @@ export const Contact = () => {
             </div>
           )}
           
-          {(activeTab === 'socials' || activeTab === 'categories') && (
+          {activeTab === 'socials' && (
+            <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 space-y-6">
+              <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                <div>
+                  <h3 className="text-lg font-serif text-white">Connect Internationally CMS</h3>
+                  <p className="text-xs text-gray-400">Edit social handle cards & section header title.</p>
+                </div>
+                <button 
+                  onClick={() => setSocialModal({ isOpen: true, mode: 'add', item: { platform: '', handle: '', url: '' }, index: null })}
+                  className="px-4 py-2 bg-gold text-black font-bold rounded-lg text-xs flex items-center gap-1.5 hover:bg-yellow-500 transition-colors"
+                >
+                  <Plus className="w-4 h-4" /> Add Social Card
+                </button>
+              </div>
+
+              {/* Section Header Title */}
+              <div>
+                <label className="block text-xs text-gray-400 uppercase font-mono tracking-wider mb-2">Section Title Heading</label>
+                <input 
+                  type="text" 
+                  className="w-full bg-black border border-white/10 rounded-lg px-4 py-2 text-white font-serif focus:border-gold outline-none text-sm" 
+                  value={socialTitle} 
+                  onChange={e => setSocialTitle(e.target.value)} 
+                  placeholder="Connect Internationally"
+                />
+              </div>
+
+              {/* Social Handle Cards List */}
+              <div className="space-y-3">
+                <label className="block text-xs text-gray-400 uppercase font-mono tracking-wider">Social Cards ({socialsForm.length})</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {socialsForm.map((s, idx) => (
+                    <div key={idx} className="p-4 bg-black border border-white/10 rounded-xl space-y-2 hover:border-gold/40 transition-colors relative">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span className="text-xs font-mono font-bold text-gold uppercase">{s.platform || "Social Link"}</span>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            type="button"
+                            onClick={() => setSocialModal({ isOpen: true, mode: 'edit', item: s, index: idx })} 
+                            className="p-1 text-gray-400 hover:text-white transition-colors"
+                            title="Edit Card"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => handleDeleteSocialCard(idx)} 
+                            className="p-1 text-rose-400 hover:text-rose-200 transition-colors"
+                            title="Delete Card"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] text-gray-500 font-mono block">Handle / Display Text:</span>
+                        <span className="text-xs font-semibold text-white">{s.handle || 'N/A'}</span>
+                      </div>
+
+                      {s.url && (
+                        <div>
+                          <span className="text-[10px] text-gray-500 font-mono block">Target URL:</span>
+                          <a href={s.url} target="_blank" rel="noreferrer" className="text-xs text-gold hover:underline font-mono truncate block">
+                            {s.url}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button 
+                type="button"
+                onClick={() => handleSaveData('socials', socialsForm)} 
+                className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-lg text-xs transition-colors"
+              >
+                Apply Socials to Preview
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'categories' && (
             <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 text-center">
               <Database className="w-12 h-12 text-zinc-800 mx-auto mb-4" />
-              <h3 className="text-lg font-serif text-white mb-2">{activeTab === 'socials' ? 'Social Links' : 'Form Categories'} Manager</h3>
-              <p className="text-sm text-gray-500">Fully synced with MongoDB. Add, edit, reorder your items.</p>
-              <button className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-white flex items-center gap-2 mx-auto">
-                <Plus className="w-4 h-4" /> Add Item
-              </button>
+              <h3 className="text-lg font-serif text-white mb-2">Form Categories Manager</h3>
+              <p className="text-sm text-gray-500">Fully synced with MongoDB. Manage dropdown options.</p>
             </div>
           )}
         </div>
@@ -359,13 +464,13 @@ export const Contact = () => {
 
                 {/* Socials */}
                 <div>
-                  <h4 className="font-serif text-[10px] font-bold text-white mb-3 uppercase tracking-[2px]">Connect Internationally</h4>
+                  <h4 className="font-serif text-[10px] font-bold text-white mb-3 uppercase tracking-[2px]">{socialTitle}</h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {socialsForm.map(s => (
-                      <div key={s.platform} className="border border-white/5 bg-white/[0.01] p-3 rounded-2xl">
+                    {socialsForm.map((s, idx) => (
+                      <div key={s.platform || idx} className="border border-white/5 bg-white/[0.01] p-3 rounded-2xl">
                         <span className="text-[9px] text-gold uppercase tracking-[1px] font-bold font-mono">{s.platform}</span>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-[10px] text-white font-light">{s.handle}</span>
+                          <span className="text-[10px] text-white font-light truncate max-w-[80%]">{s.handle}</span>
                           <ExternalLink className="w-3 h-3 text-gray-500" />
                         </div>
                       </div>
@@ -378,6 +483,79 @@ export const Contact = () => {
           </div>
         </div>
       </div>
+
+      {/* ADD / EDIT SOCIAL CARD MODAL */}
+      {socialModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-xs font-roboto">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">
+                {socialModal.mode === 'add' ? 'Add New Social Card' : 'Edit Social Card'}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => setSocialModal({ isOpen: false, mode: 'add', item: { platform: '', handle: '', url: '' }, index: null })} 
+                className="text-zinc-500 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSocialModal} className="space-y-4">
+              <div>
+                <label className="block text-zinc-400 font-mono uppercase text-[10px] mb-1">Platform Name (e.g., INSTAGRAM, LINKEDIN)</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="INSTAGRAM"
+                  value={socialModal.item.platform} 
+                  onChange={e => setSocialModal({ ...socialModal, item: { ...socialModal.item, platform: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-gold font-mono uppercase font-bold text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-zinc-400 font-mono uppercase text-[10px] mb-1">Handle / Username (e.g., @aman_techmaster)</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="@aman_techmaster"
+                  value={socialModal.item.handle} 
+                  onChange={e => setSocialModal({ ...socialModal, item: { ...socialModal.item, handle: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-zinc-400 font-mono uppercase text-[10px] mb-1">Target Profile URL (e.g., https://instagram.com/aman_techmaster)</label>
+                <input 
+                  type="url" 
+                  placeholder="https://instagram.com"
+                  value={socialModal.item.url} 
+                  onChange={e => setSocialModal({ ...socialModal, item: { ...socialModal.item, url: e.target.value } })}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-white font-mono text-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+                <button 
+                  type="button" 
+                  onClick={() => setSocialModal({ isOpen: false, mode: 'add', item: { platform: '', handle: '', url: '' }, index: null })}
+                  className="px-3 py-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-900 text-xs"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="px-4 py-1.5 rounded-lg bg-gold text-black font-bold text-xs hover:bg-yellow-500 transition-colors"
+                >
+                  Save Card
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

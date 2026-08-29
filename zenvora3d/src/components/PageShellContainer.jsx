@@ -14,6 +14,7 @@ export const PageShellContainer = ({
   pageSlug,
   pageKey,
   sectionsRoadmap = [],
+  hiddenTabs = ['media', 'seo'],
   children
 }) => {
   const { db, updateSection } = useDatabase();
@@ -113,7 +114,7 @@ export const PageShellContainer = ({
         </div>
       </div>
 
-      {/* 7 ARCHITECTURAL TABS ROW */}
+      {/* ARCHITECTURAL TABS ROW */}
       <div className="flex items-center gap-1 border-b border-zinc-800/80 pb-3 overflow-x-auto scrollbar-none">
         {[
           { id: 'overview', label: 'Overview', icon: FileText },
@@ -123,7 +124,7 @@ export const PageShellContainer = ({
           { id: 'visibility', label: 'Visibility & Access', icon: Eye },
           { id: 'publish', label: 'Publish Settings', icon: Clock },
           { id: 'preview', label: 'Live Preview', icon: Monitor }
-        ].map(tab => {
+        ].filter(tab => !hiddenTabs.includes(tab.id)).map(tab => {
           const IconComp = tab.icon;
           return (
             <button

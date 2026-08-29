@@ -18,7 +18,6 @@ export const PagesManager = ({ setCurrentView }) => {
     { id: 'page-1', title: 'Homepage', slug: '/', status: 'Published', viewKey: 'homepage', lastModified: '2026-07-28', template: 'Homepage' },
     { id: 'page-2', title: 'About Us', slug: '/about', status: 'Published', viewKey: 'about', lastModified: '2026-07-27', template: 'About' },
     { id: 'page-3', title: "Founder's Journey", slug: '/journey', status: 'Published', viewKey: 'founder-journey', lastModified: '2026-07-27', template: 'Timeline' },
-    { id: 'page-4', title: 'Mission & Vision', slug: '/mission', status: 'Published', viewKey: 'mission-vision', lastModified: '2026-07-26', template: 'Standard' },
     { id: 'page-10', title: 'Portfolio (Our Work)', slug: '/portfolio', status: 'Published', viewKey: 'portfolio', lastModified: '2026-07-28', template: 'Portfolio' },
     { id: 'page-14', title: 'Blogs & Articles', slug: '/blog', status: 'Published', viewKey: 'blogs', lastModified: '2026-07-26', template: 'Blog' },
     { id: 'page-15', title: 'Careers & Hiring', slug: '/careers', status: 'Published', viewKey: 'careers', lastModified: '2026-07-21', template: 'Careers' },

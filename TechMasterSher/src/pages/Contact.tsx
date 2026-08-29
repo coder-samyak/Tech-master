@@ -45,6 +45,8 @@ export const Contact: React.FC = () => {
   const addressVal = contactInfo.address;
   const whatsappNumber = contactInfo.whatsapp;
 
+  const socialTitle = rawData.socialHeader?.title || rawData.socialTitle || "Connect Internationally";
+
   const socialsList = rawData.socials || [
     { platform: "Instagram", handle: "@aman_techmaster", url: "https://instagram.com" },
     { platform: "LinkedIn", handle: "/in/aman-tech", url: "https://linkedin.com" }
@@ -349,7 +351,7 @@ export const Contact: React.FC = () => {
 
           {/* Social Media Links section */}
           <div>
-            <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">Connect Internationally</h4>
+            <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">{socialTitle}</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {socialsList.map((social: any) => (
                 <a 

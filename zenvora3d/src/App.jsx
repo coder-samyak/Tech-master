@@ -9,7 +9,6 @@ import { Dashboard } from './pages/Dashboard/Dashboard';
 import { Homepage } from './pages/Modules/Homepage';
 import { About } from './pages/Modules/About';
 import { FounderJourney } from './pages/Modules/FounderJourney';
-import { MissionVision } from './pages/Modules/MissionVision';
 import { Portfolio } from './pages/Modules/Portfolio';
 import { Blogs } from './pages/Modules/Blogs';
 import { Careers } from './pages/Modules/Careers';
@@ -23,9 +22,7 @@ import { MediaLibrary } from './pages/Modules/MediaLibrary';
 import { NavigationManager } from './pages/Modules/NavigationManager';
 import { PagesManager } from './pages/Modules/PagesManager';
 import { SEOManager } from './pages/Modules/SEOManager';
-import { NewsletterManager } from './pages/Modules/NewsletterManager';
 import { ContactsManager } from './pages/Modules/ContactsManager';
-import { Analytics } from './pages/Modules/Analytics';
 import { UserManagement } from './pages/Modules/UserManagement';
 import { RolesPermissionsManager } from './pages/Modules/RolesPermissionsManager';
 import { WebsiteSettings } from './pages/Modules/WebsiteSettings';
@@ -54,8 +51,6 @@ function AppContent() {
         return <About />;
       case 'founder-journey':
         return <FounderJourney />;
-      case 'mission-vision':
-        return <MissionVision />;
       case 'portfolio':
       case 'our-work':
       case 'ourWork':
@@ -87,14 +82,10 @@ function AppContent() {
       case 'seo-manager':
       case 'seo':
         return <SEOManager />;
-      case 'newsletter':
-        return <NewsletterManager />;
       case 'contacts':
       case 'enquiries':
       case 'faq-contact':
         return <ContactsManager />;
-      case 'analytics':
-        return <Analytics />;
       case 'users':
       case 'user-management':
         return <UserManagement />;

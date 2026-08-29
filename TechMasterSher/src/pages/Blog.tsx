@@ -163,7 +163,7 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
             {activeHero.badge || "CREATOR JOURNAL"}
           </motion.div>
           
-          <h1 className="typo-h1 mb-8">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-white mb-6">
             {activeHero.titleLine1 || "Thoughts on Tech"} <br />
             <span className="text-gold italic font-bold">{activeHero.titleLine2 || "education & scalability."}</span>
           </h1>

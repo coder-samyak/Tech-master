@@ -211,9 +211,9 @@ export const Blogs = () => {
     setTimeout(() => setIsSaved(false), 2500);
   };
 
-  const handleItemDelete = (listKey, id) => {
+  const handleItemDelete = (listKey, targetId) => {
     const list = [...formData[listKey]];
-    const updated = list.filter(item => item.id !== id);
+    const updated = list.filter(item => (item.id || item._id) !== targetId);
     persistChanges({ ...formData, [listKey]: updated });
     showToast('Item removed', 'info');
   };
@@ -223,13 +223,17 @@ export const Blogs = () => {
     const { listKey, item } = modalConfig;
     const list = [...formData[listKey]];
 
+    const itemId = item.id || item._id;
+    const isEditMode = itemId && list.some(i => (i.id || i._id) === itemId);
+
     let updated;
-    if (item.id) {
-      updated = list.map(i => i.id === item.id ? item : i);
+    if (isEditMode) {
+      updated = list.map(i => ((i.id || i._id) === itemId) ? { ...item, id: itemId } : i);
     } else {
+      const newId = itemId || `${listKey.slice(0, 3)}-${Date.now()}`;
       const newItem = {
         ...item,
-        id: `${listKey.slice(0, 3)}-${Date.now()}`,
+        id: newId,
         order: list.length + 1,
         active: true,
         status: item.status || 'published'
@@ -239,7 +243,7 @@ export const Blogs = () => {
 
     persistChanges({ ...formData, [listKey]: updated });
     setModalConfig(null);
-    showToast(item.id ? 'Item updated successfully!' : 'New item added!', 'success');
+    showToast(isEditMode ? 'Article updated successfully!' : 'New article added!', 'success');
   };
 
   return (
@@ -269,13 +273,12 @@ export const Blogs = () => {
         </div>
       </div>
 
-      {/* 8 Architectural Tabs */}
+      {/* Architectural Tabs */}
       <div className="flex items-center gap-1.5 border-b border-zinc-800/80 pb-3 overflow-x-auto scrollbar-none">
         {[
           { id: 'posts', label: '1. Blog Posts Catalog', icon: FileText },
           { id: 'categories', label: '2. Categories & Filters', icon: Tag },
-          { id: 'strategy', label: '3. Strategy & ROI Estimator', icon: Target },
-          { id: 'media', label: 'Media Assets', icon: ImageIcon }
+          { id: 'strategy', label: '3. Strategy & ROI Estimator', icon: Target }
         ].map(tab => {
           const IconComp = tab.icon;
           return (
@@ -328,8 +331,8 @@ export const Blogs = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-zinc-800/80 text-[10px] font-mono text-zinc-400">
                   <span>{b.readTime || '5 min'}</span>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setModalConfig({ listKey: 'blogs', item: b })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => handleItemDelete('blogs', b.id)} className="p-1 text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setModalConfig({ listKey: 'blogs', item: { ...b, id: b.id || b._id } })} className="p-1 text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleItemDelete('blogs', b.id || b._id)} className="p-1 text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
               </div>

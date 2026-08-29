@@ -237,9 +237,7 @@ function App() {
           </main>
 
           {/* Premium Multi-column Footer */}
-          {activePage !== "contact" && (
-            <Footer onChangePage={navigatePage} />
-          )}
+          <Footer onChangePage={navigatePage} />
         </div>
       </SmoothScroll>
     </>

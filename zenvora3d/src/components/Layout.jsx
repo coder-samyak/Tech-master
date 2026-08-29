@@ -27,7 +27,6 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
     { id: 'homepage', label: 'Homepage', icon: Home },
     { id: 'about', label: 'About', icon: User },
     { id: 'founder-journey', label: 'Founder Journey', icon: History },
-    { id: 'mission-vision', label: 'Mission & Vision', icon: Target },
     { id: 'portfolio', label: 'Our Work / Portfolio', icon: FolderHeart },
     { id: 'blogs', label: 'Blogs', icon: FileText },
     { id: 'careers', label: 'Careers', icon: FileSpreadsheet },
@@ -48,9 +47,7 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
     },
     { id: 'navigation-manager', label: 'Navigation Manager', icon: Navigation },
     { id: 'pages', label: 'Pages', icon: FileText },
-    { id: 'newsletter', label: 'Newsletter', icon: Mail },
     { id: 'contacts', label: 'Contacts', icon: PhoneCall },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
     { id: 'settings', label: 'Settings', icon: Settings }

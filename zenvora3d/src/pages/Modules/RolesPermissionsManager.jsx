@@ -15,7 +15,7 @@ export const RolesPermissionsManager = () => {
   const roles = db?.userRoles || defaultRoles;
 
   const modulesList = [
-    'Homepage', 'About', 'Founder Journey', 'Mission & Vision', 'Services', 
+    'Homepage', 'About', 'Founder Journey', 'Services', 
     'Portfolio', 'Blogs', 'Media Library', 'SEO Manager', 'Settings'
   ];
 

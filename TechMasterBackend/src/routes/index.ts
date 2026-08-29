@@ -72,41 +72,59 @@ import {
 const router = Router();
 
 // Public endpoint for submitting a resume/career application
-router.post("/public/resume", parseDocument, async (req: any, res: any, next: any) => {
+const handleResumeSubmission = async (req: any, res: any, next: any) => {
   try {
-    const { name, email, phone, jobTitle, experience, message, coverLetter } = req.body;
+    const { name, candidateName, fullName, email, phone, jobTitle, role, position, experience, portfolioLink, message, whyJoin, coverLetter } = req.body;
     let resumeUrl = "";
     let publicId = "";
     
     if (req.file) {
-      // Upload to cloudinary as auto
-      const result = await CloudinaryService.uploadBuffer(req.file.buffer, "techmaster/resumes", "auto");
-      resumeUrl = result.secure_url;
+      const isDoc = (req.file.mimetype && (req.file.mimetype.includes("pdf") || req.file.mimetype.includes("document"))) || 
+                    (req.file.originalname && (req.file.originalname.endsWith(".pdf") || req.file.originalname.endsWith(".doc") || req.file.originalname.endsWith(".docx")));
+      const resourceType = isDoc ? "raw" : "auto";
+      const result = await CloudinaryService.uploadBuffer(req.file.buffer, "techmaster/resumes", resourceType as any);
+      
+      let url = result.secure_url;
+      if (isDoc && !url.endsWith(".pdf") && req.file.originalname?.endsWith(".pdf")) {
+        url = `${url}.pdf`;
+      }
+      resumeUrl = url;
       publicId = result.public_id;
     }
 
-    // Append to CMSData 'resumes' array
+    // Append to CMSData 'resumes' and 'careerApplications' array
     const doc = await CMSData.findOne({ key: "resumes" });
     let resumes = [];
     if (doc && Array.isArray(doc.value)) {
       resumes = doc.value;
-    } else if (doc && typeof doc.value === 'object') {
+    } else {
       resumes = [];
     }
 
+    const applicantName = name || candidateName || fullName || "Anonymous Candidate";
+    const jobRole = jobTitle || role || position || "General Application";
+
     const newResume = {
       id: `resume-${Date.now()}`,
-      candidateName: name,
-      email,
-      phone,
-      jobApplied: jobTitle,
-      portfolioUrl: experience,
-      message,
-      coverLetter,
+      name: applicantName,
+      candidateName: applicantName,
+      fullName: applicantName,
+      email: email || "",
+      phone: phone || "",
+      jobTitle: jobRole,
+      jobApplied: jobRole,
+      position: jobRole,
+      portfolioUrl: experience || portfolioLink || "",
+      experience: experience || portfolioLink || "",
+      message: message || whyJoin || "",
+      whyJoin: message || whyJoin || "",
+      coverLetter: coverLetter || "",
       resumeFileUrl: resumeUrl,
+      resumeUrl: resumeUrl,
       resumeFileName: req.file?.originalname || 'resume.pdf',
       publicId: publicId,
       status: "New",
+      date: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString()
     };
 
@@ -118,11 +136,51 @@ router.post("/public/resume", parseDocument, async (req: any, res: any, next: an
       { upsert: true, new: true }
     );
 
+    await CMSData.findOneAndUpdate(
+      { key: "careerApplications" },
+      { value: resumes },
+      { upsert: true, new: true }
+    );
+
     ApiResponse.success(res, "Resume submitted successfully", newResume);
   } catch (error) {
     next(error);
   }
-});
+};
+
+router.post("/public/resume", parseDocument, handleResumeSubmission);
+router.post("/cms/public/resume", parseDocument, handleResumeSubmission);
+router.post("/public/career-application", parseDocument, handleResumeSubmission);
+
+// DELETE endpoint for removing an applicant submission
+const handleDeleteResume = async (req: any, res: any, next: any) => {
+  try {
+    const { id } = req.params;
+    const doc = await CMSData.findOne({ key: "resumes" });
+    let resumes = (doc && Array.isArray(doc.value)) ? doc.value : [];
+    
+    resumes = resumes.filter((r: any) => r.id !== id && r._id !== id);
+
+    await CMSData.findOneAndUpdate(
+      { key: "resumes" },
+      { value: resumes },
+      { upsert: true, new: true }
+    );
+
+    await CMSData.findOneAndUpdate(
+      { key: "careerApplications" },
+      { value: resumes },
+      { upsert: true, new: true }
+    );
+
+    ApiResponse.success(res, "Application deleted successfully", { id });
+  } catch (error) {
+    next(error);
+  }
+};
+
+router.delete("/resumes/:id", handleDeleteResume);
+router.delete("/public/resume/:id", handleDeleteResume);
 
 // Public endpoint for submitting a business inquiry / contact form submission
 const handleEnquirySubmission = async (req: any, res: any, next: any) => {

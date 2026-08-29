@@ -58,18 +58,18 @@ const getSocialLinks = (ch: any) => {
 
 
 const getChannelCircleImage = (clientOrChannelName: string, channelObj?: any, liveData?: any, activeDb?: any) => {
-  const name = (clientOrChannelName || "").trim().toLowerCase();
+  // 1. Direct explicit image set on channel object from CMS/Admin panel (Top Priority!)
+  if (channelObj) {
+    const directImg = channelObj.circleImage || channelObj.imageUrl || channelObj.logoUrl || channelObj.image;
+    if (directImg) return mediaUrl(directImg);
+  }
 
+  const name = (clientOrChannelName || "").trim().toLowerCase();
   if (name.includes("tech master") || name.includes("techmaster")) return "/TechMaster.jpeg";
   if (name.includes("next univerz") || name.includes("nextuniverz")) return "/NextUniverz.jpeg";
   if (name.includes("master wheels") || name.includes("masterwheels") || name.includes("wheels")) return "/MasterWheels.jpeg";
   if (name.includes("full circle") || name.includes("fullcircle")) return "/First circle.jpg.jpeg";
   if (name.includes("trendz talk") || name.includes("trendztalk") || name.includes("trendz")) return "/Trendz talk logo.png";
-
-  if (channelObj) {
-    const directImg = channelObj.circleImage || channelObj.logoUrl || channelObj.image || channelObj.imageUrl;
-    if (directImg) return mediaUrl(directImg);
-  }
 
   const allTickerChannels = [
     ...(liveData?.channelsTicker?.channels || []),

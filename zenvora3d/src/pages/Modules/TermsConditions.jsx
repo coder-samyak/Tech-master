@@ -297,13 +297,15 @@ export const TermsConditions = () => {
       <AnimatePresence>
         {toastMsg && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-6 z-50 bg-luxury-gold/90 text-black font-semibold px-4 py-2 rounded-xl shadow-lg text-xs flex items-center gap-2 border border-yellow-400"
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-6 right-6 z-[9999] bg-zinc-950 text-emerald-400 font-bold px-4 py-3 rounded-xl shadow-[0_0_30px_rgba(16,185,129,0.3)] border border-emerald-500/50 text-xs flex items-center gap-2.5 backdrop-blur-2xl"
           >
-            <Check className="w-4 h-4 stroke-[3]" />
-            <span>{toastMsg}</span>
+            <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+              <Check className="w-3.5 h-3.5 stroke-[3]" />
+            </div>
+            <span className="text-emerald-300 font-mono tracking-wide">{toastMsg}</span>
           </motion.div>
         )}
       </AnimatePresence>
