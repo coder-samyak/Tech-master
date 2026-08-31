@@ -2,38 +2,14 @@
 <html lang="en">
 
 <head>
-
-  <!-- Google Tag Manager -->
-  <script>
-    (function (w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({
-        'gtm.start': new Date().getTime(),
-        event: 'gtm.js'
-      });
-
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l != 'dataLayer' ? '&l=' + l : '';
-
-      j.async = true;
-      j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-WD3KFD4X');
-  </script>
-  <!-- End Google Tag Manager -->
-
-
   <meta charset="UTF-8" />
-
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <meta name="theme-color" content="#050505" />
 
-  <link rel="preload" as="image" href="/Tech MAster Logo.png" />
-
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
   <!-- SEO -->
   <meta name="robots" content="index, follow" />
@@ -46,10 +22,8 @@
 
   <meta name="author" content="Tech Master Studio" />
 
-
   <!-- Canonical -->
   <link rel="canonical" href="https://www.techmasterco.com/" />
-
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -65,7 +39,6 @@
 
   <meta property="og:site_name" content="Tech Master" />
 
-
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
 
@@ -78,16 +51,21 @@
 
   <meta name="twitter:image" content="https://www.techmasterco.com/Trendz%20talk%20logo.png" />
 
-
-  <!-- Font Optimization -->
+  <!--
+    Google Fonts
+    Load asynchronously so fonts don't block initial rendering.
+  -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <link
+  <link rel="preload" as="style"
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Chivo:wght@900&family=League+Spartan:wght@800;900&family=Montserrat:wght@800;900&family=Outfit:wght@800;900&family=Poppins:wght@800;900&display=swap"
-    rel="stylesheet" />
+    onload="this.onload=null;this.rel='stylesheet'" />
 
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Chivo:wght@900&family=League+Spartan:wght@800;900&family=Montserrat:wght@800;900&family=Outfit:wght@800;900&family=Poppins:wght@800;900&display=swap" />
+  </noscript>
 
   <!-- Page Title -->
   <title>
@@ -96,19 +74,12 @@
 
 </head>
 
-
 <body>
 
-  <!-- Google Tag Manager (noscript) -->
-  <noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WD3KFD4X" height="0" width="0"
-      style="display:none;visibility:hidden"></iframe>
-  </noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
-
+  <!-- Application Root -->
   <div id="root"></div>
 
+  <!-- React Application -->
   <script type="module" src="/src/main.tsx"></script>
 
 </body>

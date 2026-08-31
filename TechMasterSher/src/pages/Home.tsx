@@ -33,7 +33,7 @@ import teslaLogo from "../assets/Tesla.jpeg";
 import tataLogo from "../assets/TATA.jpeg";
 import hyundaiLogo from "../assets/Hyundai.jpeg";
 import kiaLogo from "../assets/KIA.jpeg";
-import circleImg from "../assets/First circle.jpg (1).jpeg";
+import circleImg from "../assets/techmaster-circle-optimized.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -2270,9 +2270,9 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
             <div
               className={`flex-1 bg-black flex items-center justify-center ${selectedVideo.aspectRatio ===
-                  "9/16"
-                  ? "md:max-w-md mx-auto"
-                  : "w-full"
+                "9/16"
+                ? "md:max-w-md mx-auto"
+                : "w-full"
                 }`}
             >
               <video

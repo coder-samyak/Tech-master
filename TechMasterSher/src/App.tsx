@@ -1,255 +1,3 @@
-// import { useState, useEffect, useCallback } from "react";
-// import { CustomCursor } from "./components/CustomCursor";
-// import { SmoothScroll } from "./components/SmoothScroll";
-// // import { SceneContainer } from "./three/SceneContainer";
-// import { lazy, Suspense } from "react";
-// import { Header } from "./layouts/Header";
-// import { Footer } from "./layouts/Footer";
-// import { useData } from "./context/DataContext";
-// import { BackgroundVideo } from "./components/BackgroundVideo";
-// import { ScrollToTop } from "./components/ScrollToTop";
-// import { SEO } from "./components/SEO";
-// import { initAnalytics, trackPageView } from "./utils/analytics";
-// import gsap from "gsap";
-
-// // Pages
-// import { Home } from "./pages/Home";
-// import { About } from "./pages/About";
-// import { Journey } from "./pages/Journey";
-// import { Mission } from "./pages/Mission";
-// import { WhatWeDo } from "./pages/WhatWeDo";
-// import { Services } from "./pages/Services";
-// import { Collaborations } from "./pages/Collaborations";
-// import { Campaigns } from "./pages/Campaigns";
-// import { ProductLaunches } from "./pages/ProductLaunches";
-// import { Events } from "./pages/Events";
-// import { Portfolio } from "./pages/Portfolio";
-// import { Gallery } from "./pages/Gallery";
-// import { Media } from "./pages/Media";
-// import { Testimonials } from "./pages/Testimonials";
-// import { Career } from "./pages/Career";
-// import { Blog } from "./pages/Blog";
-// import { BlogDetails } from "./pages/BlogDetails";
-// import { FAQ } from "./pages/FAQ";
-// import { Contact } from "./pages/Contact";
-// import { Privacy } from "./pages/Privacy";
-// import { Terms } from "./pages/Terms";
-// import { NotFound } from "./pages/NotFound";
-
-
-// // Slug Mapping Helpers
-// const getPageIdFromPath = (path: string): string => {
-//   const cleanPath = path.toLowerCase().replace(/\/+$/, "").replace(/^\//, "");
-//   if (!cleanPath || cleanPath === "") return "home";
-//   if (cleanPath === "privacy-policy" || cleanPath === "privacy") return "privacy";
-//   if (cleanPath === "terms-of-service" || cleanPath === "terms") return "terms";
-//   if (cleanPath.startsWith("blog/")) {
-//     return `blog-details/${cleanPath.split("blog/")[1]}`;
-//   }
-//   const VALID_PAGES = [
-//     "home", "about", "journey", "mission", "what-we-do", "services",
-//     "collaborations", "campaigns", "product-launches", "events", "portfolio",
-//     "gallery", "media", "testimonials", "career", "blog", "faq", "contact",
-//     "privacy", "terms"
-//   ];
-//   if (VALID_PAGES.includes(cleanPath)) return cleanPath;
-//   return "not-found";
-// };
-
-// const getPathFromPageId = (pageId: string): string => {
-//   if (pageId === "home") return "/";
-//   if (pageId === "privacy") return "/privacy-policy";
-//   if (pageId === "terms") return "/terms-of-service";
-//   if (pageId.startsWith("blog-details/")) {
-//     return `/blog/${pageId.split("blog-details/")[1]}`;
-//   }
-//   if (pageId === "not-found") return "/404";
-//   return `/${pageId}`;
-// };
-
-// function App() {
-//   const [activePage, setActivePage] = useState<string>(() => {
-//     if (typeof window !== "undefined") {
-//       return getPageIdFromPath(window.location.pathname);
-//     }
-//     return "home";
-//   });
-//   const { dbData } = useData();
-
-//   // Initialize Analytics once dbData is ready
-//   useEffect(() => {
-//     const gaId = dbData?.globalSEO?.gaMeasurementId;
-//     const gtmId = dbData?.globalSEO?.gtmContainerId;
-//     initAnalytics(gaId, gtmId);
-//   }, [dbData?.globalSEO]);
-
-//   // Track Page Views on activePage transition
-//   useEffect(() => {
-//     const currentPath = getPathFromPageId(activePage);
-//     trackPageView(currentPath, document.title || "Tech Master");
-//   }, [activePage]);
-
-//   // Handle Browser Back/Forward navigation (popstate)
-//   useEffect(() => {
-//     const handlePopState = () => {
-//       const page = getPageIdFromPath(window.location.pathname);
-//       setActivePage(page);
-//       window.scrollTo(0, 0);
-//       if ((window as any).lenis) {
-//         (window as any).lenis.scrollTo(0, { immediate: true });
-//       }
-//     };
-
-//     window.addEventListener("popstate", handlePopState);
-//     return () => window.removeEventListener("popstate", handlePopState);
-//   }, []);
-
-//   const navigatePage = useCallback((pageId: string) => {
-//     if (pageId === activePage) {
-//       window.scrollTo({ top: 0, behavior: "smooth" });
-//       if ((window as any).lenis) {
-//         (window as any).lenis.scrollTo(0);
-//       }
-//       return;
-//     }
-
-//     const targetPath = getPathFromPageId(pageId);
-//     if (typeof window !== "undefined" && window.location.pathname !== targetPath) {
-//       window.history.pushState({ pageId }, "", targetPath);
-//     }
-
-//     // Trigger smooth overlay entrance
-//     gsap.to(".page-transition-overlay", {
-//       clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-//       duration: 0.6,
-//       ease: "power3.inOut",
-//       onComplete: () => {
-//         setActivePage(pageId);
-//         window.scrollTo(0, 0);
-//         if ((window as any).lenis) {
-//           (window as any).lenis.scrollTo(0, { immediate: true });
-//         }
-
-//         // Trigger overlay exit
-//         gsap.to(".page-transition-overlay", {
-//           clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
-//           duration: 0.6,
-//           delay: 0.15,
-//           ease: "power3.inOut",
-//         });
-//       },
-//     });
-//   }, [activePage]);
-
-//   const renderActivePage = () => {
-//     switch (activePage) {
-//       case "home":
-//         return <Home onChangePage={navigatePage} />;
-//       case "about":
-//         return <About />;
-//       case "journey":
-//         return <Journey />;
-//       case "mission":
-//         return <Mission />;
-//       case "what-we-do":
-//         return <WhatWeDo />;
-//       case "services":
-//         return <Services />;
-//       case "collaborations":
-//         return <Collaborations />;
-//       case "campaigns":
-//         return <Campaigns />;
-//       case "product-launches":
-//         return <ProductLaunches />;
-//       case "events":
-//         return <Events />;
-//       case "portfolio":
-//         return <Portfolio />;
-//       case "gallery":
-//         return <Gallery />;
-//       case "media":
-//         return <Media />;
-//       case "testimonials":
-//         return <Testimonials />;
-//       case "career":
-//         return <Career />;
-//       case "blog":
-//         return <Blog onChangePage={navigatePage} />;
-//       case "faq":
-//         return <FAQ />;
-//       case "contact":
-//         return <Contact />;
-//       case "privacy":
-//       case "privacy-policy":
-//         return <Privacy />;
-//       case "terms":
-//       case "terms-of-service":
-//         return <Terms />;
-//       case "not-found":
-//         return <NotFound onChangePage={navigatePage} />;
-//       default:
-//         if (activePage.startsWith("blog-details/")) {
-//           const slug = activePage.split("blog-details/")[1];
-//           return <BlogDetails slug={slug} onChangePage={navigatePage} />;
-//         }
-//         return <NotFound onChangePage={navigatePage} />;
-//     }
-//   };
-
-//   return (
-//     <>
-//       {/* 1. Dynamic Head Metadata, Canonicals, Open Graph & Structured Data */}
-//       <SEO pageId={activePage} dbSEO={dbData} />
-
-//       {/* 3. Custom Magnetic Cursor */}
-//       <CustomCursor />
-
-//       {/* 4. Global Noise Grain overlay */}
-//       <div className="noise-overlay" />
-
-//       {/* 5. Background Loop Videos */}
-//       <BackgroundVideo activePage={activePage} />
-
-//       {/* 6. R3F Spatial 3D Canvas Background */}
-//       <SceneContainer />
-
-//       {/* 7. Global Page Transition Overlay */}
-//       <div
-//         className="page-transition-overlay fixed inset-0 bg-[#0d0d0d] z-[9999] pointer-events-none"
-//         style={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)" }}
-//       />
-
-//       {/* 8. Floating Global Scroll to Top Button */}
-//       <ScrollToTop />
-
-//       {/* 9. Smooth Scroll Chassis & Content Layout */}
-//       <SmoothScroll>
-//         <div 
-//           className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-gold selection:text-black"
-//           style={{ zIndex: 10 }}
-//         >
-
-//           {/* Header Sticky Navigation */}
-//           <Header activePage={activePage} onChangePage={navigatePage} />
-
-//           {/* Dynamic Page Views */}
-//           <main className="flex-grow z-10">
-//             {renderActivePage()}
-//           </main>
-
-//           {/* Premium Multi-column Footer */}
-//           <Footer onChangePage={navigatePage} />
-//         </div>
-//       </SmoothScroll>
-//     </>
-//   );
-// }
-
-// export default App;
-
-
-
-
 import {
   useState,
   useEffect,
@@ -270,57 +18,158 @@ import {
   initAnalytics,
   trackPageView,
 } from "./utils/analytics";
+
 import gsap from "gsap";
 
-/*
- * ============================================================
- * THREE.JS LAZY LOADING
- * ============================================================
- *
- * Three.js / WebGL is intentionally loaded after the main
- * application bundle so the important HTML/UI can render first.
- */
-const SceneContainer = lazy(
-  () =>
-    import("./three/SceneContainer").then((module) => ({
-      default: module.SceneContainer,
-    }))
-);
-
-/*
- * ============================================================
- * PAGES
- * ============================================================
- */
+/* -------------------------------------------------------------------------- */
+/* HOME - KEEP EAGER                                                          */
+/* -------------------------------------------------------------------------- */
 
 import { Home } from "./pages/Home";
-import { About } from "./pages/About";
-import { Journey } from "./pages/Journey";
-import { Mission } from "./pages/Mission";
-import { WhatWeDo } from "./pages/WhatWeDo";
-import { Services } from "./pages/Services";
-import { Collaborations } from "./pages/Collaborations";
-import { Campaigns } from "./pages/Campaigns";
-import { ProductLaunches } from "./pages/ProductLaunches";
-import { Events } from "./pages/Events";
-import { Portfolio } from "./pages/Portfolio";
-import { Gallery } from "./pages/Gallery";
-import { Media } from "./pages/Media";
-import { Testimonials } from "./pages/Testimonials";
-import { Career } from "./pages/Career";
-import { Blog } from "./pages/Blog";
-import { BlogDetails } from "./pages/BlogDetails";
-import { FAQ } from "./pages/FAQ";
-import { Contact } from "./pages/Contact";
-import { Privacy } from "./pages/Privacy";
-import { Terms } from "./pages/Terms";
-import { NotFound } from "./pages/NotFound";
 
-/*
- * ============================================================
- * URL → PAGE ID
- * ============================================================
- */
+/* -------------------------------------------------------------------------- */
+/* LAZY LOAD ALL NON-HOME PAGES                                               */
+/* -------------------------------------------------------------------------- */
+
+const About = lazy(() =>
+  import("./pages/About").then((m) => ({
+    default: m.About,
+  }))
+);
+
+const Journey = lazy(() =>
+  import("./pages/Journey").then((m) => ({
+    default: m.Journey,
+  }))
+);
+
+const Mission = lazy(() =>
+  import("./pages/Mission").then((m) => ({
+    default: m.Mission,
+  }))
+);
+
+const WhatWeDo = lazy(() =>
+  import("./pages/WhatWeDo").then((m) => ({
+    default: m.WhatWeDo,
+  }))
+);
+
+const Services = lazy(() =>
+  import("./pages/Services").then((m) => ({
+    default: m.Services,
+  }))
+);
+
+const Collaborations = lazy(() =>
+  import("./pages/Collaborations").then((m) => ({
+    default: m.Collaborations,
+  }))
+);
+
+const Campaigns = lazy(() =>
+  import("./pages/Campaigns").then((m) => ({
+    default: m.Campaigns,
+  }))
+);
+
+const ProductLaunches = lazy(() =>
+  import("./pages/ProductLaunches").then((m) => ({
+    default: m.ProductLaunches,
+  }))
+);
+
+const Events = lazy(() =>
+  import("./pages/Events").then((m) => ({
+    default: m.Events,
+  }))
+);
+
+const Portfolio = lazy(() =>
+  import("./pages/Portfolio").then((m) => ({
+    default: m.Portfolio,
+  }))
+);
+
+const Gallery = lazy(() =>
+  import("./pages/Gallery").then((m) => ({
+    default: m.Gallery,
+  }))
+);
+
+const Media = lazy(() =>
+  import("./pages/Media").then((m) => ({
+    default: m.Media,
+  }))
+);
+
+const Testimonials = lazy(() =>
+  import("./pages/Testimonials").then((m) => ({
+    default: m.Testimonials,
+  }))
+);
+
+const Career = lazy(() =>
+  import("./pages/Career").then((m) => ({
+    default: m.Career,
+  }))
+);
+
+const Blog = lazy(() =>
+  import("./pages/Blog").then((m) => ({
+    default: m.Blog,
+  }))
+);
+
+const BlogDetails = lazy(() =>
+  import("./pages/BlogDetails").then((m) => ({
+    default: m.BlogDetails,
+  }))
+);
+
+const FAQ = lazy(() =>
+  import("./pages/FAQ").then((m) => ({
+    default: m.FAQ,
+  }))
+);
+
+const Contact = lazy(() =>
+  import("./pages/Contact").then((m) => ({
+    default: m.Contact,
+  }))
+);
+
+const Privacy = lazy(() =>
+  import("./pages/Privacy").then((m) => ({
+    default: m.Privacy,
+  }))
+);
+
+const Terms = lazy(() =>
+  import("./pages/Terms").then((m) => ({
+    default: m.Terms,
+  }))
+);
+
+const NotFound = lazy(() =>
+  import("./pages/NotFound").then((m) => ({
+    default: m.NotFound,
+  }))
+);
+
+/* -------------------------------------------------------------------------- */
+/* THREE.JS                                                                   */
+/* -------------------------------------------------------------------------- */
+
+const SceneContainer = lazy(() =>
+  import("./three/SceneContainer").then((m) => ({
+    default: m.SceneContainer,
+  }))
+);
+
+/* -------------------------------------------------------------------------- */
+/* ROUTING                                                                    */
+/* -------------------------------------------------------------------------- */
 
 const getPageIdFromPath = (path: string): string => {
   const cleanPath = path
@@ -347,7 +196,13 @@ const getPageIdFromPath = (path: string): string => {
   }
 
   if (cleanPath.startsWith("blog/")) {
-    return `blog-details/${cleanPath.split("blog/")[1]}`;
+    const slug = cleanPath.substring(5);
+
+    if (slug) {
+      return `blog-details/${slug}`;
+    }
+
+    return "blog";
   }
 
   const VALID_PAGES = [
@@ -380,12 +235,6 @@ const getPageIdFromPath = (path: string): string => {
   return "not-found";
 };
 
-/*
- * ============================================================
- * PAGE ID → URL
- * ============================================================
- */
-
 const getPathFromPageId = (pageId: string): string => {
   if (pageId === "home") {
     return "/";
@@ -400,7 +249,9 @@ const getPathFromPageId = (pageId: string): string => {
   }
 
   if (pageId.startsWith("blog-details/")) {
-    return `/blog/${pageId.split("blog-details/")[1]}`;
+    return `/blog/${pageId.substring(
+      "blog-details/".length
+    )}`;
   }
 
   if (pageId === "not-found") {
@@ -410,56 +261,103 @@ const getPathFromPageId = (pageId: string): string => {
   return `/${pageId}`;
 };
 
-/*
- * ============================================================
- * APP
- * ============================================================
- */
+/* -------------------------------------------------------------------------- */
+/* PAGE LOADER                                                                */
+/* -------------------------------------------------------------------------- */
+
+const PageLoader = () => {
+  return (
+    <div
+      className="min-h-[60vh] flex items-center justify-center"
+      aria-label="Loading page"
+    >
+      <div
+        className="
+          w-6
+          h-6
+          rounded-full
+          border
+          border-white/20
+          border-t-white
+          animate-spin
+        "
+      />
+    </div>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/* APP                                                                        */
+/* -------------------------------------------------------------------------- */
 
 function App() {
-  const [activePage, setActivePage] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      return getPageIdFromPath(window.location.pathname);
-    }
+  const [activePage, setActivePage] =
+    useState<string>(() => {
+      if (typeof window !== "undefined") {
+        return getPageIdFromPath(
+          window.location.pathname
+        );
+      }
 
-    return "home";
-  });
+      return "home";
+    });
 
   const { dbData } = useData();
 
-  /*
-   * ==========================================================
-   * GOOGLE ANALYTICS / GTM
-   * ==========================================================
-   */
+  /* ------------------------------------------------------------------------ */
+  /* ANALYTICS                                                               */
+  /* ------------------------------------------------------------------------ */
 
   useEffect(() => {
-    const gaId = dbData?.globalSEO?.gaMeasurementId;
-    const gtmId = dbData?.globalSEO?.gtmContainerId;
+    const gaId =
+      dbData?.globalSEO?.gaMeasurementId;
 
-    initAnalytics(gaId, gtmId);
-  }, [dbData?.globalSEO]);
+    const gtmId =
+      dbData?.globalSEO?.gtmContainerId;
 
-  /*
-   * ==========================================================
-   * PAGE VIEW TRACKING
-   * ==========================================================
-   */
+    /*
+     * Delay analytics so it doesn't compete
+     * with the critical first render.
+     */
+    const timer = window.setTimeout(() => {
+      initAnalytics(gaId, gtmId);
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [
+    dbData?.globalSEO?.gaMeasurementId,
+    dbData?.globalSEO?.gtmContainerId,
+  ]);
+
+  /* ------------------------------------------------------------------------ */
+  /* PAGE VIEW                                                                */
+  /* ------------------------------------------------------------------------ */
 
   useEffect(() => {
-    const currentPath = getPathFromPageId(activePage);
+    const currentPath =
+      getPathFromPageId(activePage);
 
-    trackPageView(
-      currentPath,
-      document.title || "Tech Master"
-    );
+    /*
+     * Don't execute tracking during the critical
+     * rendering phase.
+     */
+    const timer = window.setTimeout(() => {
+      trackPageView(
+        currentPath,
+        document.title || "Tech Master"
+      );
+    }, 1000);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [activePage]);
 
-  /*
-   * ==========================================================
-   * BROWSER BACK / FORWARD
-   * ==========================================================
-   */
+  /* ------------------------------------------------------------------------ */
+  /* BROWSER BACK / FORWARD                                                   */
+  /* ------------------------------------------------------------------------ */
 
   useEffect(() => {
     const handlePopState = () => {
@@ -469,7 +367,10 @@ function App() {
 
       setActivePage(page);
 
-      window.scrollTo(0, 0);
+      window.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
 
       if ((window as any).lenis) {
         (window as any).lenis.scrollTo(0, {
@@ -491,18 +392,12 @@ function App() {
     };
   }, []);
 
-  /*
-   * ==========================================================
-   * INTERNAL PAGE NAVIGATION
-   * ==========================================================
-   */
+  /* ------------------------------------------------------------------------ */
+  /* NAVIGATION                                                               */
+  /* ------------------------------------------------------------------------ */
 
   const navigatePage = useCallback(
     (pageId: string) => {
-      /*
-       * If user clicks the current page,
-       * simply scroll to top.
-       */
       if (pageId === activePage) {
         window.scrollTo({
           top: 0,
@@ -519,9 +414,6 @@ function App() {
       const targetPath =
         getPathFromPageId(pageId);
 
-      /*
-       * Update browser URL without full page reload.
-       */
       if (
         typeof window !== "undefined" &&
         window.location.pathname !== targetPath
@@ -533,49 +425,51 @@ function App() {
         );
       }
 
-      /*
-       * Page transition animation.
-       */
-      gsap.to(".page-transition-overlay", {
-        clipPath:
-          "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+      gsap.to(
+        ".page-transition-overlay",
+        {
+          clipPath:
+            "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+          duration: 0.45,
+          ease: "power3.inOut",
 
-        duration: 0.6,
-        ease: "power3.inOut",
+          onComplete: () => {
+            setActivePage(pageId);
 
-        onComplete: () => {
-          setActivePage(pageId);
-
-          window.scrollTo(0, 0);
-
-          if ((window as any).lenis) {
-            (window as any).lenis.scrollTo(0, {
-              immediate: true,
+            window.scrollTo({
+              top: 0,
+              behavior: "auto",
             });
-          }
 
-          /*
-           * Exit transition.
-           */
-          gsap.to(".page-transition-overlay", {
-            clipPath:
-              "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
+            if ((window as any).lenis) {
+              (window as any).lenis.scrollTo(
+                0,
+                {
+                  immediate: true,
+                }
+              );
+            }
 
-            duration: 0.6,
-            delay: 0.15,
-            ease: "power3.inOut",
-          });
-        },
-      });
+            gsap.to(
+              ".page-transition-overlay",
+              {
+                clipPath:
+                  "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
+                duration: 0.45,
+                delay: 0.05,
+                ease: "power3.inOut",
+              }
+            );
+          },
+        }
+      );
     },
     [activePage]
   );
 
-  /*
-   * ==========================================================
-   * ACTIVE PAGE RENDERER
-   * ==========================================================
-   */
+  /* ------------------------------------------------------------------------ */
+  /* ACTIVE PAGE                                                              */
+  /* ------------------------------------------------------------------------ */
 
   const renderActivePage = () => {
     switch (activePage) {
@@ -642,11 +536,9 @@ function App() {
         return <Contact />;
 
       case "privacy":
-      case "privacy-policy":
         return <Privacy />;
 
       case "terms":
-      case "terms-of-service":
         return <Terms />;
 
       case "not-found":
@@ -657,16 +549,15 @@ function App() {
         );
 
       default:
-        /*
-         * Dynamic blog details.
-         */
         if (
-          activePage.startsWith("blog-details/")
+          activePage.startsWith(
+            "blog-details/"
+          )
         ) {
           const slug =
-            activePage.split(
-              "blog-details/"
-            )[1];
+            activePage.substring(
+              "blog-details/".length
+            );
 
           return (
             <BlogDetails
@@ -684,60 +575,47 @@ function App() {
     }
   };
 
-  /*
-   * ==========================================================
-   * UI
-   * ==========================================================
-   */
+  /* ------------------------------------------------------------------------ */
+  /* UI                                                                       */
+  /* ------------------------------------------------------------------------ */
 
   return (
     <>
-      {/* =====================================================
-          1. DYNAMIC SEO
-          ===================================================== */}
-
+      {/* Dynamic SEO */}
       <SEO
         pageId={activePage}
         dbSEO={dbData}
       />
 
-      {/* =====================================================
-          2. CUSTOM CURSOR
-          ===================================================== */}
-
+      {/* Custom Cursor */}
       <CustomCursor />
 
-      {/* =====================================================
-          3. GLOBAL NOISE / GRAIN
-          ===================================================== */}
-
+      {/* Global Noise */}
       <div
         className="noise-overlay"
         aria-hidden="true"
       />
 
-      {/* =====================================================
-          4. BACKGROUND VIDEO
-          ===================================================== */}
-
+      {/* Optimized Background Video */}
       <BackgroundVideo
         activePage={activePage}
       />
 
-      {/* =====================================================
-          5. LAZY-LOADED THREE.JS / WEBGL
-          ===================================================== */}
-
+      {/* Lazy Three.js */}
       <Suspense fallback={null}>
         <SceneContainer />
       </Suspense>
 
-      {/* =====================================================
-          6. PAGE TRANSITION
-          ===================================================== */}
-
+      {/* Page Transition */}
       <div
-        className="page-transition-overlay fixed inset-0 bg-[#0d0d0d] z-[9999] pointer-events-none"
+        className="
+          page-transition-overlay
+          fixed
+          inset-0
+          bg-[#0d0d0d]
+          z-[9999]
+          pointer-events-none
+        "
         style={{
           clipPath:
             "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
@@ -745,16 +623,10 @@ function App() {
         aria-hidden="true"
       />
 
-      {/* =====================================================
-          7. SCROLL TO TOP
-          ===================================================== */}
-
+      {/* Scroll To Top */}
       <ScrollToTop />
 
-      {/* =====================================================
-          8. SMOOTH SCROLL + MAIN LAYOUT
-          ===================================================== */}
-
+      {/* Smooth Scroll */}
       <SmoothScroll>
         <div
           className="
@@ -771,27 +643,20 @@ function App() {
             zIndex: 10,
           }}
         >
-          {/* =================================================
-              HEADER
-              ================================================= */}
-
+          {/* Header */}
           <Header
             activePage={activePage}
             onChangePage={navigatePage}
           />
 
-          {/* =================================================
-              MAIN CONTENT
-              ================================================= */}
-
+          {/* Page */}
           <main className="flex-grow z-10">
-            {renderActivePage()}
+            <Suspense fallback={<PageLoader />}>
+              {renderActivePage()}
+            </Suspense>
           </main>
 
-          {/* =================================================
-              FOOTER
-              ================================================= */}
-
+          {/* Footer */}
           <Footer
             onChangePage={navigatePage}
           />
