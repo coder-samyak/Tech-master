@@ -1,8 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import React, { useCallback, useEffect, useRef } from "react";
 
-gsap.registerPlugin(ScrollTrigger);
+/**
+ * PERFORMANCE-OPTIMIZED BACKGROUND VIDEO
+ *
+ * Main improvements:
+ * - Only ONE video is loaded initially.
+ * - preload="none"
+ * - Videos are loaded only when required.
+ * - No GSAP / ScrollTrigger.
+ * - No React re-render on every scroll.
+ * - Next video is preloaded only near the transition point.
+ * - Video playback starts after the browser gets a chance to render the page.
+ * - Old videos are unloaded to reduce memory/network pressure.
+ */
 
 interface VideoTrio {
   hero: string;
@@ -10,319 +20,608 @@ interface VideoTrio {
   feature: string;
 }
 
-// Cinematic background video loops for all 18 pages.
-// Each page maps 3 distinct loops that smoothly cross-fade as the user scrolls.
+/* -------------------------------------------------------------------------- */
+/* VIDEO LIBRARY                                                              */
+/* -------------------------------------------------------------------------- */
+
 const pageVideos: Record<string, VideoTrio> = {
   home: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-dark-waves-fluid-loop-43093-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-liquid-smoke-swirling-background-43031-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-liquid-smoke-swirling-background-43031-large.mp4",
   },
+
   about: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-dark-waves-fluid-loop-43093-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-liquid-smoke-swirling-background-43031-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
   },
+
   journey: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-dark-waves-fluid-loop-43093-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-glowing-bokeh-particles-floating-slowly-43048-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-glowing-bokeh-particles-floating-slowly-43048-large.mp4",
   },
+
   mission: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
   },
+
   "what-we-do": {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
   },
+
   services: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-particles-background-42998-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-particles-background-42998-large.mp4",
   },
+
   collaborations: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-liquid-smoke-swirling-background-43031-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-liquid-smoke-swirling-background-43031-large.mp4",
   },
+
   campaigns: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-aurora-borealis-lights-glowing-in-dark-sky-43187-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-glowing-bokeh-particles-floating-slowly-43048-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-ink-smoke-spreading-in-water-43075-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-ink-smoke-spreading-in-water-43075-large.mp4",
   },
+
   "product-launches": {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-aurora-borealis-lights-glowing-in-dark-sky-43187-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
   },
+
   events: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-beams-in-dark-background-42940-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
   },
+
   portfolio: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-particles-background-42998-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
   },
+
   gallery: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-liquid-smoke-swirling-background-43031-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-beams-in-dark-background-42940-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-beams-in-dark-background-42940-large.mp4",
   },
+
   media: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-beams-in-dark-background-42940-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
   },
+
   testimonials: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-glowing-bokeh-particles-floating-slowly-43048-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-ink-smoke-spreading-in-water-43075-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
   },
+
   career: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-lines-glowing-neon-lights-42880-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-particles-background-42998-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-digital-connection-lines-glowing-in-dark-42898-large.mp4",
   },
+
   blog: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-abstract-ink-smoke-spreading-in-water-43075-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
   },
+
   faq: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-liquid-fluid-shifting-refractions-43242-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-abstract-ink-smoke-spreading-in-water-43075-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-glowing-neon-connections-loop-42861-large.mp4",
   },
+
   contact: {
     hero: "https://assets.mixkit.co/videos/preview/mixkit-glowing-bokeh-particles-floating-slowly-43048-large.mp4",
     mid: "https://assets.mixkit.co/videos/preview/mixkit-aurora-borealis-lights-glowing-in-dark-sky-43187-large.mp4",
-    feature: "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
+    feature:
+      "https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-fluid-flow-43224-large.mp4",
   },
 };
+
+/* -------------------------------------------------------------------------- */
+/* HELPERS                                                                    */
+/* -------------------------------------------------------------------------- */
+
+const getVideos = (page: string): VideoTrio => {
+  return pageVideos[page] || pageVideos.home;
+};
+
+const prefersReducedMotion = (): boolean => {
+  if (typeof window === "undefined") return false;
+
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
+
+const isMobileDevice = (): boolean => {
+  if (typeof window === "undefined") return false;
+
+  return window.matchMedia("(max-width: 768px)").matches;
+};
+
+/* -------------------------------------------------------------------------- */
+/* COMPONENT                                                                  */
+/* -------------------------------------------------------------------------- */
 
 interface BackgroundVideoProps {
   activePage: string;
 }
 
-export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({ activePage }) => {
-  const activePair = pageVideos[activePage] || pageVideos.home;
-  
-  const [videoSrcHero, setVideoSrcHero] = useState(activePair.hero);
-  const [videoSrcMid, setVideoSrcMid] = useState(activePair.mid);
-  const [videoSrcFeature, setVideoSrcFeature] = useState(activePair.feature);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [transitionOpacity, setTransitionOpacity] = useState(1);
-  const heroRef = useRef<HTMLVideoElement>(null);
-  const midRef = useRef<HTMLVideoElement>(null);
-  const featureRef = useRef<HTMLVideoElement>(null);
+export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
+  activePage,
+}) => {
+  const videoARef = useRef<HTMLVideoElement | null>(null);
+  const videoBRef = useRef<HTMLVideoElement | null>(null);
+
+  const activeVideoRef = useRef<"A" | "B">("A");
+
+  const loadedSourcesRef = useRef<Set<string>>(new Set());
+
+  const currentPageRef = useRef(activePage);
+
+  const currentVideosRef = useRef<VideoTrio>(getVideos(activePage));
+
+  const scrollFrameRef = useRef<number | null>(null);
+
+  const preloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [heroLoaded, setHeroLoaded] = React.useState(false);
+
+  /* ------------------------------------------------------------------------ */
+  /* LOAD VIDEO                                                               */
+  /* ------------------------------------------------------------------------ */
+
+  const loadVideo = useCallback(
+    (
+      video: HTMLVideoElement | null,
+      src: string,
+      shouldPlay: boolean = false
+    ) => {
+      if (!video || !src) return;
+
+      if (video.src === src || loadedSourcesRef.current.has(src)) {
+        if (shouldPlay) {
+          video.play().catch(() => { });
+        }
+
+        return;
+      }
+
+      video.src = src;
+      video.preload = "metadata";
+
+      loadedSourcesRef.current.add(src);
+
+      video.load();
+
+      if (shouldPlay) {
+        const playWhenReady = () => {
+          video
+            .play()
+            .catch(() => { })
+            .finally(() => {
+              video.removeEventListener("canplay", playWhenReady);
+            });
+        };
+
+        video.addEventListener("canplay", playWhenReady, {
+          once: true,
+        });
+      }
+    },
+    []
+  );
+
+  /* ------------------------------------------------------------------------ */
+  /* PAGE CHANGE                                                              */
+  /* ------------------------------------------------------------------------ */
 
   useEffect(() => {
-    const handleGlobalMouseEnter = () => {
-      heroRef.current?.play().catch(() => {});
-      midRef.current?.play().catch(() => {});
-      featureRef.current?.play().catch(() => {});
+    currentPageRef.current = activePage;
+
+    const videos = getVideos(activePage);
+
+    currentVideosRef.current = videos;
+
+    activeVideoRef.current = "A";
+
+    setHeroLoaded(false);
+
+    const videoA = videoARef.current;
+    const videoB = videoBRef.current;
+
+    if (videoA) {
+      videoA.pause();
+      videoA.removeAttribute("src");
+      videoA.load();
+
+      videoA.style.opacity = "0";
+      videoA.style.transform = "scale(1)";
+    }
+
+    if (videoB) {
+      videoB.pause();
+      videoB.removeAttribute("src");
+      videoB.load();
+
+      videoB.style.opacity = "0";
+      videoB.style.transform = "scale(1)";
+    }
+
+    loadedSourcesRef.current.clear();
+
+    /*
+     * IMPORTANT:
+     * Do not load video during the first critical render.
+     *
+     * Let browser paint the website first.
+     */
+    const startLoadingHero = () => {
+      const currentVideo = videoARef.current;
+
+      if (!currentVideo) return;
+
+      loadVideo(currentVideo, videos.hero, true);
+
+      currentVideo.style.opacity = "0.25";
+
+      setHeroLoaded(true);
     };
-    const handleGlobalMouseLeave = () => {
-      if (heroRef.current) {
-        heroRef.current.pause();
-        heroRef.current.currentTime = 0;
-      }
-      if (midRef.current) {
-        midRef.current.pause();
-        midRef.current.currentTime = 0;
-      }
-      if (featureRef.current) {
-        featureRef.current.pause();
-        featureRef.current.currentTime = 0;
-      }
-    };
 
-    document.addEventListener("mouseenter", handleGlobalMouseEnter);
-    document.addEventListener("mouseleave", handleGlobalMouseLeave);
+    /*
+     * Mobile gets slightly more delay because mobile CPUs/network
+     * are much more sensitive to heavy video decoding.
+     */
+    const delay = isMobileDevice() ? 1800 : 1000;
 
-    return () => {
-      document.removeEventListener("mouseenter", handleGlobalMouseEnter);
-      document.removeEventListener("mouseleave", handleGlobalMouseLeave);
-    };
-  }, []);
-
-  useEffect(() => {
-    // Cross-fade the page video sources change smoothly on route transitions
-    setTransitionOpacity(0);
-    const timeout = setTimeout(() => {
-      const currentPair = pageVideos[activePage] || pageVideos.home;
-      setVideoSrcHero(currentPair.hero);
-      setVideoSrcMid(currentPair.mid);
-      setVideoSrcFeature(currentPair.feature);
-      setTransitionOpacity(1);
-    }, 400);
-
-    return () => clearTimeout(timeout);
-  }, [activePage]);
-
-  useEffect(() => {
-    // Dynamic scroll tracking percentage
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalScroll > 0) {
-        setScrollProgress(window.scrollY / totalScroll);
+    preloadTimerRef.current = setTimeout(() => {
+      if ("requestIdleCallback" in window) {
+        (
+          window as Window & {
+            requestIdleCallback?: (
+              callback: () => void,
+              options?: { timeout: number }
+            ) => number;
+          }
+        ).requestIdleCallback?.(startLoadingHero, {
+          timeout: 2500,
+        });
       } else {
-        setScrollProgress(0);
+        startLoadingHero();
       }
-    };
-    
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const videoHero = document.querySelector(".bg-video-hero");
-    const videoMid = document.querySelector(".bg-video-mid");
-    const videoFeature = document.querySelector(".bg-video-feature");
-    if (!videoHero || !videoMid || !videoFeature) return;
-
-    // Scroll-controlled parallax displacements
-    const animHero = gsap.fromTo(
-      videoHero,
-      { y: 0, scale: 1.0 },
-      {
-        y: -100,
-        scale: 1.1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-        },
-      }
-    );
-
-    const animMid = gsap.fromTo(
-      videoMid,
-      { y: 50, scale: 1.05 },
-      {
-        y: -50,
-        scale: 1.1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-        },
-      }
-    );
-
-    const animFeature = gsap.fromTo(
-      videoFeature,
-      { y: 100, scale: 1.15 },
-      {
-        y: 0,
-        scale: 1.05,
-        ease: "none",
-        scrollTrigger: {
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-        },
-      }
-    );
+    }, delay);
 
     return () => {
-      animHero.scrollTrigger?.kill();
-      animHero.kill();
-      animMid.scrollTrigger?.kill();
-      animMid.kill();
-      animFeature.scrollTrigger?.kill();
-      animFeature.kill();
+      if (preloadTimerRef.current) {
+        clearTimeout(preloadTimerRef.current);
+      }
     };
-  }, [videoSrcHero, videoSrcMid, videoSrcFeature]);
+  }, [activePage, loadVideo]);
 
-  // Three-stage opacity math:
-  // p < 0.2: Video 1 is 100% visible, others are 0%.
-  // 0.2 <= p <= 0.4: Cross-fade from Video 1 to Video 2.
-  // 0.4 < p < 0.6: Video 2 is 100% visible, others are 0%.
-  // 0.6 <= p <= 0.8: Cross-fade from Video 2 to Video 3.
-  // p > 0.8: Video 3 is 100% visible, others are 0%.
-  let opacityHero = 0;
-  let opacityMid = 0;
-  let opacityFeature = 0;
+  /* ------------------------------------------------------------------------ */
+  /* PRELOAD NEXT VIDEO                                                       */
+  /* ------------------------------------------------------------------------ */
 
-  if (scrollProgress < 0.2) {
-    opacityHero = 1;
-  } else if (scrollProgress >= 0.2 && scrollProgress <= 0.4) {
-    const factor = (scrollProgress - 0.2) / 0.2; // 0 to 1
-    opacityHero = 1 - factor;
-    opacityMid = factor;
-  } else if (scrollProgress > 0.4 && scrollProgress < 0.6) {
-    opacityMid = 1;
-  } else if (scrollProgress >= 0.6 && scrollProgress <= 0.8) {
-    const factor = (scrollProgress - 0.6) / 0.2; // 0 to 1
-    opacityMid = 1 - factor;
-    opacityFeature = factor;
-  } else {
-    opacityFeature = 1;
-  }
+  const preloadNextVideo = useCallback(
+    (nextVideo: "mid" | "feature") => {
+      const videos = currentVideosRef.current;
 
-  // Factor in maximum opacity layer bounds
-  const maxOpacity = 0.25;
-  const opacityHeroAdjusted = opacityHero * maxOpacity * transitionOpacity;
-  const opacityMidAdjusted = opacityMid * maxOpacity * transitionOpacity;
-  const opacityFeatureAdjusted = opacityFeature * maxOpacity * transitionOpacity;
+      const nextSrc = videos[nextVideo];
+
+      if (!nextSrc) return;
+
+      if (loadedSourcesRef.current.has(nextSrc)) return;
+
+      const inactiveVideo =
+        activeVideoRef.current === "A"
+          ? videoBRef.current
+          : videoARef.current;
+
+      loadVideo(inactiveVideo, nextSrc, false);
+    },
+    [loadVideo]
+  );
+
+  /* ------------------------------------------------------------------------ */
+  /* SWITCH VIDEO                                                             */
+  /* ------------------------------------------------------------------------ */
+
+  const switchVideo = useCallback(
+    (target: "mid" | "feature") => {
+      const videos = currentVideosRef.current;
+
+      const targetSrc = videos[target];
+
+      if (!targetSrc) return;
+
+      const currentActive = activeVideoRef.current;
+
+      const currentVideo =
+        currentActive === "A" ? videoARef.current : videoBRef.current;
+
+      const nextVideo =
+        currentActive === "A" ? videoBRef.current : videoARef.current;
+
+      if (!nextVideo) return;
+
+      /*
+       * If target is already loaded in current video, don't reload.
+       */
+      if (
+        nextVideo.src !== targetSrc &&
+        !loadedSourcesRef.current.has(targetSrc)
+      ) {
+        loadVideo(nextVideo, targetSrc, false);
+      }
+
+      /*
+       * Wait until enough data is available.
+       */
+      const performSwitch = () => {
+        if (currentPageRef.current !== activePage) return;
+
+        nextVideo.currentTime = 0;
+
+        nextVideo
+          .play()
+          .catch(() => { });
+
+        nextVideo.style.opacity = "0.25";
+        nextVideo.style.transform = "scale(1.03)";
+
+        if (currentVideo) {
+          currentVideo.style.opacity = "0";
+        }
+
+        activeVideoRef.current = currentActive === "A" ? "B" : "A";
+
+        nextVideo.removeEventListener("canplay", performSwitch);
+      };
+
+      if (nextVideo.readyState >= 3) {
+        performSwitch();
+      } else {
+        nextVideo.addEventListener("canplay", performSwitch, {
+          once: true,
+        });
+      }
+    },
+    [activePage, loadVideo]
+  );
+
+  /* ------------------------------------------------------------------------ */
+  /* SCROLL HANDLER                                                           */
+  /* ------------------------------------------------------------------------ */
+
+  useEffect(() => {
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    let lastProgress = -1;
+
+    const handleScroll = () => {
+      if (scrollFrameRef.current !== null) return;
+
+      scrollFrameRef.current = window.requestAnimationFrame(() => {
+        scrollFrameRef.current = null;
+
+        const maxScroll =
+          document.documentElement.scrollHeight - window.innerHeight;
+
+        if (maxScroll <= 0) return;
+
+        const progress = Math.min(
+          1,
+          Math.max(0, window.scrollY / maxScroll)
+        );
+
+        /*
+         * Avoid unnecessary DOM work.
+         */
+        if (Math.abs(progress - lastProgress) < 0.01) {
+          return;
+        }
+
+        lastProgress = progress;
+
+        const activeVideo =
+          activeVideoRef.current === "A"
+            ? videoARef.current
+            : videoBRef.current;
+
+        if (activeVideo) {
+          /*
+           * Very light parallax.
+           *
+           * We intentionally keep this tiny.
+           * Large transforms cause expensive GPU work.
+           */
+          const scale = 1 + progress * 0.025;
+          const translateY = progress * -15;
+
+          activeVideo.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`;
+        }
+
+        /*
+         * Preload next video BEFORE transition.
+         *
+         * This means browser has time to download it.
+         */
+        if (progress >= 0.12 && progress < 0.42) {
+          preloadNextVideo("mid");
+        }
+
+        if (progress >= 0.50 && progress < 0.85) {
+          preloadNextVideo("feature");
+        }
+
+        /*
+         * Switch around the middle of each scroll zone.
+         */
+        if (progress >= 0.40 && progress < 0.55) {
+          switchVideo("mid");
+        }
+
+        if (progress >= 0.80) {
+          switchVideo("feature");
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+
+      if (scrollFrameRef.current !== null) {
+        cancelAnimationFrame(scrollFrameRef.current);
+        scrollFrameRef.current = null;
+      }
+    };
+  }, [preloadNextVideo, switchVideo]);
+
+  /* ------------------------------------------------------------------------ */
+  /* CLEANUP                                                                  */
+  /* ------------------------------------------------------------------------ */
+
+  useEffect(() => {
+    return () => {
+      if (preloadTimerRef.current) {
+        clearTimeout(preloadTimerRef.current);
+      }
+
+      const videoA = videoARef.current;
+      const videoB = videoBRef.current;
+
+      [videoA, videoB].forEach((video) => {
+        if (!video) return;
+
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      });
+    };
+  }, []);
+
+  /* ------------------------------------------------------------------------ */
+  /* RENDER                                                                   */
+  /* ------------------------------------------------------------------------ */
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-screen pointer-events-none bg-[#030303] overflow-hidden"
-      style={{ zIndex: 1 }}
+      style={{
+        zIndex: 1,
+        contain: "strict",
+      }}
+      aria-hidden="true"
     >
-      {/* 1. Hero Video: Visible at top screen, fades as we scroll down */}
+      {/* ------------------------------------------------------------------ */}
+      {/* VIDEO A                                                            */}
+      {/* ------------------------------------------------------------------ */}
+
       <video
-        ref={heroRef}
-        key={videoSrcHero}
-        src={videoSrcHero}
+        ref={videoARef}
         loop
         muted
         playsInline
-        className="bg-video-hero w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ease-out"
-        style={{ opacity: opacityHeroAdjusted }}
+        preload="none"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          opacity: heroLoaded ? 0.25 : 0,
+          transform: "translate3d(0,0,0) scale(1)",
+          transition: "opacity 700ms ease, transform 900ms ease",
+          willChange: "opacity, transform",
+          backfaceVisibility: "hidden",
+        }}
       />
 
-      {/* 2. Mid Video: Cross-fades in mid scroll */}
+      {/* ------------------------------------------------------------------ */}
+      {/* VIDEO B                                                            */}
+      {/* ------------------------------------------------------------------ */}
+
       <video
-        ref={midRef}
-        key={videoSrcMid}
-        src={videoSrcMid}
+        ref={videoBRef}
         loop
         muted
         playsInline
-        className="bg-video-mid w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ease-out"
-        style={{ opacity: opacityMidAdjusted }}
+        preload="none"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          opacity: 0,
+          transform: "translate3d(0,0,0) scale(1)",
+          transition: "opacity 700ms ease, transform 900ms ease",
+          willChange: "opacity, transform",
+          backfaceVisibility: "hidden",
+        }}
       />
 
-      {/* 3. Feature Video: Fades in bottom scroll */}
-      <video
-        ref={featureRef}
-        key={videoSrcFeature}
-        src={videoSrcFeature}
-        loop
-        muted
-        playsInline
-        className="bg-video-feature w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ease-out"
-        style={{ opacity: opacityFeatureAdjusted }}
+      {/* ------------------------------------------------------------------ */}
+      {/* DARK OVERLAY                                                        */}
+      {/* ------------------------------------------------------------------ */}
+
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(to top, #030303 0%, transparent 45%, rgba(3,3,3,0.82) 100%)",
+        }}
       />
 
-      {/* Ambient gradient layer to blur/darken edges */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/80 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#030303]/20 via-transparent to-[#030303]/20 pointer-events-none" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(to right, rgba(3,3,3,0.18), transparent 50%, rgba(3,3,3,0.18))",
+        }}
+      />
+
+      {/* ------------------------------------------------------------------ */}
+      {/* MOBILE DARKENING                                                    */}
+      {/* ------------------------------------------------------------------ */}
+
+      <div
+        className="absolute inset-0 pointer-events-none md:hidden"
+        style={{
+          background: "rgba(0,0,0,0.12)",
+        }}
+      />
     </div>
   );
 };
