@@ -1,88 +1,131 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { GlassSphere } from "./GlassSphere";
-import { ParticleField } from "./ParticleField";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 
-interface SceneContainerProps {}
+const ThreeScene = lazy(() => import("./ThreeScene.tsx"));
+
+interface SceneContainerProps { }
 
 export const SceneContainer: React.FC<SceneContainerProps> = () => {
   const mouse = useRef({ x: 0, y: 0 });
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
+  /*
+   * Delay WebGL initialization until the main page has had
+   * a chance to render its important HTML/content first.
+   */
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      // Normalize mouse positions to range [-1, 1]
-      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const loadScene = () => {
+      setShouldLoad(true);
     };
 
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalScroll > 0) {
-        setScrollProgress(window.scrollY / totalScroll);
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(loadScene, {
+        timeout: 2000,
+      });
+    } else {
+      timeoutId = setTimeout(loadScene, 1200);
+    }
+
+    return () => {
+      if (idleId !== undefined && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
       }
     };
+  }, []);
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("scroll", handleScroll);
+  /*
+   * Mouse tracking without React re-renders.
+   */
+  useEffect(() => {
+    let animationFrame = 0;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (animationFrame) return;
+
+      animationFrame = requestAnimationFrame(() => {
+        mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        animationFrame = 0;
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, {
+      passive: true,
+    });
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, []);
+
+  /*
+   * Throttle scroll updates using requestAnimationFrame.
+   * This prevents React from rendering on every scroll event.
+   */
+  useEffect(() => {
+    let animationFrame = 0;
+
+    const handleScroll = () => {
+      if (animationFrame) return;
+
+      animationFrame = requestAnimationFrame(() => {
+        const totalScroll =
+          document.documentElement.scrollHeight - window.innerHeight;
+
+        if (totalScroll > 0) {
+          setScrollProgress(
+            Math.min(1, Math.max(0, window.scrollY / totalScroll))
+          );
+        }
+
+        animationFrame = 0;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    handleScroll();
+
+    return () => {
       window.removeEventListener("scroll", handleScroll);
+
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
     };
   }, []);
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-screen pointer-events-none bg-transparent"
-      style={{ zIndex: 2 }}
+      style={{
+        zIndex: 2,
+        contain: "layout paint",
+      }}
+      aria-hidden="true"
     >
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-      >
-        {/* Cinematic Studio Lighting */}
-        <ambientLight intensity={0.2} />
-        
-        {/* Main dramatic key light */}
-        <directionalLight
-          position={[5, 5, 5]}
-          intensity={1.5}
-          color="#ffffff"
-          castShadow
-        />
-
-        {/* Soft fill light */}
-        <directionalLight
-          position={[-5, -5, -5]}
-          intensity={0.5}
-          color="#00E5FF"
-        />
-
-        {/* Golden accent glowing point light */}
-        <pointLight
-          position={[2, 3, 2]}
-          intensity={2.0}
-          distance={10}
-          color="#D4AF37"
-        />
-
-        {/* Purple glow backing */}
-        <pointLight
-          position={[-2, -3, 2]}
-          intensity={2.5}
-          distance={10}
-          color="#aa3bff"
-        />
-
-        {/* Render 3D Objects based on the current page context */}
-        
-        {/* Render the Logo (GlassSphere) on all pages */}
-        <GlassSphere scrollProgress={scrollProgress} mouse={mouse} />
-        
-        {/* ParticleField rendered once globally */}
-        <ParticleField scrollProgress={scrollProgress} />
-      </Canvas>
+      {shouldLoad && (
+        <Suspense fallback={null}>
+          <ThreeScene
+            mouse={mouse}
+            scrollProgress={scrollProgress}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };
