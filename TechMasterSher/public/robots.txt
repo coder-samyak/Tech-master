@@ -23,4 +23,4 @@ Disallow: /scratch/
 Disallow: /dist/
 
 # Canonical XML Sitemap Reference
-Sitemap: https://techmasterco.com/sitemap.xml
+Sitemap: https://www.techmasterco.com/sitemap.xml
