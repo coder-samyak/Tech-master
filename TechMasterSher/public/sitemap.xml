@@ -1,153 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- 1. Primary Landing Page -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
   <url>
-    <loc>https://techmasterco.com/</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <loc>https://www.techmasterco.com/</loc>
   </url>
 
-  <!-- 2. Core Brand & Company Pages -->
+  <!-- Company & Brand -->
   <url>
-    <loc>https://techmasterco.com/about</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.techmasterco.com/about</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/services</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.techmasterco.com/journey</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/portfolio</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.techmasterco.com/mission</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/what-we-do</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.techmasterco.com/what-we-do</loc>
+  </url>
+
+  <!-- Services -->
+  <url>
+    <loc>https://www.techmasterco.com/services</loc>
+  </url>
+
+  <!-- Work & Experiences -->
+  <url>
+    <loc>https://www.techmasterco.com/collaborations</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/mission</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.techmasterco.com/campaigns</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/journey</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- 3. Alliances & Showcases -->
-  <url>
-    <loc>https://techmasterco.com/collaborations</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.techmasterco.com/product-launches</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/campaigns</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.techmasterco.com/events</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/product-launches</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.techmasterco.com/portfolio</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/events</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- 4. Media, Social Proof & Journal -->
-  <url>
-    <loc>https://techmasterco.com/gallery</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.techmasterco.com/gallery</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/media</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.techmasterco.com/media</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/testimonials</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.techmasterco.com/testimonials</loc>
+  </url>
+
+  <!-- Content -->
+  <url>
+    <loc>https://www.techmasterco.com/blog</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/blog</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.techmasterco.com/faq</loc>
   </url>
 
-  <!-- 5. Careers, FAQ & Contact -->
+  <!-- Career & Contact -->
   <url>
-    <loc>https://techmasterco.com/career</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.techmasterco.com/career</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/faq</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.techmasterco.com/contact</loc>
+  </url>
+
+  <!-- Legal -->
+  <url>
+    <loc>https://www.techmasterco.com/privacy-policy</loc>
   </url>
 
   <url>
-    <loc>https://techmasterco.com/contact</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- 6. Legal & Policy Pages -->
-  <url>
-    <loc>https://techmasterco.com/privacy-policy</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://techmasterco.com/terms-of-service</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://www.techmasterco.com/terms-of-service</loc>
   </url>
 
 </urlset>
