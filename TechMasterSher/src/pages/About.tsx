@@ -57,7 +57,7 @@ export const About: React.FC = () => {
 
   // Extract Section 3 (Studio / Image Card)
   const studioCard = aboutDataAny?.studioCard || {
-    imageUrl: culture.imageUrl || aboutDataAny?.story?.imageUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: culture.imageUrl || aboutDataAny?.story?.imageUrl || coverImg,
     imageAlt: culture.imageAlt || "Tech Master Team",
     imageSubtitle: culture.imageSubtitle || "Jaipur Studio",
     imageDescription: culture.imageDescription || "50+ Person Production & Gaming Suite",
@@ -73,13 +73,13 @@ export const About: React.FC = () => {
     description: "Information is Wealth.",
     founderName: "Tech Master Founder",
     founderDesignation: "Founder & CEO",
-    profileImageUrl: aboutDataAny?.introduction?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80",
+    profileImageUrl: aboutDataAny?.philosophy?.profileImageUrl || aboutDataAny?.introduction?.profileImageUrl || coverImg,
     showDivider: true,
     visibility: true,
     order: 4
   };
 
-  const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80";
+  const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || coverImg;
   const founderImgUrl = mediaUrl(philosophy.profileImageUrl || philosophy.imageUrl || philosophy.image || aboutDataAny?.introduction?.profileImageUrl) || coverImg;
 
   return (
