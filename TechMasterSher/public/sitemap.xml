@@ -6,7 +6,7 @@
 
   <!-- 1. Primary Landing Page -->
   <url>
-    <loc>https://techmaster.com/</loc>
+    <loc>https://techmasterco.com/</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -14,42 +14,42 @@
 
   <!-- 2. Core Brand & Company Pages -->
   <url>
-    <loc>https://techmaster.com/about</loc>
+    <loc>https://techmasterco.com/about</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/services</loc>
+    <loc>https://techmasterco.com/services</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/portfolio</loc>
+    <loc>https://techmasterco.com/portfolio</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/what-we-do</loc>
+    <loc>https://techmasterco.com/what-we-do</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/mission</loc>
+    <loc>https://techmasterco.com/mission</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/journey</loc>
+    <loc>https://techmasterco.com/journey</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -57,28 +57,28 @@
 
   <!-- 3. Alliances & Showcases -->
   <url>
-    <loc>https://techmaster.com/collaborations</loc>
+    <loc>https://techmasterco.com/collaborations</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/campaigns</loc>
+    <loc>https://techmasterco.com/campaigns</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/product-launches</loc>
+    <loc>https://techmasterco.com/product-launches</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/events</loc>
+    <loc>https://techmasterco.com/events</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -86,28 +86,28 @@
 
   <!-- 4. Media, Social Proof & Journal -->
   <url>
-    <loc>https://techmaster.com/gallery</loc>
+    <loc>https://techmasterco.com/gallery</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/media</loc>
+    <loc>https://techmasterco.com/media</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/testimonials</loc>
+    <loc>https://techmasterco.com/testimonials</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/blog</loc>
+    <loc>https://techmasterco.com/blog</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -115,21 +115,21 @@
 
   <!-- 5. Careers, FAQ & Contact -->
   <url>
-    <loc>https://techmaster.com/career</loc>
+    <loc>https://techmasterco.com/career</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/faq</loc>
+    <loc>https://techmasterco.com/faq</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/contact</loc>
+    <loc>https://techmasterco.com/contact</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -137,14 +137,14 @@
 
   <!-- 6. Legal & Policy Pages -->
   <url>
-    <loc>https://techmaster.com/privacy-policy</loc>
+    <loc>https://techmasterco.com/privacy-policy</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://techmaster.com/terms-of-service</loc>
+    <loc>https://techmasterco.com/terms-of-service</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
