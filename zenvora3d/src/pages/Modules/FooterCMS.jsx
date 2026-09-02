@@ -50,7 +50,6 @@ const defaultFooterData = {
     linkedin: "https://linkedin.com/in/techmasterf",
     instagram: "https://instagram.com/techmasterf",
     facebook: "https://facebook.com/techmasterf",
-    github: "https://github.com/techmasterf",
     twitter: "https://twitter.com/techmasterf"
   },
   copyrightText: "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.",
@@ -377,7 +376,7 @@ export const FooterCMS = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            {Object.keys(formData.socials).map((platform) => (
+            {Object.keys(formData.socials).filter((platform) => platform !== 'github').map((platform) => (
               <div key={platform}>
                 <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1.5">
                   {platform} URL
