@@ -86,12 +86,14 @@ export const FooterCMS = () => {
   const { db, updateSection, apiFetch } = useDatabase();
   const [toast, setToast] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const isInitializedRef = React.useRef(false);
 
   const [formData, setFormData] = useState(() => mergeFooterData(db?.footer));
 
   useEffect(() => {
-    if (db?.footer) {
+    if (!isInitializedRef.current && db?.footer) {
       setFormData(mergeFooterData(db.footer));
+      isInitializedRef.current = true;
     }
   }, [db?.footer]);
 
@@ -404,11 +406,14 @@ export const FooterCMS = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.socials[platform]}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    socials: { ...formData.socials, [platform]: e.target.value } 
-                  })}
+                  value={formData.socials[platform] || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      socials: { ...prev.socials, [platform]: val } 
+                    }));
+                  }}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none font-mono"
                 />
               </div>
