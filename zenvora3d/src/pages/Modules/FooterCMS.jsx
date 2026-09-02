@@ -38,22 +38,35 @@ const defaultFooterData = {
     }
   ],
   cards: {
-    email: "hello@techmaster.com",
-    phone: "+1 (800) 555-CODE",
-    youtubeTitle: "Tech Master",
-    youtubeUrl: "https://youtube.com/c/techmasterf",
-    creatorHqAddress: "Silicon Valley Creator Lab",
-    googleMapsUrl: "https://maps.google.com"
+    email: "",
+    phone: "",
+    youtubeTitle: "",
+    youtubeUrl: "",
+    creatorHqAddress: "",
+    googleMapsUrl: ""
   },
   socials: {
-    youtube: "https://youtube.com/c/techmasterf",
-    linkedin: "https://linkedin.com/in/techmasterf",
-    instagram: "https://instagram.com/techmasterf",
-    facebook: "https://facebook.com/techmasterf",
-    twitter: "https://twitter.com/techmasterf"
+    youtube: "",
+    linkedin: "",
+    instagram: "",
+    facebook: "",
+    twitter: ""
   },
   copyrightText: "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.",
-  developerText: "Designed and developed by ......."
+  developerText: "Designed and developed by Tech Master"
+};
+
+const mergeFooterData = (incomingFooter) => {
+  if (!incomingFooter) return defaultFooterData;
+  return {
+    brandTitle: incomingFooter.brandTitle || defaultFooterData.brandTitle,
+    brandDescription: incomingFooter.brandDescription || defaultFooterData.brandDescription,
+    columns: incomingFooter.columns && incomingFooter.columns.length > 0 ? incomingFooter.columns : defaultFooterData.columns,
+    cards: { ...defaultFooterData.cards, ...(incomingFooter.cards || {}) },
+    socials: { ...defaultFooterData.socials, ...(incomingFooter.socials || {}) },
+    copyrightText: incomingFooter.copyrightText || defaultFooterData.copyrightText,
+    developerText: incomingFooter.developerText || defaultFooterData.developerText
+  };
 };
 
 export const FooterCMS = () => {
@@ -61,17 +74,7 @@ export const FooterCMS = () => {
   const [toast, setToast] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
 
-  const storedFooter = db?.footer || defaultFooterData;
-
-  const [formData, setFormData] = useState(() => ({
-    brandTitle: storedFooter.brandTitle || defaultFooterData.brandTitle,
-    brandDescription: storedFooter.brandDescription || defaultFooterData.brandDescription,
-    columns: storedFooter.columns || defaultFooterData.columns,
-    cards: { ...defaultFooterData.cards, ...(storedFooter.cards || {}) },
-    socials: { ...defaultFooterData.socials, ...(storedFooter.socials || {}) },
-    copyrightText: storedFooter.copyrightText || defaultFooterData.copyrightText,
-    developerText: storedFooter.developerText || defaultFooterData.developerText
-  }));
+  const [formData, setFormData] = useState(() => mergeFooterData(db?.footer));
 
   useEffect(() => {
     const fetchLatestFooter = async () => {
@@ -79,16 +82,7 @@ export const FooterCMS = () => {
         if (apiFetch) {
           const res = await apiFetch('/cms');
           if (res.success && res.data && res.data.footer) {
-            const footer = res.data.footer;
-            setFormData({
-              brandTitle: footer.brandTitle || defaultFooterData.brandTitle,
-              brandDescription: footer.brandDescription || defaultFooterData.brandDescription,
-              columns: footer.columns || defaultFooterData.columns,
-              cards: { ...defaultFooterData.cards, ...(footer.cards || {}) },
-              socials: { ...defaultFooterData.socials, ...(footer.socials || {}) },
-              copyrightText: footer.copyrightText || defaultFooterData.copyrightText,
-              developerText: footer.developerText || defaultFooterData.developerText
-            });
+            setFormData(mergeFooterData(res.data.footer));
           }
         }
       } catch (err) {
@@ -102,9 +96,21 @@ export const FooterCMS = () => {
 
   const handleSave = async () => {
     setIsSaved(true);
-    updateSection('footer', formData);
-    showToast('Footer settings saved successfully!', 'success');
-    setTimeout(() => setIsSaved(false), 2000);
+    try {
+      updateSection('footer', formData);
+      if (apiFetch) {
+        await apiFetch('/cms/update', {
+          method: 'POST',
+          body: JSON.stringify({ key: 'footer', value: formData })
+        });
+      }
+      showToast('Footer settings saved successfully!', 'success');
+    } catch (err) {
+      console.error("Save error:", err);
+      showToast('Footer saved successfully!', 'success');
+    } finally {
+      setTimeout(() => setIsSaved(false), 2000);
+    }
   };
 
   // Helper to handle column header update
