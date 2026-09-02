@@ -90,10 +90,10 @@ export const Testimonials: React.FC = () => {
   };
 
   // SEO configuration updates
-  if (seo.metaTitle) {
+  if (seo.metaTitle && !/luxury|spatial/i.test(seo.metaTitle)) {
     document.title = seo.metaTitle;
     const metaDesc = document.querySelector("meta[name='description']");
-    if (metaDesc) metaDesc.setAttribute("content", seo.metaDescription || "");
+    if (metaDesc && seo.metaDescription && !/luxury|spatial/i.test(seo.metaDescription)) metaDesc.setAttribute("content", seo.metaDescription);
   }
 
   // Active items lists

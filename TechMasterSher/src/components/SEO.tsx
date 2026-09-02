@@ -225,6 +225,26 @@ const PAGE_DEFAULTS: Record<
   },
 };
 
+const isOutdatedLuxuryText = (text?: string): boolean => {
+  if (!text) return false;
+  return /luxury|spatial studio|architect of luxury|3d configurations|3d spatial|digital native/i.test(text);
+};
+
+const sanitizeTitle = (val?: string): string | undefined => {
+  if (!val || isOutdatedLuxuryText(val)) return undefined;
+  return val;
+};
+
+const sanitizeDesc = (val?: string): string | undefined => {
+  if (!val || isOutdatedLuxuryText(val)) return undefined;
+  return val;
+};
+
+const sanitizeKeywords = (val?: string): string | undefined => {
+  if (!val || isOutdatedLuxuryText(val)) return undefined;
+  return val;
+};
+
 export const SEO = ({
   pageId,
   title,
@@ -256,10 +276,10 @@ export const SEO = ({
      */
 
     const activeTitle =
-      title ||
-      matchedPageSEO?.metaTitle ||
+      sanitizeTitle(title) ||
+      sanitizeTitle(matchedPageSEO?.metaTitle) ||
       (pageId === "home"
-        ? globalSEO.defaultTitle || globalSEO.websiteName
+        ? sanitizeTitle(globalSEO.defaultTitle) || sanitizeTitle(globalSEO.websiteName)
         : undefined) ||
       fallback.title;
 
@@ -270,10 +290,10 @@ export const SEO = ({
      */
 
     const activeDesc =
-      description ||
-      matchedPageSEO?.metaDescription ||
+      sanitizeDesc(description) ||
+      sanitizeDesc(matchedPageSEO?.metaDescription) ||
       (pageId === "home"
-        ? globalSEO.defaultDescription
+        ? sanitizeDesc(globalSEO.defaultDescription)
         : undefined) ||
       fallback.description;
 
@@ -284,9 +304,9 @@ export const SEO = ({
      */
 
     const activeKeywords =
-      keywords ||
-      matchedPageSEO?.keywords ||
-      globalSEO.defaultKeywords ||
+      sanitizeKeywords(keywords) ||
+      sanitizeKeywords(matchedPageSEO?.keywords) ||
+      sanitizeKeywords(globalSEO.defaultKeywords) ||
       "technology, automotive, mobility, entertainment media, digital culture, tech master";
 
     /*
