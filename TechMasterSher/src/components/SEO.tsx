@@ -89,9 +89,9 @@ const PAGE_DEFAULTS: Record<
   },
 
   "product-launches": {
-    title: "Product Launches & Spatial Showcases | Tech Master",
+    title: "Product Launches & Showcases | Tech Master",
     description:
-      "Pioneering product reveals with high-fidelity 3D spatial models, interactive configurators, and cinematic visualizers.",
+      "Pioneering product reveals, tech announcements, and digital media coverage by Tech Master.",
     slug: "/product-launches",
     ogType: "website",
   },
@@ -107,7 +107,7 @@ const PAGE_DEFAULTS: Record<
   journey: {
     title: "Our Evolution & Milestone Timeline | Tech Master",
     description:
-      "Follow the developmental history, breakthrough achievements, and engineering roadmap of Tech Master from inception to date.",
+      "Follow the developmental history, breakthrough achievements, and growth roadmap of Tech Master from inception to date.",
     slug: "/journey",
     ogType: "website",
   },
@@ -115,15 +115,15 @@ const PAGE_DEFAULTS: Record<
   mission: {
     title: "Mission, Core Values & Vision | Tech Master",
     description:
-      "Empowering creators and enterprises with state-of-the-art interactive digital experiences that redefine the boundaries of the modern web.",
+      "Empowering audiences and creators with authentic technology, automotive, and entertainment media coverage.",
     slug: "/mission",
     ogType: "website",
   },
 
   "what-we-do": {
-    title: "What We Do | Spatial Engineering & Creative Technology",
+    title: "What We Do | Tech Master",
     description:
-      "Delivering bespoke digital craftsmanship, interactive 3D visualizations, and robust scalable web systems.",
+      "Covering technology, mobility, automotive, entertainment, digital culture and related stories.",
     slug: "/what-we-do",
     ogType: "website",
   },
@@ -155,7 +155,7 @@ const PAGE_DEFAULTS: Record<
   career: {
     title: "Join Our Team | Careers at Tech Master Studio",
     description:
-      "Discover career opportunities for 3D graphics engineers, frontend architects, UI/UX designers, and creative coders.",
+      "Discover career opportunities across editorial, content creation, frontend development, and media operations.",
     slug: "/career",
     ogType: "website",
   },
@@ -163,7 +163,7 @@ const PAGE_DEFAULTS: Record<
   blog: {
     title: "Engineering Insights & Design Journal | Tech Master",
     description:
-      "Deep dives into WebGL shaders, Three.js performance optimization, GSAP motion choreography, and modern full-stack development.",
+      "Deep dives into tech innovations, automotive trends, entertainment news, and modern digital media.",
     slug: "/blog",
     ogType: "website",
   },
@@ -171,15 +171,15 @@ const PAGE_DEFAULTS: Record<
   faq: {
     title: "Frequently Asked Questions | Tech Master",
     description:
-      "Find clear answers regarding our project engagement models, development timelines, technical stacks, and partnership options.",
+      "Find clear answers regarding our media coverage, editorial guidelines, technology stacks, and partnership options.",
     slug: "/faq",
     ogType: "website",
   },
 
   contact: {
-    title: "Contact & Project Inquiries | Tech Master Studio",
+    title: "Contact & Inquiries | Tech Master Studio",
     description:
-      "Get in touch with Tech Master to discuss your upcoming digital project, keynote invitations, or creative collaborations.",
+      "Get in touch with Tech Master to discuss media inquiries, sponsorship opportunities, or creative collaborations.",
     slug: "/contact",
     ogType: "website",
   },
@@ -219,7 +219,7 @@ const PAGE_DEFAULTS: Record<
   "not-found": {
     title: "404 - Page Not Found | Tech Master",
     description:
-      "The requested page could not be located. Explore our spatial laboratory, digital portfolio, and creative engineering services.",
+      "The requested page could not be located. Explore Tech Master's homepage, latest articles, and media coverage.",
     slug: "/404",
     ogType: "website",
   },
@@ -227,7 +227,7 @@ const PAGE_DEFAULTS: Record<
 
 const isOutdatedLuxuryText = (text?: string): boolean => {
   if (!text) return false;
-  return /luxury|spatial studio|architect of luxury|3d configurations|3d spatial|digital native/i.test(text);
+  return /luxury|spatial studio|architect of luxury|3d configurations|3d spatial|digital native|creative lab|cinematic art|creative engineering|premium digital ecosystems|spatial showcase|spatial engineering|spatial laboratory/i.test(text);
 };
 
 const sanitizeTitle = (val?: string): string | undefined => {
