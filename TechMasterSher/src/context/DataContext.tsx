@@ -179,7 +179,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (db.websiteSettings) setWebsiteSettings(db.websiteSettings);
     if (db.coreServicesConfig) setCoreServicesConfig(db.coreServicesConfig);
     if (db.servicesPage) setServicesPageData(db.servicesPage);
-    if (db.footer) setFooterData(db.footer);
+    if (db.footer) {
+      if (db.footer.socials) {
+        for (const k of Object.keys(db.footer.socials)) {
+          if (typeof db.footer.socials[k] === 'string' && db.footer.socials[k].includes('techmasterf')) {
+            db.footer.socials[k] = '';
+          }
+        }
+      }
+      setFooterData(db.footer);
+    }
 
     // Blog CMS Hydration
     if (db.blogHero) setBlogHeroData(db.blogHero);

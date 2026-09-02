@@ -56,19 +56,26 @@ const defaultFooterData = {
   developerText: "Designed and developed by Tech Master"
 };
 
+const cleanSocialUrl = (url) => {
+  if (!url || typeof url !== 'string') return "";
+  if (url.includes("techmasterf")) return "";
+  return url.trim();
+};
+
 const mergeFooterData = (incomingFooter) => {
   if (!incomingFooter) return defaultFooterData;
+  const rawSocials = incomingFooter.socials || {};
   return {
     brandTitle: typeof incomingFooter.brandTitle === 'string' ? incomingFooter.brandTitle : defaultFooterData.brandTitle,
     brandDescription: typeof incomingFooter.brandDescription === 'string' ? incomingFooter.brandDescription : defaultFooterData.brandDescription,
     columns: incomingFooter.columns && incomingFooter.columns.length > 0 ? incomingFooter.columns : defaultFooterData.columns,
     cards: { ...defaultFooterData.cards, ...(incomingFooter.cards || {}) },
     socials: {
-      youtube: typeof incomingFooter.socials?.youtube === 'string' ? incomingFooter.socials.youtube : "",
-      linkedin: typeof incomingFooter.socials?.linkedin === 'string' ? incomingFooter.socials.linkedin : "",
-      instagram: typeof incomingFooter.socials?.instagram === 'string' ? incomingFooter.socials.instagram : "",
-      facebook: typeof incomingFooter.socials?.facebook === 'string' ? incomingFooter.socials.facebook : "",
-      twitter: typeof incomingFooter.socials?.twitter === 'string' ? incomingFooter.socials.twitter : ""
+      youtube: cleanSocialUrl(rawSocials.youtube),
+      linkedin: cleanSocialUrl(rawSocials.linkedin),
+      instagram: cleanSocialUrl(rawSocials.instagram),
+      facebook: cleanSocialUrl(rawSocials.facebook),
+      twitter: cleanSocialUrl(rawSocials.twitter)
     },
     copyrightText: typeof incomingFooter.copyrightText === 'string' ? incomingFooter.copyrightText : defaultFooterData.copyrightText,
     developerText: typeof incomingFooter.developerText === 'string' ? incomingFooter.developerText : defaultFooterData.developerText
@@ -83,37 +90,39 @@ export const FooterCMS = () => {
   const [formData, setFormData] = useState(() => mergeFooterData(db?.footer));
 
   useEffect(() => {
-    const fetchLatestFooter = async () => {
-      try {
-        if (apiFetch) {
-          const res = await apiFetch('/cms');
-          if (res.success && res.data && res.data.footer) {
-            setFormData(mergeFooterData(res.data.footer));
-          }
-        }
-      } catch (err) {
-        console.warn("Could not fetch latest footer from backend:", err);
-      }
-    };
-    fetchLatestFooter();
-  }, []);
+    if (db?.footer) {
+      setFormData(mergeFooterData(db.footer));
+    }
+  }, [db?.footer]);
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
   const handleSave = async () => {
     setIsSaved(true);
     try {
-      updateSection('footer', formData);
+      const sanitizedFormData = {
+        ...formData,
+        socials: {
+          youtube: cleanSocialUrl(formData.socials?.youtube),
+          linkedin: cleanSocialUrl(formData.socials?.linkedin),
+          instagram: cleanSocialUrl(formData.socials?.instagram),
+          facebook: cleanSocialUrl(formData.socials?.facebook),
+          twitter: cleanSocialUrl(formData.socials?.twitter)
+        }
+      };
+
+      updateSection('footer', sanitizedFormData);
       if (apiFetch) {
         await apiFetch('/cms/update', {
           method: 'POST',
-          body: JSON.stringify({ key: 'footer', value: formData })
+          body: JSON.stringify({ key: 'footer', value: sanitizedFormData })
         });
       }
+      setFormData(sanitizedFormData);
       showToast('Footer settings saved successfully!', 'success');
     } catch (err) {
       console.error("Save error:", err);
-      showToast('Footer saved successfully!', 'success');
+      showToast('Footer saved locally!', 'warning');
     } finally {
       setTimeout(() => setIsSaved(false), 2000);
     }

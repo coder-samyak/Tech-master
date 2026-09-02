@@ -124,6 +124,16 @@ export const DatabaseProvider = ({ children }) => {
           ...localParsed,
           ...backendData
         };
+
+        if (merged.footer && merged.footer.socials) {
+          const s = merged.footer.socials;
+          for (const key of Object.keys(s)) {
+            if (typeof s[key] === 'string' && s[key].includes('techmasterf')) {
+              s[key] = '';
+            }
+          }
+        }
+
         localStorage.setItem('zenvora_db', JSON.stringify(merged));
         return merged;
       });
