@@ -59,13 +59,19 @@ const defaultFooterData = {
 const mergeFooterData = (incomingFooter) => {
   if (!incomingFooter) return defaultFooterData;
   return {
-    brandTitle: incomingFooter.brandTitle || defaultFooterData.brandTitle,
-    brandDescription: incomingFooter.brandDescription || defaultFooterData.brandDescription,
+    brandTitle: typeof incomingFooter.brandTitle === 'string' ? incomingFooter.brandTitle : defaultFooterData.brandTitle,
+    brandDescription: typeof incomingFooter.brandDescription === 'string' ? incomingFooter.brandDescription : defaultFooterData.brandDescription,
     columns: incomingFooter.columns && incomingFooter.columns.length > 0 ? incomingFooter.columns : defaultFooterData.columns,
     cards: { ...defaultFooterData.cards, ...(incomingFooter.cards || {}) },
-    socials: { ...defaultFooterData.socials, ...(incomingFooter.socials || {}) },
-    copyrightText: incomingFooter.copyrightText || defaultFooterData.copyrightText,
-    developerText: incomingFooter.developerText || defaultFooterData.developerText
+    socials: {
+      youtube: typeof incomingFooter.socials?.youtube === 'string' ? incomingFooter.socials.youtube : "",
+      linkedin: typeof incomingFooter.socials?.linkedin === 'string' ? incomingFooter.socials.linkedin : "",
+      instagram: typeof incomingFooter.socials?.instagram === 'string' ? incomingFooter.socials.instagram : "",
+      facebook: typeof incomingFooter.socials?.facebook === 'string' ? incomingFooter.socials.facebook : "",
+      twitter: typeof incomingFooter.socials?.twitter === 'string' ? incomingFooter.socials.twitter : ""
+    },
+    copyrightText: typeof incomingFooter.copyrightText === 'string' ? incomingFooter.copyrightText : defaultFooterData.copyrightText,
+    developerText: typeof incomingFooter.developerText === 'string' ? incomingFooter.developerText : defaultFooterData.developerText
   };
 };
 
