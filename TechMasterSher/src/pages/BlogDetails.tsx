@@ -14,19 +14,47 @@ export const BlogDetails: React.FC<BlogDetailsProps> = ({ slug, onChangePage }) 
   const { blogsData } = useData();
   
   const post = blogsData?.find(b => b.slug === slug || b.id === slug);
+  const coverImage = post ? (mediaUrl(post.coverImage) || mediaUrl(post.image) || mediaUrl(post.imageUrl)) : "";
 
   useEffect(() => {
     if (post) {
-      document.title = post.seo?.metaTitle || `${post.title} | TechMaster Blog`;
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        document.head.appendChild(metaDesc);
+      const activeTitle = post.seo?.metaTitle || `${post.title} | Tech Master`;
+      const activeDesc = post.seo?.metaDescription || post.excerpt || post.title;
+      const canonicalUrl = `https://www.techmasterco.com/blog/${post.slug || post.id}`;
+      const ogImg = coverImage || "https://www.techmasterco.com/Trendz%20talk%20logo.png";
+
+      document.title = activeTitle;
+
+      const setMeta = (name: string, content: string, isProperty = false) => {
+        const attr = isProperty ? "property" : "name";
+        let elem = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
+        if (!elem) {
+          elem = document.createElement("meta");
+          elem.setAttribute(attr, name);
+          document.head.appendChild(elem);
+        }
+        elem.setAttribute("content", content);
+      };
+
+      setMeta("description", activeDesc);
+      setMeta("og:title", activeTitle, true);
+      setMeta("og:description", activeDesc, true);
+      setMeta("og:image", ogImg, true);
+      setMeta("og:url", canonicalUrl, true);
+      setMeta("og:type", "article", true);
+      setMeta("twitter:title", activeTitle);
+      setMeta("twitter:description", activeDesc);
+      setMeta("twitter:image", ogImg);
+
+      let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!canonicalLink) {
+        canonicalLink = document.createElement("link");
+        canonicalLink.setAttribute("rel", "canonical");
+        document.head.appendChild(canonicalLink);
       }
-      metaDesc.setAttribute('content', post.seo?.metaDescription || post.excerpt);
+      canonicalLink.setAttribute("href", canonicalUrl);
     }
-  }, [post]);
+  }, [post, coverImage]);
 
   if (!post) {
     return (
@@ -38,8 +66,6 @@ export const BlogDetails: React.FC<BlogDetailsProps> = ({ slug, onChangePage }) 
       </div>
     );
   }
-
-  const coverImage = mediaUrl(post.coverImage) || mediaUrl(post.image) || mediaUrl(post.imageUrl);
 
   return (
     <div className="relative text-white min-h-screen pt-24 pb-20 px-6 overflow-hidden">

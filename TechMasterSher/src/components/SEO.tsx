@@ -40,18 +40,18 @@ const PAGE_DEFAULTS: Record<
 > = {
   home: {
     title:
-      "Tech Master // Luxury Immersive 3D Spatial Creative Studio & Architecture Lab",
+      "Tech Master | Technology, Automotive & Entertainment Media",
     description:
-      "Tech Master crafts luxury immersive 3D WebGL experiences and premium digital ecosystems at the intersection of cinematic art and creative engineering.",
+      "Tech Master is an Indian technology, automotive and entertainment media company covering technology, mobility, automotive, entertainment, digital culture and related stories.",
     slug: "/",
     ogType: "website",
   },
 
   about: {
     title:
-      "About Us | Tech Master - Creative Engineering & Digital Vision",
+      "About Us | Tech Master - Technology & Media Platform",
     description:
-      "Learn about Tech Master's journey, leadership, design philosophy, and pioneering work in spatial computing and immersive web design.",
+      "Learn about Tech Master's journey, leadership, editorial philosophy, and media coverage across tech, automotive, and entertainment.",
     slug: "/about",
     ogType: "website",
   },
@@ -287,7 +287,7 @@ export const SEO = ({
       keywords ||
       matchedPageSEO?.keywords ||
       globalSEO.defaultKeywords ||
-      "threejs, react three fiber, creative coding, luxury web design, spatial computing, gsap motion, 3d portfolio";
+      "technology, automotive, mobility, entertainment media, digital culture, tech master";
 
     /*
      * ============================================================
@@ -464,7 +464,7 @@ export const SEO = ({
           logo: `${BASE_URL}/Tech%20MAster%20Logo.png`,
 
           description:
-            "Luxury immersive 3D spatial creative studio and full-stack digital lab.",
+            "Indian technology, automotive and entertainment media company.",
 
           sameAs: [
             "https://youtube.com/@techmastersher",

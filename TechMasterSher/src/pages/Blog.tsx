@@ -340,7 +340,11 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
                   className="h-full"
                 >
                   <LuxuryCard accentColor="#D4AF37" index={idx}>
-                    <div onClick={() => onChangePage && onChangePage(`blog-details/${post.slug || post.id}`)} className="flex flex-col h-full justify-between block w-full h-full cursor-pointer relative z-20">
+                    <a 
+                      href={`/blog/${post.slug || post.id}`}
+                      onClick={(e) => { e.preventDefault(); onChangePage && onChangePage(`blog-details/${post.slug || post.id}`); }} 
+                      className="flex flex-col h-full justify-between block w-full h-full cursor-pointer relative z-20"
+                    >
                       <div>
                         <div className="aspect-video w-full overflow-hidden border-b border-white/5 relative rounded-2xl mb-6">
                           <img
@@ -372,7 +376,7 @@ export const Blog: React.FC<BlogProps> = ({ onChangePage }) => {
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </div>
                       </div>
-                    </div>
+                    </a>
                   </LuxuryCard>
                 </motion.div>
               ))}

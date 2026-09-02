@@ -286,16 +286,20 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                 {column.header}
               </p>
               <ul className="flex flex-col gap-[12px] sm:gap-[18px]">
-                {column.links?.map((link: any, linkIdx: number) => (
-                  <li key={linkIdx}>
-                    <button
-                      onClick={() => handleNavClick(link.id)}
-                      className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block leading-tight"
-                    >
-                      {link.name}
-                    </button>
-                  </li>
-                ))}
+                {column.links?.map((link: any, linkIdx: number) => {
+                  const href = link.id === "home" ? "/" : link.id === "portfolio" ? "/what-we-do" : link.id === "privacy" ? "/privacy-policy" : link.id === "terms" ? "/terms-of-service" : `/${link.id}`;
+                  return (
+                    <li key={linkIdx}>
+                      <a
+                        href={href}
+                        onClick={(e) => { e.preventDefault(); handleNavClick(link.id); }}
+                        className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block leading-tight"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -376,19 +380,21 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1 flex items-center gap-3">
             <span>{footerData?.developerText || "Designed and developed by ......."}</span>
             <span>•</span>
-            <button 
-              onClick={() => onChangePage("privacy")}
+            <a 
+              href="/privacy-policy"
+              onClick={(e) => { e.preventDefault(); handleNavClick("privacy"); }}
               className="text-gray-400 hover:text-gold transition-colors underline cursor-pointer"
             >
               Privacy Policy
-            </button>
+            </a>
             <span>•</span>
-            <button 
-              onClick={() => onChangePage("terms")}
+            <a 
+              href="/terms-of-service"
+              onClick={(e) => { e.preventDefault(); handleNavClick("terms"); }}
               className="text-gray-400 hover:text-gold transition-colors underline cursor-pointer"
             >
               Terms of Service
-            </button>
+            </a>
           </p>
         </div>
 
@@ -396,25 +402,25 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         <div className="flex gap-3.5">
           {[
             { 
-              // YouTube
+              label: "YouTube",
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               ), 
-              href: footerData?.socials?.youtube || "https://youtube.com/c/techmasterf" 
+              href: footerData?.socials?.youtube || (websiteSettings as any)?.socials?.youtube || (websiteSettings as any)?.youtubeUrl || "" 
             },
             { 
-              // LinkedIn
+              label: "LinkedIn",
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                 </svg>
               ), 
-              href: footerData?.socials?.linkedin || "https://linkedin.com/in/techmasterf" 
+              href: footerData?.socials?.linkedin || (websiteSettings as any)?.socials?.linkedin || (websiteSettings as any)?.linkedinUrl || "" 
             },
             { 
-              // Instagram
+              label: "Instagram",
               icon: (
                 <svg className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -422,54 +428,57 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                 </svg>
               ), 
-              href: footerData?.socials?.instagram || "https://instagram.com/techmasterf" 
+              href: footerData?.socials?.instagram || (websiteSettings as any)?.socials?.instagram || (websiteSettings as any)?.instagramUrl || "" 
             },
             { 
-              // Facebook
+              label: "Facebook",
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
                 </svg>
               ), 
-              href: footerData?.socials?.facebook || "https://facebook.com/techmasterf" 
+              href: footerData?.socials?.facebook || (websiteSettings as any)?.socials?.facebook || (websiteSettings as any)?.facebookUrl || "" 
             },
             { 
-              // GitHub
+              label: "GitHub",
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                 </svg>
               ), 
-              href: footerData?.socials?.github || "https://github.com/techmasterf" 
+              href: footerData?.socials?.github || (websiteSettings as any)?.socials?.github || (websiteSettings as any)?.githubUrl || "" 
             },
             { 
-              // Twitter/X
+              label: "Twitter",
               icon: (
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               ), 
-              href: footerData?.socials?.twitter || "https://twitter.com/techmasterf" 
+              href: footerData?.socials?.twitter || (websiteSettings as any)?.socials?.twitter || (websiteSettings as any)?.twitterUrl || "" 
             },
-          ].map((soc, idx) => (
-            <Magnetic key={idx} strength={0.3}>
-              <motion.a
-                href={soc.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full border border-white/10 hover:border-gold/50 flex items-center justify-center text-gray-400 hover:text-gold bg-white/5 transition-all duration-300 shadow-sm"
-                animate={{ y: [0, -4, 0] }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 4,
-                  delay: idx * 0.5,
-                  ease: "easeInOut",
-                }}
-              >
-                {soc.icon}
-              </motion.a>
-            </Magnetic>
-          ))}
+          ]
+            .filter((soc) => typeof soc.href === "string" && soc.href.trim().length > 0)
+            .map((soc, idx) => (
+              <Magnetic key={idx} strength={0.3}>
+                <motion.a
+                  href={soc.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Tech Master on ${soc.label}`}
+                  className="w-9 h-9 rounded-full border border-white/10 hover:border-gold/50 flex items-center justify-center text-gray-400 hover:text-gold bg-white/5 transition-all duration-300 shadow-sm"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 4,
+                    delay: idx * 0.5,
+                    ease: "easeInOut",
+                  }}
+                >
+                  {soc.icon}
+                </motion.a>
+              </Magnetic>
+            ))}
         </div>
       </div>
     </footer>

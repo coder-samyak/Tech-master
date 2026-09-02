@@ -32,45 +32,48 @@ export const NotFound = ({ onChangePage }: NotFoundProps) => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            onClick={() => onChangePage("home")}
+          <a
+            href="/"
+            onClick={(e) => { e.preventDefault(); onChangePage("home"); }}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gold text-black font-semibold text-xs tracking-widest uppercase transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-gold/10 cursor-pointer"
           >
             <HomeIcon className="w-4 h-4" />
             Return Home
-          </button>
+          </a>
 
-          <button
-            onClick={() => onChangePage("portfolio")}
+          <a
+            href="/what-we-do"
+            onClick={(e) => { e.preventDefault(); onChangePage("portfolio"); }}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 bg-white/5 text-white font-semibold text-xs tracking-widest uppercase transition-all duration-300 hover:bg-white/10 hover:border-gold/50 cursor-pointer"
           >
             <Briefcase className="w-4 h-4 text-gold" />
             Explore Portfolio
-          </button>
+          </a>
 
-          <button
-            onClick={() => onChangePage("contact")}
+          <a
+            href="/contact"
+            onClick={(e) => { e.preventDefault(); onChangePage("contact"); }}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 bg-white/5 text-white font-semibold text-xs tracking-widest uppercase transition-all duration-300 hover:bg-white/10 hover:border-gold/50 cursor-pointer"
           >
             <Mail className="w-4 h-4 text-gold" />
             Contact Studio
-          </button>
+          </a>
         </div>
 
         {/* Quick Links Footer */}
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-wrap justify-center gap-6 text-xs text-zinc-500 font-mono">
-          <button onClick={() => onChangePage("services")} className="hover:text-gold transition-colors cursor-pointer">
+          <a href="/services" onClick={(e) => { e.preventDefault(); onChangePage("services"); }} className="hover:text-gold transition-colors cursor-pointer">
             /Services
-          </button>
-          <button onClick={() => onChangePage("about")} className="hover:text-gold transition-colors cursor-pointer">
+          </a>
+          <a href="/about" onClick={(e) => { e.preventDefault(); onChangePage("about"); }} className="hover:text-gold transition-colors cursor-pointer">
             /About
-          </button>
-          <button onClick={() => onChangePage("blog")} className="hover:text-gold transition-colors cursor-pointer">
+          </a>
+          <a href="/blog" onClick={(e) => { e.preventDefault(); onChangePage("blog"); }} className="hover:text-gold transition-colors cursor-pointer">
             /Journal
-          </button>
-          <button onClick={() => onChangePage("collaborations")} className="hover:text-gold transition-colors cursor-pointer">
+          </a>
+          <a href="/collaborations" onClick={(e) => { e.preventDefault(); onChangePage("collaborations"); }} className="hover:text-gold transition-colors cursor-pointer">
             /Collaborations
-          </button>
+          </a>
         </div>
       </div>
     </section>

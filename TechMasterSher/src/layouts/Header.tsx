@@ -167,8 +167,9 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
         }}
       >
         {/* Brand Logo */}
-        <div 
-          onClick={() => handleNavClick("home")} 
+        <a 
+          href="/"
+          onClick={(e) => { e.preventDefault(); handleNavClick("home"); }} 
           className={`flex items-center gap-2.5 cursor-pointer group transition-opacity duration-300 ${isScrolled ? 'opacity-0' : 'opacity-100'}`}
           data-cursor="home"
           style={{ pointerEvents: isScrolled ? 'none' : 'auto' }}
@@ -182,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
               filter: "none",
             }}
           />
-        </div>
+        </a>
 
         {/* Desktop Navigation Link Cluster */}
         <nav className={`hidden lg:flex items-center gap-5 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
@@ -192,20 +193,24 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
             { name: "Journey", id: "journey" },
             { name: "Our Work", id: "portfolio" },
             { name: "Careers", id: "career" },
-          ]).map((item: any) => (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item.id)}
-              className={`text-xs uppercase tracking-[2px] transition-all duration-300 relative py-1 hover:text-gold font-black ${
-                activePage === item.id ? "text-gold" : "text-gray-400"
-              }`}
-            >
-              {item.name}
-              {activePage === item.id && (
-                <span className="absolute bottom-0 left-0 w-full h-[1px] bg-gold" />
-              )}
-            </button>
-          ))}
+          ]).map((item: any) => {
+            const href = item.id === "home" ? "/" : item.id === "portfolio" ? "/what-we-do" : `/${item.id}`;
+            return (
+              <a
+                key={item.id}
+                href={href}
+                onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
+                className={`text-xs uppercase tracking-[2px] transition-all duration-300 relative py-1 hover:text-gold font-black ${
+                  activePage === item.id ? "text-gold" : "text-gray-400"
+                }`}
+              >
+                {item.name}
+                {activePage === item.id && (
+                  <span className="absolute bottom-0 left-0 w-full h-[1px] bg-gold" />
+                )}
+              </a>
+            );
+          })}
         </nav>
 
         {/* Action Button & Hamburger Toggle */}
@@ -254,23 +259,27 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className="flex flex-col gap-2 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">IDENTITY</p>
             <div className="flex flex-col gap-0 md:gap-0.5 w-full">
-              {identityItems.map((item: any) => (
-                <div key={item.id} className="overflow-hidden">
-                  <button
-                    onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
-                  >
-                    <span className="inline-block transition-transform duration-300 group-hover:scale-105">
-                      {item.name}
-                    </span>
-                    {activePage === item.id && (
-                      <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
-                        Active
+              {identityItems.map((item: any) => {
+                const href = item.id === "home" ? "/" : `/${item.id}`;
+                return (
+                  <div key={item.id} className="overflow-hidden">
+                    <a
+                      href={href}
+                      onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
+                      className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    >
+                      <span className="inline-block transition-transform duration-300 group-hover:scale-105">
+                        {item.name}
                       </span>
-                    )}
-                  </button>
-                </div>
-              ))}
+                      {activePage === item.id && (
+                        <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
+                          Active
+                        </span>
+                      )}
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -278,23 +287,27 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className="flex flex-col gap-2 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">ENGAGEMENT</p>
             <div className="flex flex-col gap-0 md:gap-0.5 w-full">
-              {engagementItems.map((item: any) => (
-                <div key={item.id} className="overflow-hidden">
-                  <button
-                    onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
-                  >
-                    <span className="inline-block transition-transform duration-300 group-hover:scale-105">
-                      {item.name}
-                    </span>
-                    {activePage === item.id && (
-                      <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
-                        Active
+              {engagementItems.map((item: any) => {
+                const href = item.id === "portfolio" ? "/what-we-do" : `/${item.id}`;
+                return (
+                  <div key={item.id} className="overflow-hidden">
+                    <a
+                      href={href}
+                      onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
+                      className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    >
+                      <span className="inline-block transition-transform duration-300 group-hover:scale-105">
+                        {item.name}
                       </span>
-                    )}
-                  </button>
-                </div>
-              ))}
+                      {activePage === item.id && (
+                        <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
+                          Active
+                        </span>
+                      )}
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -302,23 +315,27 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className="flex flex-col gap-2 text-center items-center">
             <p className="text-[10px] uppercase tracking-[6px] text-gold/80 mb-2 font-bold border-b border-white/5 pb-2 w-full text-center">QUICK LINKS</p>
             <div className="flex flex-col gap-0 md:gap-0.5 w-full">
-              {quickLinksItems.map((item: any) => (
-                <div key={item.id} className="overflow-hidden">
-                  <button
-                    onClick={() => handleNavClick(item.id)}
-                    className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
-                  >
-                    <span className="inline-block transition-transform duration-300 group-hover:scale-105">
-                      {item.name}
-                    </span>
-                    {activePage === item.id && (
-                      <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
-                        Active
+              {quickLinksItems.map((item: any) => {
+                const href = item.id === "privacy" ? "/privacy-policy" : item.id === "terms" ? "/terms-of-service" : `/${item.id}`;
+                return (
+                  <div key={item.id} className="overflow-hidden">
+                    <a
+                      href={href}
+                      onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
+                      className="menu-link mx-auto flex items-center justify-center gap-3 text-sm md:text-base font-sans text-gray-400 hover:text-gold transition-colors duration-300 py-0.5 relative group font-light"
+                    >
+                      <span className="inline-block transition-transform duration-300 group-hover:scale-105">
+                        {item.name}
                       </span>
-                    )}
-                  </button>
-                </div>
-              ))}
+                      {activePage === item.id && (
+                        <span className="text-[8px] font-sans text-gold border border-gold/40 px-1.5 py-0.5 rounded-full tracking-[1.5px] uppercase bg-gold/5 shrink-0">
+                          Active
+                        </span>
+                      )}
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

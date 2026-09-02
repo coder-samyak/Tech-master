@@ -1,92 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Homepage -->
+  <!-- 1. Home -->
   <url>
     <loc>https://www.techmasterco.com/</loc>
   </url>
 
-  <!-- Company & Brand -->
+  <!-- 2. About Founder -->
   <url>
     <loc>https://www.techmasterco.com/about</loc>
   </url>
 
+  <!-- 3. Journey -->
   <url>
     <loc>https://www.techmasterco.com/journey</loc>
   </url>
 
-  <url>
-    <loc>https://www.techmasterco.com/mission</loc>
-  </url>
-
+  <!-- 4. Our Work -->
   <url>
     <loc>https://www.techmasterco.com/what-we-do</loc>
   </url>
 
-  <!-- Services -->
-  <url>
-    <loc>https://www.techmasterco.com/services</loc>
-  </url>
-
-  <!-- Work & Experiences -->
-  <url>
-    <loc>https://www.techmasterco.com/collaborations</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/campaigns</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/product-launches</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/events</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/portfolio</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/gallery</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/media</loc>
-  </url>
-
-  <url>
-    <loc>https://www.techmasterco.com/testimonials</loc>
-  </url>
-
-  <!-- Content -->
+  <!-- 5. Blog -->
   <url>
     <loc>https://www.techmasterco.com/blog</loc>
   </url>
 
-  <url>
-    <loc>https://www.techmasterco.com/faq</loc>
-  </url>
-
-  <!-- Career & Contact -->
+  <!-- 6. Careers -->
   <url>
     <loc>https://www.techmasterco.com/career</loc>
   </url>
 
+  <!-- 7. Contact -->
   <url>
     <loc>https://www.techmasterco.com/contact</loc>
   </url>
 
-  <!-- Legal -->
+  <!-- 8. Privacy Policy -->
   <url>
     <loc>https://www.techmasterco.com/privacy-policy</loc>
   </url>
 
+  <!-- 9. Terms of Service -->
   <url>
     <loc>https://www.techmasterco.com/terms-of-service</loc>
   </url>
-
 </urlset>
