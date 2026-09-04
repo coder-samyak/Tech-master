@@ -42,7 +42,7 @@ const PAGE_DEFAULTS: Record<
     title:
       "Tech Master | Tech, Automotive & Entertainment Media",
     description:
-      "Tech Master is an Indian technology, automotive and entertainment media company covering technology, mobility, automotive, entertainment, digital culture and related stories.",
+      "Tech Master is an Indian tech, automotive and entertainment media company covering technology, mobility, automotive, entertainment, digital culture and related stories.",
     slug: "/",
     ogType: "website",
   },
