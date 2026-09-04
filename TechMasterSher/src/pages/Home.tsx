@@ -8,6 +8,7 @@ import { useData } from "../context/DataContext";
 import { StripeReelsCarousel } from "../components/StripeReelsCarousel";
 import { LongVideosCarousel } from "../components/LongVideosCarousel";
 import { AnimatedCounter } from "../components/AnimatedCounter";
+import { mediaUrl } from "../utils/media";
 
 import asusLogo from "../assets/ASUS.jpeg";
 import dellLogo from "../assets/DELL.jpeg";
@@ -36,6 +37,16 @@ import kiaLogo from "../assets/KIA.jpeg";
 import circleImg from "../assets/techmaster-circle-optimized.webp";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const getChannelDefaultCircleImage = (channelName: string) => {
+  const name = (channelName || "").trim().toLowerCase();
+  if (name.includes("tech master") || name.includes("techmaster")) return "/TechMaster.jpeg";
+  if (name.includes("next univerz") || name.includes("nextuniverz")) return "/NextUniverz.jpeg";
+  if (name.includes("master wheels") || name.includes("masterwheels") || name.includes("wheels")) return "/MasterWheels.jpeg";
+  if (name.includes("full circle") || name.includes("fullcircle")) return "/First circle.jpg.jpeg";
+  if (name.includes("trendz talk") || name.includes("trendztalk") || name.includes("trendz")) return "/Trendz talk logo.png";
+  return circleImg;
+};
 
 interface HomeProps {
   onChangePage: (page: string) => void;
@@ -223,10 +234,10 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     .trim();
 
   const defaultBrandChannels = [
-    { brandName: "Tech Master" },
-    { brandName: "Next Univerz" },
-    { brandName: "Master Wheels" },
-    { brandName: "Full Circle" },
+    { brandName: "Tech Master", circleImage: "/TechMaster.jpeg" },
+    { brandName: "Next Univerz", circleImage: "/NextUniverz.jpeg" },
+    { brandName: "Master Wheels", circleImage: "/MasterWheels.jpeg" },
+    { brandName: "Full Circle", circleImage: "/First circle.jpg.jpeg" },
   ];
 
   const rawChannels =
@@ -1287,12 +1298,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
                         brand.title ||
                         "";
 
-                      const bImg =
-                        brand.circleImage ||
-                        brand.logoUrl ||
-                        brand.image ||
-                        brand.imageUrl ||
-                        circleImg;
+                      const directImg =
+                        mediaUrl(brand.circleImage) ||
+                        mediaUrl(brand.logoUrl) ||
+                        mediaUrl(brand.image) ||
+                        mediaUrl(brand.imageUrl);
+
+                      const bImg = directImg || getChannelDefaultCircleImage(bName);
 
                       return (
                         <div
