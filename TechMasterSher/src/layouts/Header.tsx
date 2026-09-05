@@ -120,13 +120,51 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
   const quickLinksItems = rawQuickLinks.filter((item: any) => !removedNavIds.has(item.id));
 
   const handleNavClick = (pageId: string) => {
-    if (pageId === "privacy") {
+    if (!pageId) {
+      onChangePage("contact");
+      return;
+    }
+
+    const trimmed = String(pageId).trim();
+
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+      window.open(trimmed, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (trimmed.startsWith("mailto:") || trimmed.startsWith("tel:")) {
+      window.location.href = trimmed;
+      return;
+    }
+
+    let cleanId = trimmed
+      .toLowerCase()
+      .replace(/^#+/, "")
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "");
+
+    if (
+      cleanId === "contact" ||
+      cleanId === "contact-us" ||
+      cleanId === "contact_us" ||
+      cleanId === "contactpage" ||
+      cleanId === "contacts" ||
+      cleanId === "get-in-touch" ||
+      cleanId === "talk"
+    ) {
+      cleanId = "contact";
+    } else if (cleanId === "about-us") {
+      cleanId = "about";
+    } else if (cleanId === "our-work") {
+      cleanId = "what-we-do";
+    }
+
+    if (cleanId === "privacy" || cleanId === "privacy-policy") {
       setIsPrivacyOpen(true);
-    } else if (pageId === "terms") {
+    } else if (cleanId === "terms" || cleanId === "terms-of-service") {
       setIsTermsOpen(true);
     } else {
       setIsMenuOpen(false);
-      onChangePage(pageId);
+      onChangePage(cleanId || "contact");
     }
   };
 
@@ -221,7 +259,7 @@ export const Header: React.FC<HeaderProps> = ({ activePage, onChangePage }) => {
           <div className={`transition-opacity duration-300 ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <Magnetic strength={0.3}>
               <button
-                onClick={() => handleNavClick((navBtnLink || "contact").replace(/^\//, ""))}
+                onClick={() => handleNavClick(navBtnLink || "contact")}
                 className="light-sweep h-7 px-3.5 rounded-full border border-gold/30 hover:border-gold hover:text-black hover:bg-gold transition-all duration-500 text-[10px] font-black uppercase tracking-[1.5px] text-gold flex items-center justify-center gap-1.5 shadow-sm"
               >
                 {navBtnText}

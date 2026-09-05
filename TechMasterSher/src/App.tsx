@@ -195,6 +195,32 @@ const getPageIdFromPath = (path: string): string => {
     return "terms";
   }
 
+  if (
+    cleanPath === "contact-us" ||
+    cleanPath === "contact_us" ||
+    cleanPath === "contactpage" ||
+    cleanPath === "contacts" ||
+    cleanPath === "get-in-touch" ||
+    cleanPath === "talk" ||
+    cleanPath === "contact"
+  ) {
+    return "contact";
+  }
+
+  if (
+    cleanPath === "our-work" ||
+    cleanPath === "what-we-do"
+  ) {
+    return "what-we-do";
+  }
+
+  if (
+    cleanPath === "about-us" ||
+    cleanPath === "about"
+  ) {
+    return "about";
+  }
+
   if (cleanPath.startsWith("blog/")) {
     const slug = cleanPath.substring(5);
 
@@ -236,29 +262,46 @@ const getPageIdFromPath = (path: string): string => {
 };
 
 const getPathFromPageId = (pageId: string): string => {
-  if (pageId === "home") {
+  const cleanId = (pageId || "")
+    .toLowerCase()
+    .replace(/^\//, "")
+    .replace(/\/+$/, "");
+
+  if (cleanId === "home" || cleanId === "") {
     return "/";
   }
 
-  if (pageId === "privacy") {
+  if (cleanId === "privacy" || cleanId === "privacy-policy") {
     return "/privacy-policy";
   }
 
-  if (pageId === "terms") {
+  if (cleanId === "terms" || cleanId === "terms-of-service") {
     return "/terms-of-service";
   }
 
-  if (pageId.startsWith("blog-details/")) {
-    return `/blog/${pageId.substring(
+  if (
+    cleanId === "contact" ||
+    cleanId === "contact-us" ||
+    cleanId === "contact_us" ||
+    cleanId === "contactpage" ||
+    cleanId === "contacts" ||
+    cleanId === "get-in-touch" ||
+    cleanId === "talk"
+  ) {
+    return "/contact";
+  }
+
+  if (cleanId.startsWith("blog-details/")) {
+    return `/blog/${cleanId.substring(
       "blog-details/".length
     )}`;
   }
 
-  if (pageId === "not-found") {
+  if (cleanId === "not-found") {
     return "/404";
   }
 
-  return `/${pageId}`;
+  return `/${cleanId}`;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -398,7 +441,25 @@ function App() {
 
   const navigatePage = useCallback(
     (pageId: string) => {
-      if (pageId === activePage) {
+      let normalizedId = (pageId || "contact").trim().toLowerCase().replace(/^\//, "").replace(/\/+$/, "");
+
+      if (
+        normalizedId === "contact" ||
+        normalizedId === "contact-us" ||
+        normalizedId === "contact_us" ||
+        normalizedId === "contactpage" ||
+        normalizedId === "contacts" ||
+        normalizedId === "get-in-touch" ||
+        normalizedId === "talk"
+      ) {
+        normalizedId = "contact";
+      } else if (normalizedId === "about-us") {
+        normalizedId = "about";
+      } else if (normalizedId === "our-work") {
+        normalizedId = "what-we-do";
+      }
+
+      if (normalizedId === activePage) {
         window.scrollTo({
           top: 0,
           behavior: "smooth",
@@ -412,14 +473,14 @@ function App() {
       }
 
       const targetPath =
-        getPathFromPageId(pageId);
+        getPathFromPageId(normalizedId);
 
       if (
         typeof window !== "undefined" &&
         window.location.pathname !== targetPath
       ) {
         window.history.pushState(
-          { pageId },
+          { pageId: normalizedId },
           "",
           targetPath
         );
@@ -434,7 +495,7 @@ function App() {
           ease: "power3.inOut",
 
           onComplete: () => {
-            setActivePage(pageId);
+            setActivePage(normalizedId);
 
             window.scrollTo({
               top: 0,
