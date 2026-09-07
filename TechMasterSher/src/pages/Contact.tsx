@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Phone, MapPin, Send, MessageCircle, ExternalLink } from "lucide-react";
+import { Mail, MapPin, Send, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 
@@ -41,9 +41,7 @@ export const Contact: React.FC = () => {
   const mapData = rawData.map || { url: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus" };
   
   const emailVal = contactInfo.email;
-  const phoneVal = contactInfo.phone;
   const addressVal = contactInfo.address;
-  const whatsappNumber = contactInfo.whatsapp;
 
   const socialTitle = rawData.socialHeader?.title || rawData.socialTitle || "Connect Internationally";
 
@@ -182,40 +180,6 @@ export const Contact: React.FC = () => {
                   <span className="text-[10px] uppercase tracking-[1px] opacity-40 block font-mono">BUSINESS EMAIL</span>
                   <a href={`mailto:${emailVal}`} className="text-sm font-bold text-white hover:text-gold transition-colors duration-300">
                     {emailVal}
-                  </a>
-                </div>
-              </div>
-
-              {/* Telephone */}
-              <div className="flex items-center gap-4 border border-white/5 bg-white/[0.01] p-4 rounded-2xl hover:border-gold/20 transition-all duration-300">
-                <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center text-gold">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase tracking-[1px] opacity-40 block font-mono">COMMUNICATION TELEPHONE</span>
-                  <a href={`tel:${phoneVal}`} className="text-sm font-bold text-white hover:text-gold transition-colors duration-300">
-                    {phoneVal}
-                  </a>
-                </div>
-              </div>
-
-              {/* WhatsApp Button */}
-              <div className="flex items-center gap-4 border border-white/5 bg-white/[0.01] p-4 rounded-2xl hover:border-green-500/20 transition-all duration-300">
-                <div className="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
-                  <MessageCircle className="w-5 h-5" />
-                </div>
-                <div className="flex-1 flex justify-between items-center pr-2">
-                  <div>
-                    <span className="text-[10px] uppercase tracking-[1px] opacity-40 block font-mono">INSTANT CHAT</span>
-                    <span className="text-xs text-gray-300 font-light block">Need answers right away?</span>
-                  </div>
-                  <a 
-                    href={`https://wa.me/${whatsappNumber}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-[10px] font-bold uppercase tracking-[1.5px] rounded-xl flex items-center gap-1.5 transition-all duration-300 cursor-pointer shadow-lg shadow-green-600/10"
-                  >
-                    WhatsApp <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>
               </div>
