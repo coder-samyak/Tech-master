@@ -521,7 +521,7 @@ export const ProductLaunches = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/product-launches"
+                src="https://www.techmasterco.com/product-launches"
                 title="Live Preview Product Launches"
                 className="w-full h-[600px] border-none"
               />

@@ -718,7 +718,7 @@ export const MissionVision = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/mission"
+                src="https://www.techmasterco.com/mission"
                 title="Live Preview Mission & Vision"
                 className="w-full h-[600px] border-none"
               />

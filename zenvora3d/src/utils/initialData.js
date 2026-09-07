@@ -7,11 +7,11 @@ export const initialData = {
   // ==========================================
   globalSEO: {
     websiteName: "TechMaster | Luxury Digital Native",
-    websiteUrl: "https://techmaster.com",
+    websiteUrl: "https://www.techmasterco.com",
     defaultTitle: "TechMaster - Architect of Luxury Digital Experiences",
     defaultDescription: "Portfolio of TechMaster, an elite developer specializing in high-fidelity 3D configurations, interactive cinema, and luxury digital architecture.",
     defaultKeywords: "Luxury Web Design, Three.js, React, 3D Configurations, TechMaster",
-    canonicalURL: "https://techmaster.com",
+    canonicalURL: "https://www.techmasterco.com",
     favicon: "/favicon.ico",
     appleIcon: "/apple-touch-icon.png",
     androidIcon: "/android-chrome-192x192.png",
@@ -39,7 +39,7 @@ export const initialData = {
     businessInformation: {
       name: "TechMaster Studios",
       type: "Creative Agency",
-      email: "hello@techmaster.com",
+      email: "hello@techmasterco.com",
       phone: "+1 (555) 123-4567",
       address: "100 Luxury Avenue",
       country: "United States",
@@ -54,8 +54,8 @@ export const initialData = {
       { id: "gsl-1", platform: "Instagram", url: "https://instagram.com/techmaster", order: 1 },
       { id: "gsl-2", platform: "LinkedIn", url: "https://linkedin.com/in/techmaster", order: 2 }
     ],
-    robotsSettings: "User-agent: *\nDisallow: /admin/\nDisallow: /config/\n\nSitemap: https://techmaster.com/sitemap.xml",
-    sitemapSettings: "https://techmaster.com/sitemap.xml",
+    robotsSettings: "User-agent: *\nDisallow: /admin/\nDisallow: /config/\n\nSitemap: https://www.techmasterco.com/sitemap.xml",
+    sitemapSettings: "https://www.techmasterco.com/sitemap.xml",
     globalToggles: {
       enableSEO: true,
       allowIndexing: true,

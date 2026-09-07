@@ -496,7 +496,7 @@ export const WhatWeDo = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/what-we-do"
+                src="https://www.techmasterco.com/what-we-do"
                 title="Live Preview What We Do"
                 className="w-full h-[600px] border-none"
               />

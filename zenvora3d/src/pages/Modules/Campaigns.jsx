@@ -464,7 +464,7 @@ export const Campaigns = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/campaigns"
+                src="https://www.techmasterco.com/campaigns"
                 title="Live Preview Campaigns"
                 className="w-full h-[600px] border-none"
               />

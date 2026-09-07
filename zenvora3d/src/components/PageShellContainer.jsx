@@ -369,7 +369,7 @@ export const PageShellContainer = ({
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src={`http://localhost:5173${pageSlug}`}
+                src={`${import.meta.env.VITE_WEBSITE_URL || 'https://www.techmasterco.com'}${pageSlug}`}
                 title="Live Preview"
                 className="w-full h-[600px] border-none"
               />

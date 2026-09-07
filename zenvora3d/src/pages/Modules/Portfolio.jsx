@@ -719,7 +719,7 @@ export const Portfolio = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/portfolio"
+                src="https://www.techmasterco.com/portfolio"
                 title="Live Preview Portfolio"
                 className="w-full h-[600px] border-none"
               />

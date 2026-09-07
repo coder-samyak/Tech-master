@@ -520,7 +520,7 @@ export const Events = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/events"
+                src="https://www.techmasterco.com/events"
                 title="Live Preview Events & Keynotes"
                 className="w-full h-[600px] border-none"
               />

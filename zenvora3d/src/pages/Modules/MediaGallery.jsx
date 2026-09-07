@@ -502,7 +502,7 @@ export const MediaGallery = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/media-gallery"
+                src="https://www.techmasterco.com/media-gallery"
                 title="Live Preview Media Gallery"
                 className="w-full h-[600px] border-none"
               />

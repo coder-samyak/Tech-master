@@ -626,7 +626,7 @@ export const Blogs = () => {
               previewMode === 'desktop' ? 'w-full' : previewMode === 'tablet' ? 'w-[768px]' : 'w-[375px]'
             }`}>
               <iframe
-                src="http://localhost:5173/blog"
+                src="https://www.techmasterco.com/blog"
                 title="Live Preview Blog"
                 className="w-full h-[600px] border-none"
               />
