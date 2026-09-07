@@ -419,6 +419,7 @@ router.get("/", async (req, res, next) => {
       testimonialsCMS: cmsDataMap['testimonialsCMS'] || cmsDataMap['testimonialsPageData'] || cmsDataMap['testimonials'] || null,
       faqPageData: cmsDataMap['faqPageData'] || cmsDataMap['faqs'] || null,
       contactPageData: cmsDataMap['contactPageData'] || cmsDataMap['contactInfo'] || cmsDataMap['contact'] || null,
+      footer: cmsDataMap['footer'] || null,
       ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
 

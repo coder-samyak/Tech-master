@@ -125,6 +125,12 @@ export const DatabaseProvider = ({ children }) => {
           ...backendData
         };
 
+        if (localParsed.footer && (!backendData.footer || Object.keys(backendData.footer).length === 0)) {
+          merged.footer = localParsed.footer;
+        } else if (prev.footer && (!backendData.footer || Object.keys(backendData.footer).length === 0)) {
+          merged.footer = prev.footer;
+        }
+
         if (merged.footer && merged.footer.socials) {
           const s = merged.footer.socials;
           for (const key of Object.keys(s)) {
