@@ -112,23 +112,23 @@ export const VisitorCareer = () => {
             ) : (
               <form onSubmit={handleApplySubmit} className="flex flex-col gap-5">
                 <div>
-                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">FULL NAME</label>
-                  <input required value={formData.candidateName} onChange={e => setFormData({...formData, candidateName: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white focus:border-luxury-gold outline-none" />
+                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">FULL NAME :</label>
+                  <input required value={formData.candidateName} onChange={e => setFormData({...formData, candidateName: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-luxury-gold outline-none" />
                 </div>
                 <div>
-                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">EMAIL ADDRESS</label>
-                  <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white focus:border-luxury-gold outline-none" />
+                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">EMAIL ADDRESS :</label>
+                  <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-luxury-gold outline-none" />
                 </div>
                 <div>
-                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">PORTFOLIO / GITHUB LINK</label>
+                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">PORTFOLIO & GITHUB LINK :</label>
                   <input type="url" value={formData.portfolioUrl} onChange={e => setFormData({...formData, portfolioUrl: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-luxury-gold outline-none" />
                 </div>
                 <div>
-                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">WHY JOIN TECH MASTER?</label>
+                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">WHY JOIN TECH MASTER? :</label>
                   <textarea rows={3} required value={formData.whyJoin || ''} onChange={e => setFormData({...formData, whyJoin: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-luxury-gold outline-none" />
                 </div>
                 <div>
-                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">UPLOAD RESUME (PDF/DOC)</label>
+                  <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">UPLOAD RESUME (PDF/DOC) :</label>
                   <div className="flex gap-2">
                      <button type="button" onClick={() => fileRef.current?.click()} className="bg-luxury-gold text-black font-bold text-[9px] uppercase tracking-[1px] px-4 py-2 rounded-full hover:bg-luxury-gold/80 transition-colors">Choose File</button>
                      <span className="text-zinc-400 text-xs flex items-center">{formData.resumeFileName || 'No file selected'}</span>

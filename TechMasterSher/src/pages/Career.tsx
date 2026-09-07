@@ -292,43 +292,43 @@ export const Career: React.FC = () => {
                 </div>
               )}
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">FULL NAME</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">FULL NAME :</label>
                 <input
                   type="text"
                   required
                   placeholder="Arya Patel"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">EMAIL ADDRESS</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">EMAIL ADDRESS :</label>
                 <input
                   type="email"
                   required
                   placeholder="arya@code.net"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">PHONE NUMBER</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">PHONE NUMBER :</label>
                 <input
                   type="tel"
                   required
                   placeholder="+1 (555) 000-0000"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">POSITION APPLYING FOR</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">POSITION APPLYING FOR :</label>
                 <select
                   value={formData.jobTitle}
                   onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
@@ -344,7 +344,7 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">PORTFOLIO / GITHUB LINK</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">PORTFOLIO & GITHUB LINK :</label>
                 <input
                   type="url"
                   required
@@ -356,7 +356,7 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">WHY JOIN TECH MASTER?</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">WHY JOIN TECH MASTER? :</label>
                 <textarea
                   rows={3}
                   required
@@ -368,7 +368,7 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">UPLOAD RESUME (PDF/DOC/PPT)</label>
+                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">UPLOAD RESUME (PDF/DOC/PPT) :</label>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx,.ppt,.pptx"
