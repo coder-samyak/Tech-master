@@ -76,8 +76,8 @@ const MorphingTorus: React.FC = () => {
           transparent={true}
           side={THREE.DoubleSide}
           depthWrite={false}
-          color="#808080"
-          opacity={0.85}
+          color="#e6e6e6"
+          opacity={0.65}
         />
       </mesh>
     </group>
