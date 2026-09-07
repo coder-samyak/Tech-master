@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Mail, MapPin, Send, ExternalLink } from "lucide-react";
+import { Mail, MapPin, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 
@@ -38,17 +38,9 @@ export const Contact: React.FC = () => {
 
   const contactHero = rawData.hero || { badge: "DIRECT PORTAL", heading: "Connect &", highlightHeading: "Launch Collaborations" };
   const contactInfo = rawData.info || { email: "aman@techmaster.com", phone: "+91 98765 43210", whatsapp: "919876543210", address: "TechMaster HQ, Silicon Valley" };
-  const mapData = rawData.map || { url: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509374!2d-122.4194155!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808580700d987b51%3A0xcb13e9a7e02e60f0!2sSilicon%20Valley!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus" };
   
   const emailVal = contactInfo.email;
   const addressVal = contactInfo.address;
-
-  const socialTitle = rawData.socialHeader?.title || rawData.socialTitle || "Connect Internationally";
-
-  const socialsList = rawData.socials || [
-    { platform: "Instagram", handle: "@aman_techmaster", url: "https://instagram.com" },
-    { platform: "LinkedIn", handle: "/in/aman-tech", url: "https://linkedin.com" }
-  ];
 
   const inquiryTypes = rawData.categories || [
     { label: "Business Inquiry", value: "business" },
@@ -68,105 +60,96 @@ export const Contact: React.FC = () => {
     setIsSubmitting(true);
     setErrorMsg("");
 
-    const newEnquiry = {
-      id: `enq-${Date.now()}`,
-      name: formData.name,
-      email: formData.email,
-      company: formData.company,
-      category: formData.category,
-      subject: formData.category,
-      message: formData.message,
-      date: new Date().toISOString().split('T')[0],
-      status: "New",
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const res = await fetch(`${baseUrl}/public/enquiry`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          candidateName: formData.name,
+          email: formData.email,
+          category: formData.category,
+          subject: formData.category,
+          company: formData.company,
+          brand: formData.company,
+          message: formData.message,
+          outline: formData.message
+        })
+      });
 
-    const envUrl = import.meta.env.VITE_API_URL || "";
-    const apiBases = [
-      ...(envUrl ? [envUrl] : []),
-      "http://localhost:5000/api/v1",
-      "http://localhost:5001/api/v1",
-      "https://tech-master-afhx.onrender.com/api/v1",
-      "https://tech-master-afhx.onrender.com/api/v1"
-    ];
-
-    const endpointsToTry: string[] = [];
-    apiBases.forEach(base => {
-      const cleanBase = base.replace(/\/+$/, "");
-      endpointsToTry.push(`${cleanBase}/cms/public/enquiry`);
-      endpointsToTry.push(`${cleanBase}/public/enquiry`);
-      endpointsToTry.push(`${cleanBase}/cms/public/contact`);
-    });
-
-    for (const url of endpointsToTry) {
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
-        });
-        if (response.ok) {
-          break;
-        }
-      } catch (err) {
-        console.warn(`Attempt failed for ${url}:`, err);
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || "Failed to submit inquiry");
       }
-    }
 
-    // Broadcast lead over cross-tab channel so admin dashboard on any local port receives it instantly
-    try {
-      const channel = new BroadcastChannel("zenvora_cms_sync");
-      channel.postMessage({ type: "NEW_ENQUIRY", enquiry: newEnquiry });
-      channel.close();
-    } catch (bcErr) {
-      console.warn("BroadcastChannel post warning:", bcErr);
-    }
+      // Also save to local storage for instant dashboard updates
+      try {
+        const savedDb = localStorage.getItem('zenvora_db');
+        const dbObj = savedDb ? JSON.parse(savedDb) : {};
+        const currentEnquiries = Array.isArray(dbObj.contactEnquiries) ? dbObj.contactEnquiries : [];
+        
+        const newLead = json.data || {
+          id: `enq-${Date.now()}`,
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          category: formData.category,
+          message: formData.message,
+          date: new Date().toISOString().split('T')[0],
+          status: "New"
+        };
 
-    // Backup to localStorage so admin dashboard & client local state update instantly
-    try {
-      const saved = localStorage.getItem('zenvora_db');
-      let localDbObj = saved ? JSON.parse(saved) : {};
-      const currentEnquiries = Array.isArray(localDbObj.contactEnquiries) ? localDbObj.contactEnquiries : [];
-      localDbObj.contactEnquiries = [newEnquiry, ...currentEnquiries];
-      localDbObj.enquiries = [newEnquiry, ...(Array.isArray(localDbObj.enquiries) ? localDbObj.enquiries : [])];
-      localStorage.setItem('zenvora_db', JSON.stringify(localDbObj));
-    } catch (e) {
-      console.warn("LocalStorage backup warning:", e);
-    }
+        const updatedEnquiries = [newLead, ...currentEnquiries];
+        dbObj.contactEnquiries = updatedEnquiries;
+        dbObj.enquiries = updatedEnquiries;
+        localStorage.setItem('zenvora_db', JSON.stringify(dbObj));
 
-    setSubmitted(true);
-    setIsSubmitting(false);
+        // Cross-tab broadcast notification
+        try {
+          const bc = new BroadcastChannel("zenvora_cms_sync");
+          bc.postMessage({ type: "NEW_ENQUIRY", enquiry: newLead });
+          bc.close();
+        } catch (bErr) {}
+      } catch (lErr) {}
+
+      setSubmitted(true);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Inquiry submission failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="relative text-white min-h-screen pt-24 pb-8 px-6 overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-1/3 left-1/4 w-[35vw] h-[35vw] aurora-glow-purple opacity-20 pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] aurora-glow-gold opacity-10 pointer-events-none" />
+    <div className="min-h-screen bg-black text-white font-sans pt-24 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-roboto">
+      {/* Background Decorative Glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gold/5 blur-[150px] pointer-events-none rounded-full" />
+      <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-purple-900/10 blur-[120px] pointer-events-none rounded-full" />
 
       {/* Hero Header */}
-      <section className="max-w-7xl mx-auto text-left mb-16 relative z-10">
+      <section className="max-w-7xl mx-auto text-center mb-16 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="typo-badge mb-4"
+          transition={{ duration: 0.6 }}
         >
-          {contactHero.badge}
+          <span className="text-[11px] font-mono tracking-[3px] text-gold uppercase font-bold mb-3 block">
+            {contactHero.badge}
+          </span>
+          <h1 className="font-sans text-4xl sm:text-6xl font-extrabold text-white tracking-tight mb-4">
+            {contactHero.heading} <span className="text-gold">{contactHero.highlightHeading}</span>
+          </h1>
+          <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+            Direct portal for brand deals, keynote bookings, high-scale engineering masterclasses, and executive consulting.
+          </p>
         </motion.div>
-        
-        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white mb-6">
-          {contactHero.heading} <br />
-          <span className="text-gold italic font-bold">{contactHero.highlightHeading}</span>
-        </h1>
       </section>
 
-      {/* Contact Layout */}
-      <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 text-left relative z-10">
-        {/* Info & Map Column */}
-        <div className="lg:col-span-5 flex flex-col justify-between gap-10">
+      {/* Main Content Layout Grid */}
+      <section className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10 items-start">
+        {/* Info Column */}
+        <div className="lg:col-span-5 flex flex-col gap-10">
           <div>
             <h3 className="font-serif text-2xl text-white font-bold mb-6">Direct Channels</h3>
             
@@ -198,27 +181,10 @@ export const Contact: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Location Map */}
-          <div className="w-full">
-            <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">Location Map</h4>
-            <div className="relative rounded-2xl overflow-hidden border border-white/5 bg-white/[0.01] p-2">
-              <iframe 
-                src={mapData.url}
-                width="100%" 
-                height="220" 
-                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) grayscale(100%) contrast(90%)" }} 
-                allowFullScreen={false} 
-                loading="lazy"
-                title="Office HQ Map"
-                className="rounded-xl opacity-80 hover:opacity-100 transition-opacity duration-500"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Form Column */}
-        <div className="lg:col-span-7 flex flex-col justify-between gap-8">
+        <div className="lg:col-span-7 flex flex-col gap-8">
           {/* Business Inquiry Form */}
           <div className="glass-panel p-8 rounded-3xl border border-white/5 relative contact-form-container font-roboto">
             <h3 className="font-serif text-2xl text-white font-bold mb-6">Business Inquiry Form</h3>
@@ -239,31 +205,31 @@ export const Contact: React.FC = () => {
                   </div>
                 )}
                 <div>
-                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">YOUR NAME</label>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">YOUR NAME :</label>
                   <input
                     type="text"
                     required
-                    placeholder="ARIAN DEVI"
+                    placeholder="Arian Devi"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">EMAIL ADDRESS</label>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">EMAIL ADDRESS :</label>
                   <input
                     type="email"
                     required
-                    placeholder="ARIAN@DEVI.COM"
+                    placeholder="arian@devi.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto font-sans"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">INQUIRY CATEGORY</label>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">INQUIRY CATEGORY :</label>
                   <select 
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -278,18 +244,18 @@ export const Contact: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">COMPANY / BRAND</label>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">COMPANY & BRAND :</label>
                   <input
                     type="text"
-                    placeholder="GOOGLE INC."
+                    placeholder="Google Inc."
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs uppercase text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">INQUIRY OUTLINE</label>
+                  <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">INQUIRY OUTLINE :</label>
                   <textarea
                     rows={4}
                     required
@@ -311,28 +277,6 @@ export const Contact: React.FC = () => {
                 </button>
               </form>
             )}
-          </div>
-
-          {/* Social Media Links section */}
-          <div>
-            <h4 className="font-serif text-sm font-bold text-white mb-4 uppercase tracking-[2px]">{socialTitle}</h4>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {socialsList.map((social: any) => (
-                <a 
-                  key={social.platform || social.name} 
-                  href={social.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="border border-white/5 bg-white/[0.01] p-4 rounded-2xl flex flex-col justify-between hover:border-gold/30 hover:bg-gold/[0.02] transition-all duration-300"
-                >
-                  <span className="text-[10px] text-gold uppercase tracking-[1px] font-bold font-mono">{social.platform || social.name}</span>
-                  <div className="flex items-center justify-between mt-3">
-                    <span className="text-xs text-white truncate max-w-[80%] font-light">{social.handle}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-gray-500" />
-                  </div>
-                </a>
-              ))}
-            </div>
           </div>
         </div>
       </section>

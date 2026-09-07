@@ -434,29 +434,29 @@ export const Contact = () => {
                   <div className="flex flex-col gap-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">YOUR NAME</label>
-                        <input disabled placeholder="ARIAN DEVI" className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] uppercase text-white" />
+                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">YOUR NAME :</label>
+                        <input disabled placeholder="Arian Devi" className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white font-roboto" />
                       </div>
                       <div>
-                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">EMAIL ADDRESS</label>
-                        <input disabled placeholder="ARIAN@DEVI.COM" className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] uppercase text-white" />
+                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">EMAIL ADDRESS :</label>
+                        <input disabled placeholder="arian@devi.com" className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white font-roboto" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">INQUIRY CATEGORY</label>
-                        <select disabled className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-gray-400">
+                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">INQUIRY CATEGORY :</label>
+                        <select disabled className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-gray-400 font-roboto">
                           {(categoriesForm || []).map(c => <option key={c.value || c.label}>{c.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">COMPANY / BRAND</label>
-                        <input disabled placeholder="GOOGLE INC." className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] uppercase text-white" />
+                        <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">COMPANY & BRAND :</label>
+                        <input disabled placeholder="Google Inc." className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white font-roboto" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">INQUIRY OUTLINE</label>
-                      <textarea disabled rows={3} placeholder="Provide outline dates..." className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white" />
+                      <label className="text-[8px] uppercase tracking-[2px] text-gold font-bold block mb-1 font-mono">INQUIRY OUTLINE :</label>
+                      <textarea disabled rows={3} placeholder="Provide outline dates..." className="w-full bg-black/60 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white font-roboto" />
                     </div>
                     <button disabled className="w-full py-3 bg-gold text-black font-bold uppercase text-[10px] tracking-[2px] rounded-lg">Log Inquiry Details</button>
                   </div>
