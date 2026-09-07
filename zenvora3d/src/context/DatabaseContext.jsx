@@ -140,6 +140,10 @@ export const DatabaseProvider = ({ children }) => {
           }
         }
 
+        if (JSON.stringify(prev) === JSON.stringify(merged)) {
+          return prev;
+        }
+
         localStorage.setItem('zenvora_db', JSON.stringify(merged));
         return merged;
       });

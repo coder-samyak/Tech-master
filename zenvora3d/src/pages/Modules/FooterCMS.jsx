@@ -65,17 +65,18 @@ const cleanSocialUrl = (url) => {
 const mergeFooterData = (incomingFooter) => {
   if (!incomingFooter) return defaultFooterData;
   const rawSocials = incomingFooter.socials || {};
+  const rawCards = incomingFooter.cards || {};
   return {
     brandTitle: incomingFooter.brandTitle !== undefined ? incomingFooter.brandTitle : defaultFooterData.brandTitle,
     brandDescription: incomingFooter.brandDescription !== undefined ? incomingFooter.brandDescription : defaultFooterData.brandDescription,
     columns: incomingFooter.columns && incomingFooter.columns.length > 0 ? incomingFooter.columns : defaultFooterData.columns,
     cards: {
-      email: incomingFooter.cards?.email ?? "",
-      phone: incomingFooter.cards?.phone ?? "",
-      youtubeTitle: incomingFooter.cards?.youtubeTitle ?? "",
-      youtubeUrl: incomingFooter.cards?.youtubeUrl ?? "",
-      creatorHqAddress: incomingFooter.cards?.creatorHqAddress ?? "",
-      googleMapsUrl: incomingFooter.cards?.googleMapsUrl ?? ""
+      email: rawCards.email !== undefined ? rawCards.email : defaultFooterData.cards.email,
+      phone: rawCards.phone !== undefined ? rawCards.phone : defaultFooterData.cards.phone,
+      youtubeTitle: rawCards.youtubeTitle !== undefined ? rawCards.youtubeTitle : defaultFooterData.cards.youtubeTitle,
+      youtubeUrl: rawCards.youtubeUrl !== undefined ? rawCards.youtubeUrl : defaultFooterData.cards.youtubeUrl,
+      creatorHqAddress: rawCards.creatorHqAddress !== undefined ? rawCards.creatorHqAddress : defaultFooterData.cards.creatorHqAddress,
+      googleMapsUrl: rawCards.googleMapsUrl !== undefined ? rawCards.googleMapsUrl : defaultFooterData.cards.googleMapsUrl
     },
     socials: {
       youtube: cleanSocialUrl(rawSocials.youtube),
@@ -93,14 +94,22 @@ export const FooterCMS = () => {
   const { db, updateSection, apiFetch } = useDatabase();
   const [toast, setToast] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const [formData, setFormData] = useState(() => mergeFooterData(db?.footer));
 
+  // Custom form state setter that marks form as dirty (edited by user)
+  const updateFormData = (updater) => {
+    setIsDirty(true);
+    setFormData(updater);
+  };
+
   useEffect(() => {
-    if (db?.footer) {
+    // Only synchronize from database updates if user has NOT modified the form
+    if (db?.footer && !isDirty) {
       setFormData(mergeFooterData(db.footer));
     }
-  }, [db?.footer]);
+  }, [db?.footer, isDirty]);
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
 
@@ -126,6 +135,7 @@ export const FooterCMS = () => {
         });
       }
       setFormData(sanitizedFormData);
+      setIsDirty(false);
       showToast('Footer settings saved successfully!', 'success');
     } catch (err) {
       console.error("Save error:", err);
@@ -139,28 +149,28 @@ export const FooterCMS = () => {
   const handleColumnHeaderChange = (colIdx, val) => {
     const updatedCols = [...formData.columns];
     updatedCols[colIdx].header = val;
-    setFormData({ ...formData, columns: updatedCols });
+    updateFormData({ ...formData, columns: updatedCols });
   };
 
   // Helper to update specific link
   const handleLinkChange = (colIdx, linkIdx, field, val) => {
     const updatedCols = [...formData.columns];
     updatedCols[colIdx].links[linkIdx][field] = val;
-    setFormData({ ...formData, columns: updatedCols });
+    updateFormData({ ...formData, columns: updatedCols });
   };
 
   // Delete link
   const handleDeleteLink = (colIdx, linkIdx) => {
     const updatedCols = [...formData.columns];
     updatedCols[colIdx].links = updatedCols[colIdx].links.filter((_, idx) => idx !== linkIdx);
-    setFormData({ ...formData, columns: updatedCols });
+    updateFormData({ ...formData, columns: updatedCols });
   };
 
   // Add new link to column
   const handleAddLink = (colIdx) => {
     const updatedCols = [...formData.columns];
     updatedCols[colIdx].links = [...updatedCols[colIdx].links, { name: 'NEW LINK', id: 'home' }];
-    setFormData({ ...formData, columns: updatedCols });
+    updateFormData({ ...formData, columns: updatedCols });
   };
 
   const footerRoadmap = [
@@ -197,7 +207,7 @@ export const FooterCMS = () => {
               <input
                 type="text"
                 value={formData.brandTitle}
-                onChange={(e) => setFormData({ ...formData, brandTitle: e.target.value })}
+                onChange={(e) => updateFormData({ ...formData, brandTitle: e.target.value })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-luxury-gold/40 font-mono text-[11px]"
               />
               <span className="text-[9px] text-zinc-500 mt-1 block">
@@ -212,7 +222,7 @@ export const FooterCMS = () => {
               <textarea
                 rows={3}
                 value={formData.brandDescription}
-                onChange={(e) => setFormData({ ...formData, brandDescription: e.target.value })}
+                onChange={(e) => updateFormData({ ...formData, brandDescription: e.target.value })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-luxury-gold/40"
               />
             </div>
@@ -309,7 +319,7 @@ export const FooterCMS = () => {
                 <input
                   type="email"
                   value={formData.cards.email}
-                  onChange={(e) => setFormData({ ...formData, cards: { ...formData.cards, email: e.target.value } })}
+                  onChange={(e) => updateFormData({ ...formData, cards: { ...formData.cards, email: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-zinc-200 focus:outline-none"
                 />
               </div>
@@ -324,7 +334,7 @@ export const FooterCMS = () => {
                 <input
                   type="text"
                   value={formData.cards.phone}
-                  onChange={(e) => setFormData({ ...formData, cards: { ...formData.cards, phone: e.target.value } })}
+                  onChange={(e) => updateFormData({ ...formData, cards: { ...formData.cards, phone: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-zinc-200 focus:outline-none"
                 />
               </div>
@@ -341,7 +351,7 @@ export const FooterCMS = () => {
                 <input
                   type="text"
                   value={formData.cards.youtubeTitle}
-                  onChange={(e) => setFormData({ ...formData, cards: { ...formData.cards, youtubeTitle: e.target.value } })}
+                  onChange={(e) => updateFormData({ ...formData, cards: { ...formData.cards, youtubeTitle: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-zinc-200 focus:outline-none"
                 />
               </div>
@@ -356,7 +366,7 @@ export const FooterCMS = () => {
                 <input
                   type="text"
                   value={formData.cards.youtubeUrl}
-                  onChange={(e) => setFormData({ ...formData, cards: { ...formData.cards, youtubeUrl: e.target.value } })}
+                  onChange={(e) => updateFormData({ ...formData, cards: { ...formData.cards, youtubeUrl: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-zinc-200 focus:outline-none font-mono"
                 />
               </div>
@@ -371,7 +381,7 @@ export const FooterCMS = () => {
                 <input
                   type="text"
                   value={formData.cards.creatorHqAddress}
-                  onChange={(e) => setFormData({ ...formData, cards: { ...formData.cards, creatorHqAddress: e.target.value } })}
+                  onChange={(e) => updateFormData({ ...formData, cards: { ...formData.cards, creatorHqAddress: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-zinc-200 focus:outline-none"
                 />
               </div>
@@ -386,7 +396,7 @@ export const FooterCMS = () => {
                 <input
                   type="text"
                   value={formData.cards.googleMapsUrl}
-                  onChange={(e) => setFormData({ ...formData, cards: { ...formData.cards, googleMapsUrl: e.target.value } })}
+                  onChange={(e) => updateFormData({ ...formData, cards: { ...formData.cards, googleMapsUrl: e.target.value } })}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-zinc-200 focus:outline-none font-mono"
                 />
               </div>
@@ -414,7 +424,7 @@ export const FooterCMS = () => {
                   value={formData.socials[platform] || ""}
                   onChange={(e) => {
                     const val = e.target.value;
-                    setFormData(prev => ({ 
+                    updateFormData(prev => ({ 
                       ...prev, 
                       socials: { ...prev.socials, [platform]: val } 
                     }));
@@ -431,7 +441,7 @@ export const FooterCMS = () => {
               <input
                 type="text"
                 value={formData.copyrightText}
-                onChange={(e) => setFormData({ ...formData, copyrightText: e.target.value })}
+                onChange={(e) => updateFormData({ ...formData, copyrightText: e.target.value })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none uppercase tracking-wider"
               />
             </div>
@@ -443,7 +453,7 @@ export const FooterCMS = () => {
               <input
                 type="text"
                 value={formData.developerText}
-                onChange={(e) => setFormData({ ...formData, developerText: e.target.value })}
+                onChange={(e) => updateFormData({ ...formData, developerText: e.target.value })}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
               />
             </div>
