@@ -368,17 +368,6 @@ export const Career: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">COVER LETTER</label>
-                <textarea
-                  rows={4}
-                  placeholder="Tell us why you are the best fit for this role."
-                  value={formData.coverLetter}
-                  onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-gold transition-colors duration-300 font-roboto"
-                />
-              </div>
-
-              <div>
                 <label className="text-[10px] uppercase tracking-[2px] text-gold font-bold block mb-2 font-roboto">UPLOAD RESUME (PDF/DOC/PPT)</label>
                 <input
                   type="file"

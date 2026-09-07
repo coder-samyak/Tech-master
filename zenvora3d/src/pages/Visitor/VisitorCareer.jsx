@@ -125,7 +125,7 @@ export const VisitorCareer = () => {
                 </div>
                 <div>
                   <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">WHY JOIN TECH MASTER?</label>
-                  <textarea rows={3} required value={formData.coverLetter} onChange={e => setFormData({...formData, coverLetter: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-luxury-gold outline-none" />
+                  <textarea rows={3} required value={formData.whyJoin || ''} onChange={e => setFormData({...formData, whyJoin: e.target.value})} className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-luxury-gold outline-none" />
                 </div>
                 <div>
                   <label className="text-[9px] uppercase tracking-[2px] text-luxury-gold font-bold block mb-2">UPLOAD RESUME (PDF/DOC)</label>
