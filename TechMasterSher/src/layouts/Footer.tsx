@@ -333,7 +333,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
         
         {/* Card 1: DIRECT MAIL */}
         <motion.a 
-          href={`mailto:${footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}`}
+          href={`mailto:${footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || ""}`}
           whileHover={{ y: -6, scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
           className="group relative glass-panel p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-white/10 hover:border-gold/60 transition-all duration-300 flex items-center gap-3 sm:gap-4 shadow-lg hover:shadow-[0_10px_30px_rgba(212,175,55,0.25)] overflow-hidden cursor-pointer"
@@ -345,7 +345,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div className="overflow-hidden relative z-10">
             <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-gold transition-colors">DIRECT MAIL</span>
             <span className="text-xs sm:text-sm font-bold text-white group-hover:text-gold transition-colors block truncate">
-              {footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || "hello@techmaster.com"}
+              {footerData?.cards?.email || contactData?.heroSetup?.email || websiteSettings?.email || ""}
             </span>
           </div>
         </motion.a>
@@ -366,7 +366,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           <div className="overflow-hidden relative z-10">
             <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-[1.5px] text-gray-400 font-semibold block mb-0.5 group-hover:text-purple-400 transition-colors">CREATOR HQ</span>
             <span className="text-xs sm:text-sm font-bold text-white group-hover:text-purple-400 transition-colors block truncate">
-              {footerData?.cards?.creatorHqAddress || "Silicon Valley Creator Lab"}
+              {footerData?.cards?.creatorHqAddress || ""}
             </span>
           </div>
         </motion.a>
@@ -377,10 +377,15 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       <div className="max-w-7xl mx-auto pt-6 sm:pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 relative z-10 text-center md:text-left">
         <div className="text-left">
           <p className="text-[10px] uppercase tracking-[2px] text-gray-300 font-light">
-            &copy; {new Date().getFullYear()} {footerData?.copyrightText || websiteSettings?.copyrightText || websiteSettings?.companyName || "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED."}
+            &copy; {new Date().getFullYear()} {footerData?.copyrightText || websiteSettings?.copyrightText || websiteSettings?.companyName || "ALL RIGHTS RESERVED."}
           </p>
           <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1 flex items-center gap-3">
-            <span>{footerData?.developerText || "Designed and developed by ......."}</span>
+            {footerData?.developerText && (
+              <>
+                <span>{footerData.developerText}</span>
+                <span>•</span>
+              </>
+            )}
             <span>•</span>
             <a 
               href="/privacy-policy"

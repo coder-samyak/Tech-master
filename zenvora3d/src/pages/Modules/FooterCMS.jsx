@@ -10,7 +10,7 @@ import {
 
 const defaultFooterData = {
   brandTitle: "Let's Build <br/><span class='text-gold font-sans font-extrabold'>Something Amazing.</span>",
-  brandDescription: "We create premium websites, web applications and digital experiences that help brands grow online. We create premium websites, web applications and digital experiences that help brands grow online.",
+  brandDescription: "We create premium websites, web applications and digital experiences that help brands grow online.",
   columns: [
     {
       header: "IDENTITY",
@@ -53,7 +53,7 @@ const defaultFooterData = {
     twitter: ""
   },
   copyrightText: "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.",
-  developerText: "Designed and developed by Tech Master"
+  developerText: ""
 };
 
 const cleanSocialUrl = (url) => {
@@ -66,10 +66,17 @@ const mergeFooterData = (incomingFooter) => {
   if (!incomingFooter) return defaultFooterData;
   const rawSocials = incomingFooter.socials || {};
   return {
-    brandTitle: typeof incomingFooter.brandTitle === 'string' ? incomingFooter.brandTitle : defaultFooterData.brandTitle,
-    brandDescription: typeof incomingFooter.brandDescription === 'string' ? incomingFooter.brandDescription : defaultFooterData.brandDescription,
+    brandTitle: incomingFooter.brandTitle !== undefined ? incomingFooter.brandTitle : defaultFooterData.brandTitle,
+    brandDescription: incomingFooter.brandDescription !== undefined ? incomingFooter.brandDescription : defaultFooterData.brandDescription,
     columns: incomingFooter.columns && incomingFooter.columns.length > 0 ? incomingFooter.columns : defaultFooterData.columns,
-    cards: { ...defaultFooterData.cards, ...(incomingFooter.cards || {}) },
+    cards: {
+      email: incomingFooter.cards?.email ?? "",
+      phone: incomingFooter.cards?.phone ?? "",
+      youtubeTitle: incomingFooter.cards?.youtubeTitle ?? "",
+      youtubeUrl: incomingFooter.cards?.youtubeUrl ?? "",
+      creatorHqAddress: incomingFooter.cards?.creatorHqAddress ?? "",
+      googleMapsUrl: incomingFooter.cards?.googleMapsUrl ?? ""
+    },
     socials: {
       youtube: cleanSocialUrl(rawSocials.youtube),
       linkedin: cleanSocialUrl(rawSocials.linkedin),
@@ -77,8 +84,8 @@ const mergeFooterData = (incomingFooter) => {
       facebook: cleanSocialUrl(rawSocials.facebook),
       twitter: cleanSocialUrl(rawSocials.twitter)
     },
-    copyrightText: typeof incomingFooter.copyrightText === 'string' ? incomingFooter.copyrightText : defaultFooterData.copyrightText,
-    developerText: typeof incomingFooter.developerText === 'string' ? incomingFooter.developerText : defaultFooterData.developerText
+    copyrightText: incomingFooter.copyrightText !== undefined ? incomingFooter.copyrightText : defaultFooterData.copyrightText,
+    developerText: incomingFooter.developerText !== undefined ? incomingFooter.developerText : ""
   };
 };
 
@@ -86,14 +93,12 @@ export const FooterCMS = () => {
   const { db, updateSection, apiFetch } = useDatabase();
   const [toast, setToast] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
-  const isInitializedRef = React.useRef(false);
 
   const [formData, setFormData] = useState(() => mergeFooterData(db?.footer));
 
   useEffect(() => {
-    if (!isInitializedRef.current && db?.footer) {
+    if (db?.footer) {
       setFormData(mergeFooterData(db.footer));
-      isInitializedRef.current = true;
     }
   }, [db?.footer]);
 
