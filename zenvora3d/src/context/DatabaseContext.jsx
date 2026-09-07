@@ -120,15 +120,22 @@ export const DatabaseProvider = ({ children }) => {
       setDb(prev => {
         const merged = {
           ...initialData,
+          ...backendData,
           ...prev,
-          ...localParsed,
-          ...backendData
+          ...localParsed
         };
 
-        if (localParsed.footer && (!backendData.footer || Object.keys(backendData.footer).length === 0)) {
-          merged.footer = localParsed.footer;
-        } else if (prev.footer && (!backendData.footer || Object.keys(backendData.footer).length === 0)) {
-          merged.footer = prev.footer;
+        if (localParsed.footer) {
+          merged.footer = {
+            ...(backendData.footer || {}),
+            ...(prev.footer || {}),
+            ...localParsed.footer
+          };
+        } else if (prev.footer) {
+          merged.footer = {
+            ...(backendData.footer || {}),
+            ...prev.footer
+          };
         }
 
         if (merged.footer && merged.footer.socials) {
