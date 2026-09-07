@@ -59,7 +59,7 @@ export const VisitorCareer = () => {
           </motion.div>
           
           <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
-            {careerHero.titleLine1 || "Join Aman's"} <br />
+            {careerHero.titleLine1 || "Join TechMaster's Team"} <br />
             <span className="text-luxury-gold italic font-bold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>
           </h1>
 

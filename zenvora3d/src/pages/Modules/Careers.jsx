@@ -25,9 +25,9 @@ export const Careers = () => {
   const defaultCareersCMS = {
     hero: {
       badge: "JOIN THE TEAM",
-      titleLine1: "Join Aman's",
+      titleLine1: "Join TechMaster's Team",
       titleLine2: "Creator & Education Lab",
-      description: "We look for cinematic editors, curriculum writers, and developer advocates who want to construct the future of tech education.",
+      description: "We look for cinematic editors , writer and Future of Creator economy who want to construct the future of tech education.",
       bgVideoUrl: "",
       bgImageUrl: "",
       visible: true
@@ -74,12 +74,12 @@ export const Careers = () => {
     jobs: [
       {
         id: "job-1",
-        title: "Senior Video Editor & Colorist",
+        title: "Script Writer",
         department: "Production Suite",
         type: "Full Time",
-        location: "Jaipur / Remote",
-        salary: "$18,000 - $25,000",
-        description: "Crafting high-octane 4K YouTube breakdowns, fast-paced shorts, and cinematic color grades.",
+        location: "Remote",
+        salary: "",
+        description: "We're hiring a Script Writer to create engaging, creative, and audience-focused scripts for digital content. Strong storytelling, research, and writing skills are preferred.",
         status: "Active",
         featured: true,
         order: 1,
@@ -88,12 +88,12 @@ export const Careers = () => {
       },
       {
         id: "job-2",
-        title: "Full-Stack Curriculum Architect",
-        department: "Next Univerz",
+        title: "Video Editor",
+        department: "Production Suite",
         type: "Full Time",
-        location: "Remote",
-        salary: "$30,000 - $45,000",
-        description: "Designing interactive web dev sandboxes, system design masterclasses, and coding challenges.",
+        location: "Jaipur / Remote",
+        salary: "",
+        description: "We're hiring a Video Editor to create engaging, high-quality videos for digital content. Strong editing, creativity, storytelling, and knowledge of tools like Premiere Pro/After Effects are preferred.",
         status: "Active",
         featured: true,
         order: 2,

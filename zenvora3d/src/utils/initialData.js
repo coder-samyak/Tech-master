@@ -268,9 +268,9 @@ export const initialData = {
 
   careerHero: {
     badge: "JOIN THE TEAM",
-    titleLine1: "Join Aman's",
+    titleLine1: "Join TechMaster's Team",
     titleLine2: "Creator & Education Lab",
-    description: "We look for cinematic editors, curriculum writers, and developer advocates who want to construct the future of tech education.",
+    description: "We look for cinematic editors , writer and Future of Creator economy who want to construct the future of tech education.",
     bgImageUrl: "",
     bgVideoUrl: "",
     status: true
