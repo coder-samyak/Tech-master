@@ -206,37 +206,11 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       {/* Ambient Rotating Background Glow */}
       <div className="absolute bottom-[-120px] right-[-100px] w-[500px] h-[500px] aurora-glow-purple opacity-15 pointer-events-none blur-[120px] animate-pulse" />
 
-      {/* Top Badge: CREATOR PLATFORM (Sits on top with gap) */}
-      <div className="max-w-7xl mx-auto relative z-10 mb-5">
-        <span className="text-[11px] font-mono tracking-[2.5px] text-gold uppercase font-bold block">
-          CREATOR PLATFORM
-        </span>
-      </div>
-
-      {/* Main Top Section Grid Layout (Let's Build & Quick Links headers start on the exact same horizontal top line) */}
+      {/* Main Top Section Grid Layout (Sitemap Pages Columns on Left, 3D Spatial Node Panel on Right) */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative z-10 mb-10 sm:mb-14 items-start">
         
-        {/* LEFT COLUMN (lg:col-span-5): Branding & Prominent Heading */}
-        <div className="lg:col-span-5 flex flex-col justify-start gap-4">
-          <h2 className="font-sans text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-white leading-[1.1] tracking-tight">
-            {footerData?.brandTitle ? (
-              <span dangerouslySetInnerHTML={{ __html: footerData.brandTitle.replace(/\n/g, "<br />") }} />
-            ) : (
-              <>
-                Let's Build <br />
-                <span className="text-gold font-sans font-extrabold">
-                  Something Amazing.
-                </span>
-              </>
-            )}
-          </h2>
-          <p className="text-gray-400 text-xs sm:text-sm font-sans font-normal max-w-md leading-relaxed opacity-90 mt-1">
-            {footerData?.brandDescription || "We create premium websites, web applications and digital experiences that help brands grow online. We create premium websites, web applications and digital experiences that help brands grow online."}
-          </p>
-        </div>
-
-        {/* MIDDLE COLUMNS (lg:col-span-4): 3 Sitemap Columns */}
-        <div className="lg:col-span-4 grid grid-cols-3 gap-2 sm:gap-6 pt-1 sm:pt-2">
+        {/* SITEMAP PAGES COLUMNS (lg:col-span-8) */}
+        <div className="lg:col-span-8 grid grid-cols-3 gap-4 sm:gap-8 pt-1 sm:pt-2">
           {(() => {
             const removedFooterIds = new Set([
               "mission",
@@ -284,10 +258,10 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
             }));
           })().map((column: any, colIdx: number) => (
             <div key={colIdx}>
-              <p className="text-[9px] sm:text-[11px] font-mono tracking-[1.5px] sm:tracking-[2.5px] text-gold uppercase font-bold mb-3 sm:mb-4 block">
+              <p className="text-[10px] sm:text-[12px] font-mono tracking-[1.5px] sm:tracking-[2.5px] text-gold uppercase font-bold mb-3 sm:mb-4 block">
                 {column.header}
               </p>
-              <ul className="flex flex-col gap-[12px] sm:gap-[18px]">
+              <ul className="flex flex-col gap-[12px] sm:gap-[16px]">
                 {column.links?.map((link: any, linkIdx: number) => {
                   const href = link.id === "home" ? "/" : link.id === "portfolio" ? "/what-we-do" : link.id === "privacy" ? "/privacy-policy" : link.id === "terms" ? "/terms-of-service" : `/${link.id}`;
                   return (
@@ -295,7 +269,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
                       <a
                         href={href}
                         onClick={(e) => { e.preventDefault(); handleNavClick(link.id); }}
-                        className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block leading-tight"
+                        className="text-[11px] sm:text-[12px] uppercase tracking-wider text-gray-400 hover:text-gold transition-colors duration-200 text-left font-light block leading-tight"
                       >
                         {link.name}
                       </a>
@@ -307,9 +281,9 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
           ))}
         </div>
 
-        {/* RIGHT COLUMN (lg:col-span-3): Taller & Perfectly Balanced 3D Spatial Node Panel */}
-        <div className="lg:col-span-3 flex flex-col justify-stretch h-full items-center lg:items-end">
-          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[260px] sm:min-h-[380px] w-full max-w-[260px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+        {/* RIGHT COLUMN (lg:col-span-4): Taller & Perfectly Balanced 3D Spatial Node Panel */}
+        <div className="lg:col-span-4 flex flex-col justify-stretch h-full items-center lg:items-end">
+          <div className="glass-panel p-4 rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden h-full min-h-[240px] sm:min-h-[300px] w-full max-w-[280px] shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
             <div className="absolute inset-0 z-0">
               <Canvas camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: true, alpha: true }}>
                 <ambientLight intensity={0.45} />

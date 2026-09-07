@@ -118,25 +118,17 @@ export const DatabaseProvider = ({ children }) => {
       const backendData = (res && res.success && res.data) ? res.data : {};
 
       setDb(prev => {
+        const mergedFooter = (backendData.footer && Object.keys(backendData.footer).length > 0)
+          ? { ...(localParsed.footer || {}), ...(prev.footer || {}), ...backendData.footer }
+          : { ...(prev.footer || {}), ...(localParsed.footer || {}) };
+
         const merged = {
           ...initialData,
-          ...backendData,
+          ...localParsed,
           ...prev,
-          ...localParsed
+          ...backendData,
+          footer: mergedFooter
         };
-
-        if (localParsed.footer) {
-          merged.footer = {
-            ...(backendData.footer || {}),
-            ...(prev.footer || {}),
-            ...localParsed.footer
-          };
-        } else if (prev.footer) {
-          merged.footer = {
-            ...(backendData.footer || {}),
-            ...prev.footer
-          };
-        }
 
         if (merged.footer && merged.footer.socials) {
           const s = merged.footer.socials;
