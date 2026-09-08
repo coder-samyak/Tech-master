@@ -85,7 +85,7 @@ const mergeFooterData = (incomingFooter) => {
       facebook: cleanSocialUrl(rawSocials.facebook),
       twitter: cleanSocialUrl(rawSocials.twitter)
     },
-    copyrightText: (incomingFooter.copyrightText !== undefined && incomingFooter.copyrightText !== "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.") ? incomingFooter.copyrightText : "",
+    copyrightText: incomingFooter.copyrightText !== undefined ? incomingFooter.copyrightText : "",
     developerText: incomingFooter.developerText !== undefined ? incomingFooter.developerText : ""
   };
 };

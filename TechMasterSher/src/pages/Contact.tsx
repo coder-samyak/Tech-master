@@ -137,8 +137,8 @@ export const Contact: React.FC = () => {
           <span className="text-[11px] font-mono tracking-[3px] text-gold uppercase font-bold mb-3 block">
             {contactHero.badge}
           </span>
-          <h1 className="font-sans text-4xl sm:text-6xl font-extrabold text-white tracking-tight mb-4">
-            {contactHero.heading} <span className="text-gold">{contactHero.highlightHeading}</span>
+          <h1 className="font-serif text-4xl sm:text-6xl font-bold text-white tracking-tight mb-4 leading-tight">
+            {contactHero.heading} <span className="text-gold italic font-bold">{contactHero.highlightHeading}</span>
           </h1>
           <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
             Direct portal for brand deals, keynote bookings, high-scale engineering masterclasses, and executive consulting.

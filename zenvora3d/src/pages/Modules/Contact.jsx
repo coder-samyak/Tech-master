@@ -366,9 +366,9 @@ export const Contact = () => {
               <div className="inline-block mb-3 px-3 py-1 bg-gold/5 border border-gold/30 text-[9px] uppercase tracking-[2px] font-bold text-gold rounded-sm">
                 {heroForm.badge}
               </div>
-              <h1 className="font-sans text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-                {heroForm.heading}{" "}
-                <span className="text-gold">{heroForm.highlightHeading}</span>
+              <h1 className="text-3xl md:text-4xl font-serif text-white mb-6 leading-tight">
+                {heroForm.heading} <br />
+                <span className="text-gold italic font-bold">{heroForm.highlightHeading}</span>.
               </h1>
             </div>
 

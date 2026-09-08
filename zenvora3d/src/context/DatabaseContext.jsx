@@ -130,17 +130,12 @@ export const DatabaseProvider = ({ children }) => {
           footer: mergedFooter
         };
 
-        if (merged.footer) {
-          if (merged.footer.socials) {
-            const s = merged.footer.socials;
-            for (const key of Object.keys(s)) {
-              if (typeof s[key] === 'string' && s[key].includes('techmasterf')) {
-                s[key] = '';
-              }
+        if (merged.footer && merged.footer.socials) {
+          const s = merged.footer.socials;
+          for (const key of Object.keys(s)) {
+            if (typeof s[key] === 'string' && s[key].includes('techmasterf')) {
+              s[key] = '';
             }
-          }
-          if (merged.footer.copyrightText === "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.") {
-            merged.footer.copyrightText = (backendData.footer && backendData.footer.copyrightText !== "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.") ? backendData.footer.copyrightText : "";
           }
         }
 
