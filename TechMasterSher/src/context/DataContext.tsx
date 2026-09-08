@@ -180,6 +180,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (db.coreServicesConfig) setCoreServicesConfig(db.coreServicesConfig);
     if (db.servicesPage) setServicesPageData(db.servicesPage);
     if (db.footer) {
+      if (db.footer.copyrightText === "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.") {
+        db.footer.copyrightText = "TECH MASTER. ALL RIGHTS RESERVED.";
+      }
       if (db.footer.socials) {
         for (const k of Object.keys(db.footer.socials)) {
           if (typeof db.footer.socials[k] === 'string' && db.footer.socials[k].includes('techmasterf')) {
