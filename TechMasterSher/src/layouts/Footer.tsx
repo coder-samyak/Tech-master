@@ -351,7 +351,7 @@ export const Footer: React.FC<FooterProps> = ({ onChangePage }) => {
       <div className="max-w-7xl mx-auto pt-6 sm:pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 relative z-10 text-center md:text-left">
         <div className="text-left">
           <p className="text-[10px] uppercase tracking-[2px] text-gray-300 font-light">
-            &copy; {new Date().getFullYear()} {footerData?.copyrightText || websiteSettings?.copyrightText || websiteSettings?.companyName || "ALL RIGHTS RESERVED."}
+            &copy; {new Date().getFullYear()} {footerData?.copyrightText && footerData.copyrightText.trim().length > 0 ? footerData.copyrightText : "TECH MASTER. ALL RIGHTS RESERVED."}
           </p>
           <p className="text-[9px] uppercase tracking-[1px] text-gray-500 mt-1 flex items-center gap-3">
             {footerData?.developerText && (

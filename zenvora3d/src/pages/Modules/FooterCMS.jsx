@@ -52,7 +52,7 @@ const defaultFooterData = {
     facebook: "",
     twitter: ""
   },
-  copyrightText: "",
+  copyrightText: "TECH MASTER. ALL RIGHTS RESERVED.",
   developerText: ""
 };
 
