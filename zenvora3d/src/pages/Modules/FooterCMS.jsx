@@ -52,7 +52,7 @@ const defaultFooterData = {
     facebook: "",
     twitter: ""
   },
-  copyrightText: "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.",
+  copyrightText: "",
   developerText: ""
 };
 
@@ -85,7 +85,7 @@ const mergeFooterData = (incomingFooter) => {
       facebook: cleanSocialUrl(rawSocials.facebook),
       twitter: cleanSocialUrl(rawSocials.twitter)
     },
-    copyrightText: incomingFooter.copyrightText !== undefined ? incomingFooter.copyrightText : defaultFooterData.copyrightText,
+    copyrightText: (incomingFooter.copyrightText !== undefined && incomingFooter.copyrightText !== "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.") ? incomingFooter.copyrightText : "",
     developerText: incomingFooter.developerText !== undefined ? incomingFooter.developerText : ""
   };
 };

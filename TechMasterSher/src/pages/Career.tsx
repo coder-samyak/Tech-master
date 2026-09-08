@@ -246,9 +246,9 @@ export const Career: React.FC = () => {
           {careerHero.badge || "JOIN THE TEAM"}
         </motion.div>
         
-        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-white mb-6">
-          {careerHero.titleLine1 || "Join TechMaster's Team"} <br />
-          <span className="text-gold italic font-bold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>.
+        <h1 className="font-sans text-4xl sm:text-6xl font-extrabold text-white tracking-tight mb-6">
+          {careerHero.titleLine1 || "Join TechMaster's Team"}{" "}
+          <span className="text-gold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>
         </h1>
 
         <p className="text-gray-400 font-light text-base md:text-lg max-w-2xl leading-relaxed mt-6">

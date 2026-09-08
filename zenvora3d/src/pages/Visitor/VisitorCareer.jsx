@@ -58,9 +58,9 @@ export const VisitorCareer = () => {
             {careerHero.badge || "JOIN THE TEAM"}
           </motion.div>
           
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-light leading-tight mb-8">
-            {careerHero.titleLine1 || "Join TechMaster's Team"} <br />
-            <span className="text-luxury-gold italic font-bold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>
+          <h1 className="font-sans text-4xl sm:text-6xl font-extrabold text-white tracking-tight mb-8">
+            {careerHero.titleLine1 || "Join TechMaster's Team"}{" "}
+            <span className="text-luxury-gold">{careerHero.titleLine2 || "Creator & Education Lab"}</span>
           </h1>
 
           <p className="text-gray-400 font-light text-base md:text-lg max-w-2xl leading-relaxed mt-6">

@@ -75,8 +75,8 @@ export const VisitorContact = () => {
           )}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             {hero.label && <span className="text-[10px] uppercase tracking-[6px] text-luxury-gold font-bold mb-4 block">{hero.label}</span>}
-            <h1 className="font-serif text-5xl sm:text-7xl font-light leading-tight">
-              {hero.mainLine1} <br/> <span className="text-luxury-gold italic font-bold">{hero.highlight}</span>
+            <h1 className="font-sans text-4xl sm:text-6xl font-extrabold text-white tracking-tight mb-4">
+              {hero.mainLine1} <span className="text-luxury-gold">{hero.highlight}</span>
             </h1>
             {hero.description && <p className="text-zinc-400 mt-6 max-w-lg font-light leading-relaxed">{hero.description}</p>}
           </motion.div>
