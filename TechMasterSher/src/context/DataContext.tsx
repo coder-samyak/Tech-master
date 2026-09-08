@@ -111,7 +111,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (saved) localDb = JSON.parse(saved);
     } catch (e) {}
 
-    const mergedDb = { ...localDb, ...db };
+    const mergedDb = { ...db, ...localDb };
     db = normalizeCmsMedia(mergedDb);
     setDbData(db);
     setIsBackendConnected(true);
