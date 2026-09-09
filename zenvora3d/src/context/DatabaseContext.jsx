@@ -259,23 +259,34 @@ export const DatabaseProvider = ({ children }) => {
 
   // Profile update handler
   const updateProfile = async (updatedFields) => {
+    let nextUser = {};
     setAuth(prev => {
-      if (!prev.isLoggedIn || !prev.user) return prev;
-      const updatedUser = { ...prev.user, ...updatedFields };
-      const nextAuth = { ...prev, user: updatedUser };
+      const currentUser = prev.user || {
+        id: "admin-1",
+        name: "Super Admin",
+        email: "techmasteradmin@gmail.com",
+        role: "Super Admin",
+        status: "Active"
+      };
+      nextUser = { ...currentUser, ...updatedFields };
+      const nextAuth = { ...prev, user: nextUser, isLoggedIn: true };
       localStorage.setItem('zenvora_auth', JSON.stringify(nextAuth));
       return nextAuth;
     });
 
-    if (auth.user) {
-      setDb(prev => {
-        const list = prev.users || [];
-        const updatedList = list.map(item => item.id === auth.user.id ? { ...item, ...updatedFields } : item);
-        
-        void syncSectionToBackend("users", updatedList);
+    setDb(prev => {
+      const updatedProfile = { ...(prev.adminProfile || {}), ...updatedFields };
+      void syncSectionToBackend("adminProfile", updatedProfile);
 
-        return { ...prev, users: updatedList };
-      });
+      const nextDb = { ...prev, adminProfile: updatedProfile };
+      localStorage.setItem('zenvora_db', JSON.stringify(nextDb));
+      return nextDb;
+    });
+
+    if (typeof window !== 'undefined') {
+      const syncPayload = { key: 'adminProfile', timestamp: Date.now() };
+      localStorage.setItem('techmaster-cms-last-updated', JSON.stringify(syncPayload));
+      window.dispatchEvent(new CustomEvent('techmaster-cms-updated', { detail: syncPayload }));
     }
   };
 

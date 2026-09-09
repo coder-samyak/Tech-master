@@ -196,10 +196,18 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
               title="View & Edit Profile"
             >
               <div className="text-right">
-                <span className="text-xs font-semibold text-zinc-300 block">{auth?.user?.name || 'TechMaster'}</span>
-                <span className="text-[10px] text-zinc-500 font-mono flex items-center justify-end gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" /> ONLINE</span>
+                <span className="text-xs font-semibold text-zinc-300 block">
+                  {auth?.user?.name || auth?.user?.fullName || db?.adminProfile?.name || 'Super Admin'}
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono flex items-center justify-end gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" /> ONLINE
+                </span>
               </div>
-              <img src={auth?.user?.imageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"} alt="" className="w-10 h-10 rounded-full border border-zinc-800 object-cover" />
+              <img 
+                src={auth?.user?.imageUrl || auth?.user?.avatar || db?.adminProfile?.imageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"} 
+                alt="Profile Avatar" 
+                className="w-10 h-10 rounded-full border border-zinc-800 object-cover shadow-sm" 
+              />
             </div>
             <button 
               onClick={logout} 
