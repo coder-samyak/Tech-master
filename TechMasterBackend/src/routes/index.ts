@@ -168,6 +168,31 @@ router.post("/public/resume", parseDocument, handleResumeSubmission);
 router.post("/cms/public/resume", parseDocument, handleResumeSubmission);
 router.post("/public/career-application", parseDocument, handleResumeSubmission);
 
+// GET endpoint for fetching candidate submissions (sanitized without heavy Base64 buffers)
+const handleGetResumes = async (req: any, res: any, next: any) => {
+  try {
+    const doc = await CMSData.findOne({ key: "resumes" });
+    const rawResumes = doc && Array.isArray(doc.value) ? doc.value : [];
+    
+    const sanitized = rawResumes.map((r: any) => {
+      const { resumeBase64Data, ...rest } = r;
+      return {
+        ...rest,
+        resumeUrl: r.resumeUrl || `/api/v1/resumes/download?id=${r.id || r._id}&file=${encodeURIComponent(r.resumeFileName || 'resume.pdf')}`
+      };
+    });
+    
+    ApiResponse.success(res, "Resumes fetched successfully", sanitized);
+  } catch (error) {
+    next(error);
+  }
+};
+
+router.get("/resumes", handleGetResumes);
+router.get("/public/resumes", handleGetResumes);
+router.get("/career-applications", handleGetResumes);
+router.get("/applications", handleGetResumes);
+
 // DELETE endpoint for removing an applicant submission
 const handleDeleteResume = async (req: any, res: any, next: any) => {
   try {
@@ -175,12 +200,22 @@ const handleDeleteResume = async (req: any, res: any, next: any) => {
     if (!id) {
       return ApiResponse.error(res, "Missing applicant ID", 400);
     }
-    const targetIdStr = String(id);
+    const target = String(id).trim().toLowerCase();
+
+    const isMatch = (r: any) => {
+      if (!r) return false;
+      if (r.id && String(r.id).trim().toLowerCase() === target) return true;
+      if (r._id && String(r._id).trim().toLowerCase() === target) return true;
+      if (r.email && String(r.email).trim().toLowerCase() === target) return true;
+      if (r.name && String(r.name).trim().toLowerCase() === target) return true;
+      if (r.candidateName && String(r.candidateName).trim().toLowerCase() === target) return true;
+      return false;
+    };
 
     // 1. Delete from "resumes"
     const docResumes = await CMSData.findOne({ key: "resumes" });
     if (docResumes && Array.isArray(docResumes.value)) {
-      const filtered = docResumes.value.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+      const filtered = docResumes.value.filter((r: any) => !isMatch(r));
       await CMSData.findOneAndUpdate(
         { key: "resumes" },
         { value: filtered },
@@ -191,7 +226,7 @@ const handleDeleteResume = async (req: any, res: any, next: any) => {
     // 2. Delete from "careerApplications"
     const docApps = await CMSData.findOne({ key: "careerApplications" });
     if (docApps && Array.isArray(docApps.value)) {
-      const filtered = docApps.value.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+      const filtered = docApps.value.filter((r: any) => !isMatch(r));
       await CMSData.findOneAndUpdate(
         { key: "careerApplications" },
         { value: filtered },
@@ -204,7 +239,7 @@ const handleDeleteResume = async (req: any, res: any, next: any) => {
     if (docCMS && docCMS.value && typeof docCMS.value === "object") {
       const cmsObj = docCMS.value as any;
       if (Array.isArray(cmsObj.resumes)) {
-        cmsObj.resumes = cmsObj.resumes.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+        cmsObj.resumes = cmsObj.resumes.filter((r: any) => !isMatch(r));
         await CMSData.findOneAndUpdate(
           { key: "careersCMS" },
           { value: cmsObj },
@@ -218,7 +253,7 @@ const handleDeleteResume = async (req: any, res: any, next: any) => {
     if (docPage && docPage.value && typeof docPage.value === "object") {
       const pageObj = docPage.value as any;
       if (Array.isArray(pageObj.resumes)) {
-        pageObj.resumes = pageObj.resumes.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+        pageObj.resumes = pageObj.resumes.filter((r: any) => !isMatch(r));
         await CMSData.findOneAndUpdate(
           { key: "careersPage" },
           { value: pageObj },
@@ -492,11 +527,25 @@ router.get("/", async (req, res, next) => {
       ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
 
-    // Ensure resumes/applications are deleted from public payload
-    delete data.resumes;
-    delete data.careerApplications;
-    delete data.contactEnquiries;
-    delete data.enquiries;
+    // 4. Attach sanitized resumes/applications and enquiries (without Base64 bloat)
+    const resumesDoc = await CMSData.findOne({ key: "resumes" });
+    const rawResumes = resumesDoc && Array.isArray(resumesDoc.value) ? resumesDoc.value : [];
+    const sanitizedResumes = rawResumes.map((r: any) => {
+      const { resumeBase64Data, ...rest } = r;
+      return {
+        ...rest,
+        resumeUrl: r.resumeUrl || `/api/v1/resumes/download?id=${r.id || r._id}&file=${encodeURIComponent(r.resumeFileName || 'resume.pdf')}`
+      };
+    });
+
+    const enquiriesDoc = await CMSData.findOne({ key: "contactEnquiries" });
+    const rawEnquiries = enquiriesDoc && Array.isArray(enquiriesDoc.value) ? enquiriesDoc.value : [];
+    const sanitizedEnquiries = rawEnquiries.map((e: any) => ({ ...e }));
+
+    data.resumes = sanitizedResumes;
+    data.careerApplications = sanitizedResumes;
+    data.contactEnquiries = sanitizedEnquiries;
+    data.enquiries = sanitizedEnquiries;
 
     ApiResponse.success(res, "CMS aggregate data retrieved successfully", data);
   } catch (error) {

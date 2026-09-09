@@ -99,21 +99,7 @@ export const Careers = () => {
         deleted: false
       }
     ],
-    resumes: [
-      {
-        id: "res-1",
-        name: "Rohan Varma",
-        email: "rohan@editor.io",
-        phone: "+91 98765 43210",
-        jobTitle: "Senior Video Editor & Colorist",
-        experience: "https://portfolio.rohanvarma.dev",
-        message: "Passionate about fast-paced cinematic tech reviews and Premiere/Resolve workflows.",
-        coverLetter: "I have edited 500+ viral shorts and long-form tech teardowns...",
-        resumeUrl: "https://example.com/resume.pdf",
-        status: "New",
-        createdAt: "2026-07-28T10:15:00Z"
-      }
-    ],
+    resumes: [],
     seo: {
       metaTitle: "Careers & Openings | TechMaster",
       metaDescription: "Join TechMaster's Creator & Education Lab. Explore open positions for video editors, engineers, and curriculum leads.",
@@ -166,7 +152,7 @@ export const Careers = () => {
     return defaultCareersCMS.jobs;
   };
 
-  const storedResumes = db?.resumes || defaultCareersCMS.resumes;
+  const storedResumes = Array.isArray(db?.resumes) ? db.resumes : (Array.isArray(db?.careerApplications) ? db.careerApplications : []);
 
   const [formData, setFormData] = useState({
     ...defaultCareersCMS,
@@ -177,7 +163,7 @@ export const Careers = () => {
     processHeader: { ...defaultCareersCMS.processHeader, ...(storedCMS.processHeader || db?.processHeader || {}) },
     process: (db?.careerProcess && db.careerProcess.length > 0) ? db.careerProcess : defaultCareersCMS.process,
     jobs: getInitialJobs(),
-    resumes: (storedResumes && storedResumes.length > 0) ? storedResumes : defaultCareersCMS.resumes
+    resumes: storedResumes
   });
 
   const showToast = (msg, type = 'success') => setToast({ id: Date.now(), message: msg, type });
@@ -270,8 +256,18 @@ export const Careers = () => {
   const fetchResumesFromBackend = async () => {
     try {
       const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
-      const res = await fetch(`${baseUrl}/cms`);
-      if (res.ok) {
+      // 1. Try dedicated /resumes endpoint
+      let res = await fetch(`${baseUrl}/resumes`).catch(() => null);
+      if (res && res.ok) {
+        const json = await res.json();
+        if (json && json.success && Array.isArray(json.data)) {
+          setFormData(prev => ({ ...prev, resumes: json.data }));
+          return;
+        }
+      }
+      // 2. Fallback to /cms
+      res = await fetch(`${baseUrl}/cms`).catch(() => null);
+      if (res && res.ok) {
         const json = await res.json();
         const serverResumes = json.data?.resumes || json.data?.careerApplications || json.data?.careersCMS?.resumes;
         if (Array.isArray(serverResumes)) {
