@@ -76,7 +76,7 @@ export const Career: React.FC = () => {
     const interval = setInterval(() => {
       fetchLiveCareers();
       setSyncTick(t => t + 1);
-    }, 2000);
+    }, 30000);
 
     // Cross-tab and real-time synchronization with Admin Panel
     let channel: BroadcastChannel | null = null;
@@ -178,7 +178,17 @@ export const Career: React.FC = () => {
   }
 
   const rawJobs = Array.from(combinedMap.values());
-  const careerList = rawJobs.filter((c: any) => c.active !== false && c.status !== false && c.visible !== false && !c.deleted);
+  const isJobActive = (c: any) => {
+    if (c.deleted) return false;
+    if (c.active === false || c.visible === false) return false;
+    if (typeof c.status === "boolean" && !c.status) return false;
+    if (typeof c.status === "string") {
+      const s = c.status.toLowerCase();
+      if (s === "inactive" || s === "closed" || s === "draft" || s === "hidden") return false;
+    }
+    return true;
+  };
+  const careerList = rawJobs.filter(isJobActive);
   
   const careerHero = liveCareerData?.careerHero || liveCareerData?.careersCMS?.hero || activeDb?.careerHero || activeDb?.careersCMS?.hero || {
     badge: "JOIN THE TEAM",

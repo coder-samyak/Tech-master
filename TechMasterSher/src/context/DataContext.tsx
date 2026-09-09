@@ -102,7 +102,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const normalized = envUrl.replace(/\/+$|\/api\/v1\/*$/i, "");
     return normalized.endsWith("/api/v1") ? normalized : `${normalized}/api/v1`;
   };
-  const REFRESH_INTERVAL_MS = 5000;
+  const REFRESH_INTERVAL_MS = 30000;
 
   const applyCmsDataToState = useCallback((db: any) => {
     let localDb = {};

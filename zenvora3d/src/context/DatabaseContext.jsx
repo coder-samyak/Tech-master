@@ -162,7 +162,7 @@ export const DatabaseProvider = ({ children }) => {
   // Sync with MongoDB backend, BroadcastChannel cross-tab sync & local changes with periodic polling
   useEffect(() => {
     fetchCMSData();
-    const interval = setInterval(fetchCMSData, 5000);
+    const interval = setInterval(fetchCMSData, 30000);
 
     let channel;
     try {

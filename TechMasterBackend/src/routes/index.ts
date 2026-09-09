@@ -77,7 +77,9 @@ const router = Router();
 const handleResumeSubmission = async (req: any, res: any, next: any) => {
   try {
     const { name, candidateName, fullName, email, phone, jobTitle, role, position, experience, portfolioLink, message, whyJoin, coverLetter } = req.body;
-    let resumeUrl = "";
+    const resumeId = `resume-${Date.now()}`;
+    let downloadUrl = "";
+    let base64Data = "";
     let publicId = "";
     
     if (req.file) {
@@ -87,10 +89,9 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
       const baseName = path.basename(origName, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
       const uniqueFileName = `${baseName}_${Date.now()}${ext}`;
 
-      // Store resume directly as permanent Base64 Data URI in MongoDB (zero cloud/disk dependency)
-      const base64Data = req.file.buffer.toString("base64");
-      resumeUrl = `data:${mimeType};base64,${base64Data}`;
+      base64Data = `data:${mimeType};base64,${req.file.buffer.toString("base64")}`;
       publicId = uniqueFileName;
+      downloadUrl = `/api/v1/resumes/download?id=${resumeId}&file=${encodeURIComponent(uniqueFileName)}`;
 
       // Optional local filesystem backup
       try {
@@ -115,7 +116,7 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
     const jobRole = jobTitle || role || position || "General Application";
 
     const newResume = {
-      id: `resume-${Date.now()}`,
+      id: resumeId,
       name: applicantName,
       candidateName: applicantName,
       fullName: applicantName,
@@ -129,8 +130,9 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
       message: message || whyJoin || "",
       whyJoin: message || whyJoin || "",
       coverLetter: coverLetter || "",
-      resumeFileUrl: resumeUrl,
-      resumeUrl: resumeUrl,
+      resumeFileUrl: downloadUrl || "",
+      resumeUrl: downloadUrl || "",
+      resumeBase64Data: base64Data || "",
       resumeFileName: req.file?.originalname || 'resume.pdf',
       publicId: publicId,
       status: "New",
@@ -138,7 +140,11 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
       createdAt: new Date().toISOString()
     };
 
-    resumes.unshift(newResume); // Add to top
+    // Store sanitized resume object without heavy base64 in the main array
+    const sanitizedResumeForList = { ...newResume };
+    delete (sanitizedResumeForList as any).resumeBase64Data;
+
+    resumes.unshift(sanitizedResumeForList); // Add to top
 
     await CMSData.findOneAndUpdate(
       { key: "resumes" },
@@ -152,7 +158,7 @@ const handleResumeSubmission = async (req: any, res: any, next: any) => {
       { upsert: true, new: true }
     );
 
-    ApiResponse.success(res, "Resume submitted successfully", newResume);
+    ApiResponse.success(res, "Resume submitted successfully", sanitizedResumeForList);
   } catch (error) {
     next(error);
   }
@@ -197,12 +203,35 @@ const handleResumeDownload = async (req: any, res: any) => {
   try {
     let rawUrl = (req.query.url as string) || (req.query.file as string) || "";
     let downloadFileName = (req.query.filename as string) || "candidate_resume.pdf";
+    const id = req.query.id as string;
+
+    // 0. Handle lookup by applicant ID first
+    if (id) {
+      const doc = await CMSData.findOne({ key: "resumes" });
+      const resumes = doc && Array.isArray(doc.value) ? doc.value : [];
+      const applicant = resumes.find((r: any) => r.id === id || r._id === id);
+      if (applicant) {
+        if (applicant.resumeFileName) downloadFileName = applicant.resumeFileName;
+        const targetUrl = applicant.resumeBase64Data || applicant.resumeUrl || applicant.resumeFileUrl || "";
+        if (targetUrl.startsWith("data:")) {
+          const matches = targetUrl.match(/^data:(.*?);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const buffer = Buffer.from(matches[2], "base64");
+            res.setHeader("Content-Type", mimeType);
+            res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadFileName)}"`);
+            return res.send(buffer);
+          }
+        }
+        if (!rawUrl && targetUrl) rawUrl = targetUrl;
+      }
+    }
 
     if (!rawUrl) {
       return res.status(400).json({ success: false, message: "Missing resume file parameter" });
     }
 
-    // 0. Handle Base64 Data URIs directly
+    // 1. Handle Base64 Data URIs directly
     if (rawUrl.startsWith("data:")) {
       const matches = rawUrl.match(/^data:(.*?);base64,(.*)$/);
       if (matches && matches.length === 3) {
@@ -214,7 +243,7 @@ const handleResumeDownload = async (req: any, res: any) => {
       }
     }
 
-    // 1. Check local uploads folder first for local resume files (/uploads/resumes/...)
+    // 2. Check local uploads folder first for local resume files (/uploads/resumes/...)
     const cleanFileName = path.basename(rawUrl);
     const localPath = path.join(process.cwd(), "uploads", "resumes", cleanFileName);
 
@@ -232,7 +261,7 @@ const handleResumeDownload = async (req: any, res: any) => {
       }
     }
 
-    // 2. Fallback for legacy Cloudinary resume URLs
+    // 3. Fallback for legacy Cloudinary resume URLs
     let response: any = null;
     try {
       response = await fetch(rawUrl);
@@ -337,6 +366,10 @@ router.get("/", async (req, res, next) => {
     const cmsDocs = await CMSData.find({});
     const cmsDataMap: Record<string, any> = {};
     for (const doc of cmsDocs) {
+      // Exclude base64 strings and candidate submission bloat
+      if (["resumes", "careerApplications", "contactEnquiries", "enquiries"].includes(doc.key)) {
+        continue;
+      }
       cmsDataMap[doc.key] = doc.value;
     }
 
@@ -386,7 +419,7 @@ router.get("/", async (req, res, next) => {
     ]);
 
     // 3. Construct aggregated CMS state
-    const data = {
+    const data: Record<string, any> = {
       services,
       blogs,
       careers,
@@ -422,6 +455,12 @@ router.get("/", async (req, res, next) => {
       footer: cmsDataMap['footer'] || null,
       ...cmsDataMap, // Dynamically override and inject any updated flat keys
     };
+
+    // Ensure resumes/applications are deleted from public payload
+    delete data.resumes;
+    delete data.careerApplications;
+    delete data.contactEnquiries;
+    delete data.enquiries;
 
     ApiResponse.success(res, "CMS aggregate data retrieved successfully", data);
   } catch (error) {
