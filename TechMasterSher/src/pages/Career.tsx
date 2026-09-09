@@ -95,7 +95,7 @@ export const Career: React.FC = () => {
       };
     } catch (e) {}
 
-    const handleStorage = (e: any) => {
+    const handleStorage = () => {
       let localParsed: any = {};
       try {
         const saved = localStorage.getItem('zenvora_db');
