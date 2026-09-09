@@ -65,12 +65,18 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      setUploadProgress(50);
+      let apiEnv = (import.meta.env.VITE_API_URL || "").trim();
+      let backendOrigin = "https://tech-master-afhx.onrender.com";
+      if (apiEnv.startsWith("http://") || apiEnv.startsWith("https://")) {
+        try {
+          backendOrigin = new URL(apiEnv).origin;
+        } catch (e) {}
+      }
 
-      const baseHost = (import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com").replace(/\/api\/v1\/?$/i, "");
-      const uploadPath = selectedFile.type.startsWith("video/") ? "/api/upload/video" : "/api/upload/image";
+      const subPath = selectedFile.type.startsWith("video/") ? "video" : "image";
+      const uploadUrl = `${backendOrigin}/api/v1/upload/${subPath}`;
       
-      const response = await fetch(`${baseHost}${uploadPath}`, {
+      const response = await fetch(uploadUrl, {
         method: "POST",
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
         credentials: "include",

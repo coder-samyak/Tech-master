@@ -58,10 +58,13 @@ app.use("/api/v1/cms", cmsRouter);
 app.use("/api/v1", cmsRouter);
 app.use("/cms", cmsRouter);
 app.use("/api/v1/admin", adminRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/media", uploadRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/media", uploadRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/media", uploadRoutes);
+app.use("/api/v1/api/upload", uploadRoutes);
+app.use("/api/v1/api/media", uploadRoutes);
+app.use("/upload", uploadRoutes);
 
 // 6. Health & Root Welcome Routes
 app.get("/", (req: Request, res: Response) => {
