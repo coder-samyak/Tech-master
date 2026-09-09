@@ -140,7 +140,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
                   <Input
                     label="Executive Email"
                     type="email"
-                    placeholder="techmasteradmin@gmail.com"
+                    placeholder="Enter Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="off"
@@ -162,7 +162,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
                     </div>
                     <input
                       type="password"
-                      placeholder="Techmaster@2026"
+                      placeholder="Enter Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="new-password"
@@ -298,7 +298,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
                   <Input
                     label="Current Password"
                     type="password"
-                    placeholder="Enter current password (admin123)"
+                    placeholder="Enter current password"
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     required
@@ -356,24 +356,6 @@ export const AuthContainer = ({ onAuthSuccess }) => {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Demo login reminder */}
-        {mode === 'login' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-6 p-4 rounded-md border border-zinc-900 bg-zinc-950/60 backdrop-blur-sm text-center"
-          >
-            <p className="text-[10px] text-zinc-500 font-semibold tracking-wider uppercase mb-1">Testing Credentials</p>
-            <p className="text-[11px] text-zinc-400">
-              Email: <span className="text-luxury-gold font-mono font-semibold">admin@techmaster.com</span>
-            </p>
-            <p className="text-[11px] text-zinc-400">
-              Password: <span className="text-luxury-gold font-mono font-semibold">admin123</span>
-            </p>
-          </motion.div>
-        )}
       </div>
     </div>
   );

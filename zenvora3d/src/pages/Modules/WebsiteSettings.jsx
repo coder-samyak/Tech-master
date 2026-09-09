@@ -431,7 +431,7 @@ export const WebsiteSettings = ({ setCurrentView }) => {
                   <Input 
                     label="Current Access Key" 
                     type="password"
-                    placeholder="Enter current password (admin123)"
+                    placeholder="Enter current password"
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     required
