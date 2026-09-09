@@ -225,13 +225,25 @@ export const DatabaseProvider = ({ children }) => {
       });
       
       if (res.success && res.data) {
+        const savedDb = localStorage.getItem('zenvora_db');
+        let profilePic = "";
+        if (savedDb) {
+          try {
+            const parsed = JSON.parse(savedDb);
+            profilePic = parsed.adminProfile?.imageUrl || parsed.adminProfile?.avatar || "";
+          } catch (e) {}
+        }
+        if (!profilePic) {
+          profilePic = res.data.admin?.avatar || res.data.admin?.imageUrl || "";
+        }
+
         const authData = {
           user: {
             id: res.data.admin.id,
             name: res.data.admin.name,
             email: res.data.admin.email,
             role: res.data.admin.role,
-            imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
+            imageUrl: profilePic,
             status: "Active"
           },
           token: res.data.token,

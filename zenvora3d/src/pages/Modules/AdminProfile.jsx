@@ -42,7 +42,11 @@ export const AdminProfile = () => {
     openMediaManager({
       type: 'image',
       onSelect: (url) => {
-        setFormData(prev => ({ ...prev, imageUrl: url }));
+        setFormData(prev => {
+          const updated = { ...prev, imageUrl: url };
+          updateProfile(updated);
+          return updated;
+        });
       }
     });
   };

@@ -15,7 +15,7 @@ import { Badge } from './ui/Badge';
 import { Floating3DShapes } from './ui/Floating3DShapes';
 
 export const Layout = ({ children, currentView, setCurrentView }) => {
-  const { auth, logout, notifications } = useDatabase();
+  const { auth, logout, notifications, db } = useDatabase();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -197,14 +197,14 @@ export const Layout = ({ children, currentView, setCurrentView }) => {
             >
               <div className="text-right">
                 <span className="text-xs font-semibold text-zinc-300 block">
-                  {auth?.user?.name || auth?.user?.fullName || db?.adminProfile?.name || 'Super Admin'}
+                  {db?.adminProfile?.name || auth?.user?.name || auth?.user?.fullName || 'Super Admin'}
                 </span>
                 <span className="text-[10px] text-zinc-500 font-mono flex items-center justify-end gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" /> ONLINE
                 </span>
               </div>
               <img 
-                src={auth?.user?.imageUrl || auth?.user?.avatar || db?.adminProfile?.imageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"} 
+                src={db?.adminProfile?.imageUrl || db?.adminProfile?.avatar || auth?.user?.imageUrl || auth?.user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"} 
                 alt="Profile Avatar" 
                 className="w-10 h-10 rounded-full border border-zinc-800 object-cover shadow-sm" 
               />

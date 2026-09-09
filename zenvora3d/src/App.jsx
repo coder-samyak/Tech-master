@@ -29,11 +29,19 @@ import { WebsiteSettings } from './pages/Modules/WebsiteSettings';
 import { AdminProfile } from './pages/Modules/AdminProfile';
 
 function AppContent() {
+  const [currentView, setCurrentView] = useState('dashboard');
   const context = useDatabase();
   const { auth } = context || { auth: { isLoggedIn: false } };
 
-  const [currentView, setCurrentView] = useState('dashboard');
-  const isAuthenticated = Boolean(auth?.isLoggedIn || JSON.parse(localStorage.getItem('zenvora_auth') || '{}')?.isLoggedIn);
+  let isSavedLoggedIn = false;
+  try {
+    const savedAuth = localStorage.getItem('zenvora_auth');
+    if (savedAuth) {
+      isSavedLoggedIn = Boolean(JSON.parse(savedAuth)?.isLoggedIn);
+    }
+  } catch (e) {}
+
+  const isAuthenticated = Boolean(auth?.isLoggedIn || isSavedLoggedIn);
 
   if (!isAuthenticated) {
     return <AuthContainer onAuthSuccess={() => setCurrentView('dashboard')} />;
