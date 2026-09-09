@@ -23,25 +23,45 @@ export const Career: React.FC = () => {
 
   const fetchLiveCareers = async () => {
     try {
-      const baseUrl = getApiBaseUrl();
-      const res = await fetch(`${baseUrl}/cms`).catch(() => null);
-      if (res && res.ok) {
-        const json = await res.json();
-        if (json.success && json.data) {
-          setLiveCareerData(json.data);
-          return;
+      const prodRes = await fetch("https://tech-master-afhx.onrender.com/api/v1/cms").catch(() => null);
+      let prodData: any = null;
+      if (prodRes && prodRes.ok) {
+        const json = await prodRes.json();
+        if (json.success && json.data) prodData = json.data;
+      }
+
+      const localBaseUrl = getApiBaseUrl();
+      let localData: any = null;
+      if (localBaseUrl !== "https://tech-master-afhx.onrender.com/api/v1") {
+        const localRes = await fetch(`${localBaseUrl}/cms`).catch(() => null);
+        if (localRes && localRes.ok) {
+          const json = await localRes.json();
+          if (json.success && json.data) localData = json.data;
         }
       }
 
-      // Fallback to production API if localhost backend is not reachable
-      if (baseUrl !== "https://tech-master-afhx.onrender.com/api/v1") {
-        const prodRes = await fetch("https://tech-master-afhx.onrender.com/api/v1/cms").catch(() => null);
-        if (prodRes && prodRes.ok) {
-          const json = await prodRes.json();
-          if (json.success && json.data) {
-            setLiveCareerData(json.data);
-          }
+      const prodJobs = getCleanList(prodData?.careersCMS?.jobs || prodData?.careers);
+      const localServerJobs = getCleanList(localData?.careersCMS?.jobs || localData?.careers);
+
+      const mergedServerJobs = [...prodJobs];
+      for (const lj of localServerJobs) {
+        const key = (lj.title || lj.role || lj.id || '').trim().toLowerCase();
+        if (key && !mergedServerJobs.some(pj => (pj.title || pj.role || pj.id || '').trim().toLowerCase() === key)) {
+          mergedServerJobs.push(lj);
         }
+      }
+
+      if (mergedServerJobs.length > 0 || prodData || localData) {
+        setLiveCareerData({
+          ...(prodData || {}),
+          ...(localData || {}),
+          careers: mergedServerJobs,
+          careersCMS: {
+            ...(prodData?.careersCMS || {}),
+            ...(localData?.careersCMS || {}),
+            jobs: mergedServerJobs
+          }
+        });
       }
     } catch (e) {
       console.warn("Direct Career fetch error:", e);

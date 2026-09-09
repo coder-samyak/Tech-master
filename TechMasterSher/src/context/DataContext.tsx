@@ -216,18 +216,53 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshData = useCallback(async () => {
     try {
       const baseUrl = getApiBaseUrl();
-      const response = await fetch(`${baseUrl}/cms`);
       let fetchedDb: any = {};
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          fetchedDb = result.data;
+
+      try {
+        const prodRes = await fetch("https://tech-master-afhx.onrender.com/api/v1/cms").catch(() => null);
+        if (prodRes && prodRes.ok) {
+          const prodJson = await prodRes.json();
+          if (prodJson.success && prodJson.data) {
+            fetchedDb = { ...prodJson.data };
+          }
         }
+      } catch (e) {}
+
+      if (baseUrl !== "https://tech-master-afhx.onrender.com/api/v1") {
+        try {
+          const response = await fetch(`${baseUrl}/cms`).catch(() => null);
+          if (response && response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+              const localJobs = result.data.careersCMS?.jobs || result.data.careers || [];
+              const prodJobs = fetchedDb.careersCMS?.jobs || fetchedDb.careers || [];
+              const mergedJobs = [...prodJobs];
+              if (Array.isArray(localJobs)) {
+                for (const lj of localJobs) {
+                  const key = (lj.title || lj.role || lj.id || '').trim().toLowerCase();
+                  if (key && !mergedJobs.some(pj => (pj.title || pj.role || pj.id || '').trim().toLowerCase() === key)) {
+                    mergedJobs.push(lj);
+                  }
+                }
+              }
+              fetchedDb = {
+                ...fetchedDb,
+                ...result.data,
+                careers: mergedJobs,
+                careersCMS: {
+                  ...(fetchedDb.careersCMS || {}),
+                  ...(result.data.careersCMS || {}),
+                  jobs: mergedJobs
+                }
+              };
+            }
+          }
+        } catch (e) {}
       }
 
       try {
-        const fvRes = await fetch(`${baseUrl}/featured-videos`);
-        if (fvRes.ok) {
+        const fvRes = await fetch(`${baseUrl}/featured-videos`).catch(() => null);
+        if (fvRes && fvRes.ok) {
           const fvJson = await fvRes.json();
           if (fvJson.success && Array.isArray(fvJson.data)) {
             fetchedDb.featuredVideos = fvJson.data;
@@ -240,7 +275,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.warn("Backend CMS sync initial fallback:", err);
       setIsBackendConnected(false);
-      // Retain existing state on transient network/cold-start delay instead of clearing
     } finally {
       setIsLoading(false);
     }
