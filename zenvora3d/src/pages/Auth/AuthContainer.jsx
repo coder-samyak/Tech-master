@@ -10,8 +10,8 @@ export const AuthContainer = ({ onAuthSuccess }) => {
   const { login, requestPasswordReset, changePassword } = useDatabase();
   const [mode, setMode] = useState('login'); // login, forgot, change
 
-  const [email, setEmail] = useState('techmasteradmin@gmail.com');
-  const [password, setPassword] = useState('Techmaster@2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const [forgotEmail, setForgotEmail] = useState('');
 
@@ -136,13 +136,14 @@ export const AuthContainer = ({ onAuthSuccess }) => {
                   System Login
                 </h3>
 
-                <form onSubmit={handleLoginSubmit} className="flex flex-col gap-5">
+                <form onSubmit={handleLoginSubmit} className="flex flex-col gap-5" autoComplete="off">
                   <Input
                     label="Executive Email"
                     type="email"
-                    placeholder="e.g. admin@techmaster.com"
+                    placeholder="techmasteradmin@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="off"
                     required
                   />
 
@@ -161,9 +162,10 @@ export const AuthContainer = ({ onAuthSuccess }) => {
                     </div>
                     <input
                       type="password"
-                      placeholder="Enter security password"
+                      placeholder="Techmaster@2026"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="new-password"
                       className="w-full bg-zinc-950/60 border border-zinc-800 rounded-md px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-luxury-gold/50 focus:ring-1 focus:ring-luxury-gold/30 transition-all duration-300"
                       required
                     />

@@ -58,17 +58,28 @@ export const connectDB = async (): Promise<void> => {
     // Run one-time startup cleanup for existing base64 resume bloat
     void cleanupCMSBloat();
 
-    // Seed default admin for login verification
-    const adminExists = await User.findOne({ email: "admin@gmail.com" });
-    if (!adminExists) {
+    // Seed/Update default admin for login verification
+    const adminEmail = "techmasteradmin@gmail.com";
+    const adminPass = "Techmaster@2026";
+    let admin = await User.findOne({ email: adminEmail });
+    if (!admin) {
+      admin = await User.findOne({ email: "admin@gmail.com" });
+    }
+
+    if (admin) {
+      admin.email = adminEmail;
+      admin.password = adminPass;
+      await admin.save();
+      console.log(`Updated admin credentials: ${adminEmail} / ${adminPass}`);
+    } else {
       await User.create({
         fullName: "Super Admin",
-        email: "admin@gmail.com",
-        password: "Admin@123",
+        email: adminEmail,
+        password: adminPass,
         role: "Super Admin",
         status: "Active",
       });
-      console.log("Seeded default admin credentials: admin@gmail.com / Admin@123");
+      console.log(`Seeded default admin credentials: ${adminEmail} / ${adminPass}`);
     }
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);

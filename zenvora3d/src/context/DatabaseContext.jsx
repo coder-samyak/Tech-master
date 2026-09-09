@@ -217,7 +217,7 @@ export const DatabaseProvider = ({ children }) => {
   }, [auth.isLoggedIn]);
 
   // Login handler
-  const login = async (email = 'admin@gmail.com', password = 'Admin@123') => {
+  const login = async (email = 'techmasteradmin@gmail.com', password = 'Techmaster@2026') => {
     try {
       const res = await apiFetch("/admin/login", {
         method: "POST",
