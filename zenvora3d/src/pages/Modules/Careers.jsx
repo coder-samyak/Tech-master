@@ -334,20 +334,41 @@ export const Careers = () => {
     };
   }, []);
 
-  const handleDeleteApplicant = async (appId) => {
+  const handleDeleteApplicant = async (applicantOrId) => {
     if (!window.confirm("Are you sure you want to delete this job application?")) return;
+
+    const targetId = typeof applicantOrId === 'object' ? (applicantOrId.id || applicantOrId._id || applicantOrId.email) : applicantOrId;
+    const targetEmail = typeof applicantOrId === 'object' ? applicantOrId.email : null;
+    const targetStr = String(targetId || '');
 
     try {
       const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
-      await fetch(`${baseUrl}/resumes/${appId}`, { method: "DELETE" });
+      if (targetStr) {
+        await fetch(`${baseUrl}/resumes/${encodeURIComponent(targetStr)}`, { method: "DELETE" });
+      }
+      if (targetEmail && targetEmail !== targetStr) {
+        await fetch(`${baseUrl}/resumes/${encodeURIComponent(targetEmail)}`, { method: "DELETE" }).catch(() => {});
+      }
     } catch (e) {
       console.warn("Delete endpoint call error:", e);
     }
 
-    const updatedResumes = (formData.resumes || []).filter(r => String(r.id) !== String(appId) && String(r._id) !== String(appId));
+    const updatedResumes = (formData.resumes || []).filter(r => {
+      if (!r) return false;
+      const rId = String(r.id || '');
+      const r_id = String(r._id || '');
+      const rEmail = String(r.email || '');
+      if (targetStr && (rId === targetStr || r_id === targetStr)) return false;
+      if (targetEmail && rEmail === String(targetEmail)) return false;
+      return true;
+    });
+
     persistChanges({ ...formData, resumes: updatedResumes });
-    if (selectedApplicant && (String(selectedApplicant.id) === String(appId) || String(selectedApplicant._id) === String(appId))) {
-      setSelectedApplicant(null);
+    if (selectedApplicant) {
+      const selId = String(selectedApplicant.id || selectedApplicant._id || selectedApplicant.email || '');
+      if (selId === targetStr || (targetEmail && selectedApplicant.email === targetEmail)) {
+        setSelectedApplicant(null);
+      }
     }
     showToast('Application deleted successfully!', 'info');
   };
@@ -758,7 +779,7 @@ export const Careers = () => {
                               View Details
                             </button>
                             <button 
-                              onClick={() => handleDeleteApplicant(r.id || r._id)} 
+                              onClick={() => handleDeleteApplicant(r)} 
                               className="p-1 rounded text-rose-400 hover:text-rose-200 hover:bg-rose-500/20 transition-colors"
                               title="Delete Application"
                             >
@@ -957,7 +978,7 @@ export const Careers = () => {
             <div className="flex items-center justify-between pt-4 border-t border-zinc-800">
               <button 
                 type="button"
-                onClick={() => handleDeleteApplicant(selectedApplicant.id || selectedApplicant._id)} 
+                onClick={() => handleDeleteApplicant(selectedApplicant)} 
                 className="px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white transition-colors text-xs font-mono flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Delete Application

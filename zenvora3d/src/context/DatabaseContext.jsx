@@ -136,9 +136,9 @@ export const DatabaseProvider = ({ children }) => {
 
         const merged = {
           ...initialData,
-          ...backendData,
           ...prev,
           ...localParsed,
+          ...backendData,
           footer: mergedFooter
         };
 
