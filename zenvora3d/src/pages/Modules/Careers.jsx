@@ -75,7 +75,6 @@ export const Careers = () => {
       {
         id: "job-1",
         title: "Script Writer",
-        department: "Production Suite",
         type: "Full Time",
         location: "Remote",
         salary: "",
@@ -89,7 +88,6 @@ export const Careers = () => {
       {
         id: "job-2",
         title: "Video Editor",
-        department: "Production Suite",
         type: "Full Time",
         location: "Jaipur / Remote",
         salary: "",
@@ -135,8 +133,39 @@ export const Careers = () => {
     }
   };
 
+  // Helper to remove any hardcoded legacy department or team field
+  const sanitizeJobs = (jobsList) => {
+    if (!Array.isArray(jobsList)) return [];
+    return jobsList.map(job => {
+      const { department, team, ...rest } = job;
+      return rest;
+    });
+  };
+
+  const isMockJob = (j) => {
+    const t = (j?.title || j?.role || '').toLowerCase();
+    return t.includes('luxury') || t.includes('3d motion graphics') || t.includes('creative video producer') || t.includes('mumbai (hybrid)');
+  };
+
   const storedCMS = db?.careersCMS || db?.careersPage || defaultCareersCMS;
-  const storedJobs = db?.careers || db?.jobOpenings || defaultCareersCMS.jobs;
+  
+  // Clean jobs list avoiding legacy Zenvora luxury mock jobs
+  const getInitialJobs = () => {
+    const candidates = [
+      db?.careersCMS?.jobs,
+      db?.careersPage?.jobs,
+      db?.careers,
+      db?.jobOpenings
+    ];
+    for (const list of candidates) {
+      if (Array.isArray(list) && list.length > 0) {
+        const cleanList = list.filter(j => !isMockJob(j));
+        if (cleanList.length > 0) return sanitizeJobs(cleanList);
+      }
+    }
+    return defaultCareersCMS.jobs;
+  };
+
   const storedResumes = db?.resumes || defaultCareersCMS.resumes;
 
   const [formData, setFormData] = useState({
@@ -147,7 +176,7 @@ export const Careers = () => {
     culture: (db?.careerCulture && db.careerCulture.length > 0) ? db.careerCulture : defaultCareersCMS.culture,
     processHeader: { ...defaultCareersCMS.processHeader, ...(storedCMS.processHeader || db?.processHeader || {}) },
     process: (db?.careerProcess && db.careerProcess.length > 0) ? db.careerProcess : defaultCareersCMS.process,
-    jobs: (storedJobs && storedJobs.length > 0) ? storedJobs : defaultCareersCMS.jobs,
+    jobs: getInitialJobs(),
     resumes: (storedResumes && storedResumes.length > 0) ? storedResumes : defaultCareersCMS.resumes
   });
 
@@ -262,9 +291,41 @@ export const Careers = () => {
     }
   };
 
+  const fetchCareersFromBackend = async () => {
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const res = await fetch(`${baseUrl}/cms`);
+      if (res.ok) {
+        const json = await res.json();
+        const serverJobs = json.data?.careersCMS?.jobs || json.data?.careers;
+        if (Array.isArray(serverJobs) && serverJobs.length > 0) {
+          const cleanServerJobs = serverJobs.filter(j => !isMockJob(j));
+          if (cleanServerJobs.length > 0) {
+            setFormData(prev => {
+              if (prev.jobs.some(j => isMockJob(j)) || JSON.stringify(prev.jobs) !== JSON.stringify(cleanServerJobs)) {
+                return { ...prev, jobs: cleanServerJobs };
+              }
+              return prev;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Careers fetch warning:", e);
+    }
+  };
+
   useEffect(() => {
     fetchResumesFromBackend();
+    fetchCareersFromBackend();
     const interval = setInterval(fetchResumesFromBackend, 5000);
+
+    // Auto-purge any old luxury mock jobs or legacy department/team from local state and storage
+    if (formData.jobs && (formData.jobs.some(j => isMockJob(j)) || formData.jobs.some(j => j.department || j.team))) {
+      const filtered = formData.jobs.filter(j => !isMockJob(j));
+      const finalCleaned = filtered.length > 0 ? sanitizeJobs(filtered) : defaultCareersCMS.jobs;
+      persistChanges({ ...formData, jobs: finalCleaned });
+    }
 
     let channel;
     try {
@@ -309,17 +370,57 @@ export const Careers = () => {
   };
 
   const persistChanges = (nextState) => {
-    setFormData(nextState);
-    updateSection('careersCMS', nextState);
-    updateSection('careersPage', nextState);
-    updateSection('careers', nextState.jobs);
-    updateSection('careerData', nextState.jobs);
-    updateSection('careerHero', nextState.hero);
-    updateSection('cultureHeader', nextState.cultureHeader);
-    updateSection('careerCulture', nextState.culture);
-    updateSection('processHeader', nextState.processHeader);
-    updateSection('careerProcess', nextState.process);
-    updateSection('resumes', nextState.resumes);
+    const validJobs = (nextState.jobs || []).filter(j => !isMockJob(j));
+    const cleanedJobs = sanitizeJobs(validJobs.length > 0 ? validJobs : defaultCareersCMS.jobs);
+    const cleanedState = {
+      ...nextState,
+      jobs: cleanedJobs
+    };
+    setFormData(cleanedState);
+    updateSection('careersCMS', cleanedState);
+    updateSection('careersPage', cleanedState);
+    updateSection('careers', cleanedState.jobs);
+    updateSection('careerData', cleanedState.jobs);
+    updateSection('careerHero', cleanedState.hero);
+    updateSection('cultureHeader', cleanedState.cultureHeader);
+    updateSection('careerCulture', cleanedState.culture);
+    updateSection('processHeader', cleanedState.processHeader);
+    updateSection('careerProcess', cleanedState.process);
+    updateSection('resumes', cleanedState.resumes);
+
+    // Direct sync to backend API endpoint to guarantee immediate persistence
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      fetch(`${baseUrl}/cms/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "careers", value: cleanedJobs })
+      }).catch(() => {});
+      fetch(`${baseUrl}/cms/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "careersCMS", value: cleanedState })
+      }).catch(() => {});
+    } catch (e) {}
+
+    // Direct localStorage backup & storage event trigger
+    try {
+      const saved = localStorage.getItem('zenvora_db');
+      const parsed = saved ? JSON.parse(saved) : {};
+      parsed.careers = cleanedJobs;
+      parsed.careerData = cleanedJobs;
+      parsed.careersCMS = cleanedState;
+      localStorage.setItem('zenvora_db', JSON.stringify(parsed));
+      localStorage.setItem('techmaster-cms-last-updated', JSON.stringify({ key: 'careers', timestamp: Date.now() }));
+      window.dispatchEvent(new CustomEvent('techmaster-cms-updated', { detail: { key: 'careers', timestamp: Date.now() } }));
+    } catch (e) {}
+
+    // Cross-tab real-time broadcast so client website updates immediately
+    try {
+      const channel = new BroadcastChannel("zenvora_cms_sync");
+      channel.postMessage({ type: "CAREERS_UPDATED", data: cleanedJobs, fullState: cleanedState });
+      channel.close();
+    } catch (e) {}
   };
 
   const handleSaveAll = (isPublished = false) => {
@@ -349,12 +450,19 @@ export const Careers = () => {
     const { listKey, item } = modalConfig;
     const list = [...formData[listKey]];
 
+    // Ensure unwanted fields like department/team are never retained for jobs
+    const cleanItem = { ...item };
+    if (listKey === 'jobs') {
+      delete cleanItem.department;
+      delete cleanItem.team;
+    }
+
     let updated;
-    if (item.id) {
-      updated = list.map(i => i.id === item.id ? item : i);
+    if (cleanItem.id) {
+      updated = list.map(i => i.id === cleanItem.id ? cleanItem : i);
     } else {
       const newItem = {
-        ...item,
+        ...cleanItem,
         id: `${listKey.slice(0, 3)}-${Date.now()}`,
         order: list.length + 1,
         visible: true
@@ -364,7 +472,7 @@ export const Careers = () => {
 
     persistChanges({ ...formData, [listKey]: updated });
     setModalConfig(null);
-    showToast(item.id ? 'Item updated successfully!' : 'New item added!', 'success');
+    showToast(cleanItem.id ? 'Item updated successfully!' : 'New item added!', 'success');
   };
 
   return (
@@ -560,7 +668,7 @@ export const Careers = () => {
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider">Open Positions ({formData.jobs.length})</h3>
                 <Button 
-                  onClick={() => setModalConfig({ listKey: 'jobs', item: { title: '', department: 'Production Suite', type: 'Full Time', location: 'Jaipur / Remote', salary: '$20,000', description: '', status: 'Active' } })} 
+                  onClick={() => setModalConfig({ listKey: 'jobs', item: { title: '', type: 'Full Time', location: 'Jaipur / Remote', salary: '$20,000', description: '', status: 'Active' } })} 
                   variant="gold" 
                   size="sm" 
                   className="text-xs uppercase"
@@ -573,14 +681,14 @@ export const Careers = () => {
                 {formData.jobs.map((j) => (
                   <div key={j.id} className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-3">
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                      <span className="font-mono text-[10px] text-luxury-gold uppercase">{j.department}</span>
+                      <span className="font-mono text-[10px] text-luxury-gold uppercase tracking-wider font-semibold">{j.status || 'Active Position'}</span>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => setModalConfig({ listKey: 'jobs', item: j })} className="text-zinc-400 hover:text-luxury-gold"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleItemDelete('jobs', j.id)} className="text-rose-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => setModalConfig({ listKey: 'jobs', item: j })} className="text-zinc-400 hover:text-luxury-gold p-1" title="Edit Position"><Edit3 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleItemDelete('jobs', j.id)} className="text-rose-400 hover:text-rose-300 p-1" title="Delete Position"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </div>
 
-                    <h4 className="font-serif font-bold text-white text-base">{j.title}</h4>
+                    <h4 className="font-serif font-bold text-luxury-gold text-base">{j.title}</h4>
                     <p className="text-zinc-400 font-light text-xs leading-relaxed">{j.description}</p>
 
                     <div className="flex flex-wrap gap-2 text-[10px] font-mono text-zinc-400 pt-2 border-t border-zinc-800">
@@ -910,20 +1018,37 @@ export const Careers = () => {
             </div>
 
             <div className="space-y-3 text-xs">
-              {Object.keys(modalConfig.item).filter(k => !['id', 'order', 'visible', 'deleted'].includes(k)).map(key => (
-                <div key={key}>
-                  <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">{key}</label>
-                  <input
-                    type="text"
-                    value={modalConfig.item[key] || ''}
-                    onChange={(e) => setModalConfig({
-                      ...modalConfig,
-                      item: { ...modalConfig.item, [key]: e.target.value }
-                    })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
-                  />
-                </div>
-              ))}
+              {Object.keys(modalConfig.item)
+                .filter(k => !['id', 'order', 'visible', 'deleted', 'department', 'team', 'featured'].includes(k))
+                .map(key => (
+                  <div key={key}>
+                    <label className="text-zinc-400 block mb-1 font-mono uppercase text-[10px]">
+                      {key === 'title' ? 'Job Title' : key === 'type' ? 'Employment Type (e.g. Full Time)' : key === 'location' ? 'Location' : key === 'salary' ? 'Salary / Compensation' : key === 'description' ? 'Job Description' : key}
+                    </label>
+                    {key === 'description' ? (
+                      <textarea
+                        rows={4}
+                        value={modalConfig.item[key] || ''}
+                        onChange={(e) => setModalConfig({
+                          ...modalConfig,
+                          item: { ...modalConfig.item, [key]: e.target.value }
+                        })}
+                        placeholder="Enter job responsibilities, skills, and expectations..."
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none leading-relaxed"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={modalConfig.item[key] || ''}
+                        onChange={(e) => setModalConfig({
+                          ...modalConfig,
+                          item: { ...modalConfig.item, [key]: e.target.value }
+                        })}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                ))}
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">

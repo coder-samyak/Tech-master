@@ -8,22 +8,86 @@ export const Career: React.FC = () => {
   const { careerData, dbData } = useData();
   const [liveCareerData, setLiveCareerData] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchLiveCareers = async () => {
-      try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
-        const res = await fetch(`${baseUrl}/cms`);
-        if (res.ok) {
-          const json = await res.json();
+  const isMockJob = (j: any) => {
+    const t = (j?.title || j?.role || '').toLowerCase();
+    return t.includes('luxury') || t.includes('3d motion graphics') || t.includes('creative video producer') || t.includes('mumbai (hybrid)');
+  };
+
+  const getApiBaseUrl = () => {
+    if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+      return "http://localhost:5000/api/v1";
+    }
+    const envUrl = import.meta.env.VITE_API_URL?.trim();
+    return envUrl || "https://tech-master-afhx.onrender.com/api/v1";
+  };
+
+  const fetchLiveCareers = async () => {
+    try {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/cms`).catch(() => null);
+      if (res && res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          setLiveCareerData(json.data);
+          return;
+        }
+      }
+
+      // Fallback to production API if localhost backend is not reachable
+      if (baseUrl !== "https://tech-master-afhx.onrender.com/api/v1") {
+        const prodRes = await fetch("https://tech-master-afhx.onrender.com/api/v1/cms").catch(() => null);
+        if (prodRes && prodRes.ok) {
+          const json = await prodRes.json();
           if (json.success && json.data) {
             setLiveCareerData(json.data);
           }
         }
-      } catch (e) {
-        console.warn("Direct Career fetch error:", e);
+      }
+    } catch (e) {
+      console.warn("Direct Career fetch error:", e);
+    }
+  };
+
+  const [syncTick, setSyncTick] = useState(0);
+  void syncTick;
+
+  useEffect(() => {
+    fetchLiveCareers();
+    const interval = setInterval(() => {
+      fetchLiveCareers();
+      setSyncTick(t => t + 1);
+    }, 2000);
+
+    // Cross-tab and real-time synchronization with Admin Panel
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel("zenvora_cms_sync");
+      channel.onmessage = (event) => {
+        if (event.data?.type === "CAREERS_UPDATED" && event.data?.data) {
+          const cleanJobs = (event.data.data || []).filter((j: any) => !isMockJob(j));
+          setLiveCareerData((prev: any) => ({
+            ...prev,
+            careers: cleanJobs,
+            careersCMS: { ...(prev?.careersCMS || {}), jobs: cleanJobs }
+          }));
+          setSyncTick(t => t + 1);
+        }
+      };
+    } catch (e) {}
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'zenvora_db' || e.key === 'techmaster-cms-last-updated') {
+        fetchLiveCareers();
+        setSyncTick(t => t + 1);
       }
     };
-    fetchLiveCareers();
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      clearInterval(interval);
+      if (channel) channel.close();
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   let localDb: any = {};
@@ -38,8 +102,6 @@ export const Career: React.FC = () => {
     {
       id: "job-1",
       title: "Script Writer",
-      department: "Production Suite",
-      team: "Production Suite",
       type: "Full Time",
       location: "Remote",
       salary: "",
@@ -50,8 +112,6 @@ export const Career: React.FC = () => {
     {
       id: "job-2",
       title: "Video Editor",
-      department: "Production Suite",
-      team: "Production Suite",
       type: "Full Time",
       location: "Jaipur / Remote",
       salary: "",
@@ -61,8 +121,43 @@ export const Career: React.FC = () => {
     }
   ];
 
-  const rawJobs = (liveCareerData?.careers || (liveCareerData?.careersCMS?.jobs && liveCareerData.careersCMS.jobs.length > 0 && liveCareerData.careersCMS.jobs) || (careerData && careerData.length > 0 && careerData) || activeDb?.careers || activeDb?.careersCMS?.jobs || defaultJobs);
+  const getCleanList = (list: any) => {
+    if (!Array.isArray(list)) return [];
+    return list.filter((j: any) => !isMockJob(j));
+  };
 
+  const serverJobs = getCleanList(liveCareerData?.careersCMS?.jobs || liveCareerData?.careers);
+  const localJobs = getCleanList(localDb?.careersCMS?.jobs || localDb?.careers || localDb?.careerData || activeDb?.careersCMS?.jobs || activeDb?.careers);
+  const contextJobs = getCleanList(careerData);
+
+  // Combine and merge by title / id so that any job present in either server or local storage is ALWAYS shown!
+  const combinedMap = new Map();
+
+  // 1. Defaults
+  for (const j of defaultJobs) {
+    const key = (j.title || (j as any).role || j.id || '').trim().toLowerCase();
+    if (key) combinedMap.set(key, j);
+  }
+
+  // 2. Server jobs
+  for (const j of serverJobs) {
+    const key = (j.title || j.role || j.id || '').trim().toLowerCase();
+    if (key) combinedMap.set(key, j);
+  }
+
+  // 3. Context jobs
+  for (const j of contextJobs) {
+    const key = (j.title || j.role || j.id || '').trim().toLowerCase();
+    if (key) combinedMap.set(key, j);
+  }
+
+  // 4. Local storage jobs (from admin panel on this browser) which has the freshest additions!
+  for (const j of localJobs) {
+    const key = (j.title || j.role || j.id || '').trim().toLowerCase();
+    if (key) combinedMap.set(key, j);
+  }
+
+  const rawJobs = Array.from(combinedMap.values());
   const careerList = rawJobs.filter((c: any) => c.active !== false && c.status !== false && c.visible !== false && !c.deleted);
   
   const careerHero = liveCareerData?.careerHero || liveCareerData?.careersCMS?.hero || activeDb?.careerHero || activeDb?.careersCMS?.hero || {
@@ -264,10 +359,12 @@ export const Career: React.FC = () => {
           <div className="flex flex-col gap-6">
             {careerList.map((role: any) => (
               <div key={role.id || role._id} className="glass-panel p-6 rounded-3xl border border-white/5 hover:border-gold/25 transition-all duration-300">
-                <span className="text-gold font-mono text-[9px] uppercase tracking-[1.5px] block mb-1">
-                  Team: {role.team || role.department}
-                </span>
-                <h4 className="font-serif text-xl font-bold text-white mb-4">{role.role || role.title}</h4>
+                {(role.team || role.department) && (role.team || role.department).toLowerCase() !== 'production suite' && (
+                  <span className="text-gold font-mono text-[9px] uppercase tracking-[1.5px] block mb-1">
+                    {role.team || role.department}
+                  </span>
+                )}
+                <h4 className="font-serif text-xl font-bold text-gold mb-4">{role.role || role.title}</h4>
                 <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
                   {role.description}
                 </p>

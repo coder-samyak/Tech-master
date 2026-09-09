@@ -78,11 +78,12 @@ export const VisitorCareer = () => {
             <div className="flex flex-col gap-6">
               {careers.filter(c => c.active !== false).sort((a,b) => (a.order || 1) - (b.order || 1)).map((role) => (
                 <div key={role.id} className="glass-panel p-6 rounded-3xl border border-white/5 hover:border-luxury-gold/25 transition-all duration-300 relative overflow-hidden group">
-                  {role.featured && <div className="absolute top-0 right-0 bg-luxury-gold text-black text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-bl-xl">Featured</div>}
-                  <span className="text-luxury-gold font-mono text-[9px] uppercase tracking-[1.5px] block mb-1">
-                    Team: {role.team || role.department}
-                  </span>
-                  <h4 className="font-serif text-xl font-bold text-white mb-4">{role.title}</h4>
+                  {(role.team || role.department) && (role.team || role.department).toLowerCase() !== 'production suite' && (
+                    <span className="text-luxury-gold font-mono text-[9px] uppercase tracking-[1.5px] block mb-1">
+                      {role.team || role.department}
+                    </span>
+                  )}
+                  <h4 className="font-serif text-xl font-bold text-luxury-gold mb-4">{role.title}</h4>
                   <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
                     {role.description}
                   </p>

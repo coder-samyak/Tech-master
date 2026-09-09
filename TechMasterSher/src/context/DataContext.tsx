@@ -128,7 +128,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (db.campaigns) setCampaignsData(db.campaigns);
     if (db.faqs) setFaqData(db.faqs);
     if (db.blogs) setBlogsData(db.blogs);
-    if (db.careers) setCareerData(db.careers);
+    const rawCareers = db.careersCMS?.jobs || db.careers || [];
+    if (Array.isArray(rawCareers)) {
+      const filtered = rawCareers.filter((j: any) => {
+        const t = (j?.title || j?.role || '').toLowerCase();
+        return !t.includes('luxury') && !t.includes('3d motion graphics') && !t.includes('creative video producer') && !t.includes('mumbai (hybrid)');
+      });
+      if (filtered.length > 0) setCareerData(filtered);
+    }
     
     // Events comes from either homepage.events.list or db.events in backend
     if (db.events) setEventsData(db.events);

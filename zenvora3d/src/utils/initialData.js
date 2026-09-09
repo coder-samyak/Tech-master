@@ -1007,51 +1007,29 @@ export const initialData = {
   careers: [
     {
       id: "job-1",
-      title: "Creative Video Producer & Editor",
-      department: "Production",
-      type: "Full-time",
-      location: "Mumbai (Hybrid)",
-      description: "Looking for an elite video editor and producer to storyboard and edit commercial reels, cinematic YouTube videos, and brand collaborations.",
-      requirements: "3+ years editing for luxury brands, advanced knowledge of Premiere/FCP/DaVinci, experience with 3D elements/animations a plus.",
-      benefits: "Premium workspace in South Mumbai, competitive luxury scale package, travel budgets, health insurance, access to exclusive industry events.",
-      isActive: true,
-      createdAt: "2026-06-01T08:00:00Z"
+      title: "Script Writer",
+      type: "Full Time",
+      location: "Remote",
+      salary: "",
+      description: "We're hiring a Script Writer to create engaging, creative, and audience-focused scripts for digital content. Strong storytelling, research, and writing skills are preferred.",
+      status: "Active",
+      featured: true,
+      order: 1,
+      visible: true,
+      deleted: false
     },
     {
       id: "job-2",
-      title: "Luxury Public Relations (PR) Associate",
-      department: "Marketing",
-      type: "Full-time",
-      location: "Mumbai",
-      description: "Manage relationships with luxury fashion publications, schedule press releases, coordinate brand invites, and maintain the VIP media database.",
-      requirements: "Experience working with fashion or luxury agencies, stellar written English, established contacts at major Indian and global lifestyle publications.",
-      benefits: "Performance bonuses, clothing allowance, top-tier health cover, direct mentorship.",
-      isActive: true,
-      createdAt: "2026-06-10T10:00:00Z"
-    },
-    {
-      id: "job-3",
-      title: "3D Motion Graphics Intern",
-      department: "Creative Consulting",
-      type: "Internship",
-      location: "Remote",
-      description: "Create premium 3D assets, glassmorphic UI interactions, and floating abstract graphics to be featured on social channels and the official web portal.",
-      requirements: "Proficient in Blender, Cinema4D, or After Effects. Strong sense of premium layouts, gradients, and physics-based animations.",
-      benefits: "Internship certificate, performance stipend, high potential for transition to full-time.",
-      isActive: false,
-      createdAt: "2026-06-20T12:00:00Z"
-    },
-    {
-      id: "job-4",
-      title: "Freelance Luxury Brand Copywriter",
-      department: "Marketing",
-      type: "Freelance",
-      location: "Remote",
-      description: "Craft premium storytelling copy for high-end brand campaigns, product launches, and luxury creator collaborations.",
-      requirements: "Experience writing for fashion or luxury lifestyle brands, strong narrative voice, and quick turnaround capacity.",
-      benefits: "Flexible schedule, project-based compensation, exposure to elite brand partnerships.",
-      isActive: true,
-      createdAt: "2026-06-25T10:00:00Z"
+      title: "Video Editor",
+      type: "Full Time",
+      location: "Jaipur / Remote",
+      salary: "",
+      description: "We're hiring a Video Editor to create engaging, high-quality videos for digital content. Strong editing, creativity, storytelling, and knowledge of tools like Premiere Pro/After Effects are preferred.",
+      status: "Active",
+      featured: true,
+      order: 2,
+      visible: true,
+      deleted: false
     }
   ],
 
