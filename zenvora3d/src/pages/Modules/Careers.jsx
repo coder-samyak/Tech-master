@@ -377,37 +377,8 @@ export const Careers = () => {
       jobs: cleanedJobs
     };
     setFormData(cleanedState);
-    updateSection('careersCMS', cleanedState);
-    updateSection('careersPage', cleanedState);
     updateSection('careers', cleanedState.jobs);
-    updateSection('careerData', cleanedState.jobs);
-    updateSection('careerHero', cleanedState.hero);
-    updateSection('cultureHeader', cleanedState.cultureHeader);
-    updateSection('careerCulture', cleanedState.culture);
-    updateSection('processHeader', cleanedState.processHeader);
-    updateSection('careerProcess', cleanedState.process);
-    updateSection('resumes', cleanedState.resumes);
-
-    // Direct sync to backend API endpoints to guarantee immediate persistence across environments
-    try {
-      const targetUrls = Array.from(new Set([
-        import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1",
-        "https://tech-master-afhx.onrender.com/api/v1"
-      ]));
-
-      for (const baseUrl of targetUrls) {
-        fetch(`${baseUrl}/cms/update`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key: "careers", value: cleanedJobs })
-        }).catch(() => {});
-        fetch(`${baseUrl}/cms/update`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key: "careersCMS", value: cleanedState })
-        }).catch(() => {});
-      }
-    } catch (e) {}
+    updateSection('careersCMS', cleanedState);
 
     // Direct localStorage backup & storage event trigger
     try {

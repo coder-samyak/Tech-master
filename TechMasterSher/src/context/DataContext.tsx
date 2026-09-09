@@ -281,20 +281,34 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [applyCmsDataToState]);
 
   useEffect(() => {
+    // 0ms instant synchronous hydration from local storage on mount
+    applyCmsDataToState({});
+
     void refreshData();
 
     const handleCmsUpdated = () => {
+      applyCmsDataToState({});
       void refreshData();
     };
 
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === 'techmaster-cms-last-updated') {
+      if (event.key === 'techmaster-cms-last-updated' || event.key === 'zenvora_db') {
+        applyCmsDataToState({});
         void refreshData();
       }
     };
 
     window.addEventListener('techmaster-cms-updated', handleCmsUpdated);
     window.addEventListener('storage', handleStorage);
+
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel("zenvora_cms_sync");
+      channel.onmessage = () => {
+        applyCmsDataToState({});
+        void refreshData();
+      };
+    } catch (e) {}
 
     const interval = window.setInterval(() => {
       void refreshData();
@@ -303,9 +317,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       window.removeEventListener('techmaster-cms-updated', handleCmsUpdated);
       window.removeEventListener('storage', handleStorage);
+      if (channel) channel.close();
       window.clearInterval(interval);
     };
-  }, [refreshData]);
+  }, [refreshData, applyCmsDataToState]);
 
   return (
     <DataContext.Provider

@@ -89,21 +89,30 @@ export const DatabaseProvider = ({ children }) => {
     return data;
   };
 
-  const syncSectionToBackend = async (key, value) => {
-    try {
-      await apiFetch('/cms/update', {
-        method: 'POST',
-        body: JSON.stringify({ key, value })
-      });
+  const syncTimersRef = React.useRef({});
 
-      if (typeof window !== 'undefined') {
-        const syncPayload = { key, timestamp: Date.now() };
-        localStorage.setItem('techmaster-cms-last-updated', JSON.stringify(syncPayload));
-        window.dispatchEvent(new CustomEvent('techmaster-cms-updated', { detail: syncPayload }));
-      }
-    } catch (error) {
-      console.error(`Failed to sync ${key} to backend:`, error);
+  const syncSectionToBackend = (key, value) => {
+    if (syncTimersRef.current[key]) {
+      clearTimeout(syncTimersRef.current[key]);
     }
+
+    syncTimersRef.current[key] = setTimeout(async () => {
+      delete syncTimersRef.current[key];
+      try {
+        await apiFetch('/cms/update', {
+          method: 'POST',
+          body: JSON.stringify({ key, value })
+        });
+
+        if (typeof window !== 'undefined') {
+          const syncPayload = { key, timestamp: Date.now() };
+          localStorage.setItem('techmaster-cms-last-updated', JSON.stringify(syncPayload));
+          window.dispatchEvent(new CustomEvent('techmaster-cms-updated', { detail: syncPayload }));
+        }
+      } catch (error) {
+        console.error(`Failed to sync ${key} to backend:`, error);
+      }
+    }, 250);
   };
 
   const fetchCMSData = async () => {

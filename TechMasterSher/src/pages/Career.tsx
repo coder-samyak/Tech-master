@@ -95,18 +95,33 @@ export const Career: React.FC = () => {
       };
     } catch (e) {}
 
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'zenvora_db' || e.key === 'techmaster-cms-last-updated') {
-        fetchLiveCareers();
-        setSyncTick(t => t + 1);
+    const handleStorage = (e: any) => {
+      let localParsed: any = {};
+      try {
+        const saved = localStorage.getItem('zenvora_db');
+        if (saved) localParsed = JSON.parse(saved);
+      } catch (err) {}
+
+      const cleanJobs = getCleanList(localParsed?.careersCMS?.jobs || localParsed?.careers || localParsed?.careerData);
+      if (cleanJobs.length > 0) {
+        setLiveCareerData((prev: any) => ({
+          ...prev,
+          ...localParsed,
+          careers: cleanJobs,
+          careersCMS: { ...(prev?.careersCMS || {}), ...(localParsed?.careersCMS || {}), jobs: cleanJobs }
+        }));
       }
+      fetchLiveCareers();
+      setSyncTick(t => t + 1);
     };
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('techmaster-cms-updated', handleStorage);
 
     return () => {
       clearInterval(interval);
       if (channel) channel.close();
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('techmaster-cms-updated', handleStorage);
     };
   }, []);
 

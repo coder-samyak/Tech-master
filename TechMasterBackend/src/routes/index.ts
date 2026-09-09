@@ -519,30 +519,49 @@ router.post("/update", authenticate as any, async (req: any, res: any, next: any
         
         if (Array.isArray(value)) {
           const payloadArray = value;
-          const recordsToInsert = payloadArray.map((item: any) => {
+          const usedSlugs = new Set<string>();
+
+          const recordsToInsert = payloadArray.map((item: any, idx: number) => {
             const cleanItem = { ...item };
             if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
               cleanItem._id = cleanItem.id;
             }
-            if (!cleanItem.slug) {
-              cleanItem.slug = (cleanItem.title || cleanItem.name || cleanItem.productName || "item")
-                .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `item-${Date.now()}`;
+            
+            const rawSlugSource = cleanItem.slug || cleanItem.title || cleanItem.role || cleanItem.name || cleanItem.productName || `item-${idx + 1}`;
+            const baseSlug = String(rawSlugSource)
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)+/g, '') || `item-${Date.now()}`;
+
+            let finalSlug = baseSlug;
+            let counter = 1;
+            while (usedSlugs.has(finalSlug)) {
+              finalSlug = `${baseSlug}-${counter}`;
+              counter++;
             }
-            if (!cleanItem.title) cleanItem.title = cleanItem.name || cleanItem.productName || "Untitled";
+            usedSlugs.add(finalSlug);
+            cleanItem.slug = finalSlug;
+
+            if (!cleanItem.title) cleanItem.title = cleanItem.role || cleanItem.name || cleanItem.productName || "Untitled";
             if (!cleanItem.category) cleanItem.category = "General";
             if (!cleanItem.description) cleanItem.description = "";
             return cleanItem;
           });
-          await Model.insertMany(recordsToInsert);
+
+          if (recordsToInsert.length > 0) {
+            await Model.insertMany(recordsToInsert, { ordered: false });
+          }
         } else if (value && typeof value === 'object') {
           const cleanItem = { ...value };
           if (cleanItem.id && /^[0-9a-fA-F]{24}$/.test(cleanItem.id)) {
             cleanItem._id = cleanItem.id;
           }
-          if (!cleanItem.slug) {
-            cleanItem.slug = (cleanItem.title || cleanItem.name || cleanItem.productName || key)
-              .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `${key}-${Date.now()}`;
-          }
+          const rawSlugSource = cleanItem.slug || cleanItem.title || cleanItem.name || cleanItem.productName || key;
+          cleanItem.slug = String(rawSlugSource)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '') || `${key}-${Date.now()}`;
+
           if (!cleanItem.title) cleanItem.title = cleanItem.name || cleanItem.productName || key;
           if (!cleanItem.category) cleanItem.category = "General";
           if (!cleanItem.description) cleanItem.description = "";
