@@ -172,22 +172,60 @@ router.post("/public/career-application", parseDocument, handleResumeSubmission)
 const handleDeleteResume = async (req: any, res: any, next: any) => {
   try {
     const { id } = req.params;
-    const doc = await CMSData.findOne({ key: "resumes" });
-    let resumes = (doc && Array.isArray(doc.value)) ? doc.value : [];
-    
-    resumes = resumes.filter((r: any) => r.id !== id && r._id !== id);
+    if (!id) {
+      return ApiResponse.error(res, "Missing applicant ID", 400);
+    }
+    const targetIdStr = String(id);
 
-    await CMSData.findOneAndUpdate(
-      { key: "resumes" },
-      { value: resumes },
-      { upsert: true, new: true }
-    );
+    // 1. Delete from "resumes"
+    const docResumes = await CMSData.findOne({ key: "resumes" });
+    if (docResumes && Array.isArray(docResumes.value)) {
+      const filtered = docResumes.value.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+      await CMSData.findOneAndUpdate(
+        { key: "resumes" },
+        { value: filtered },
+        { upsert: true, new: true }
+      );
+    }
 
-    await CMSData.findOneAndUpdate(
-      { key: "careerApplications" },
-      { value: resumes },
-      { upsert: true, new: true }
-    );
+    // 2. Delete from "careerApplications"
+    const docApps = await CMSData.findOne({ key: "careerApplications" });
+    if (docApps && Array.isArray(docApps.value)) {
+      const filtered = docApps.value.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+      await CMSData.findOneAndUpdate(
+        { key: "careerApplications" },
+        { value: filtered },
+        { upsert: true, new: true }
+      );
+    }
+
+    // 3. Delete from "careersCMS"
+    const docCMS = await CMSData.findOne({ key: "careersCMS" });
+    if (docCMS && docCMS.value && typeof docCMS.value === "object") {
+      const cmsObj = docCMS.value as any;
+      if (Array.isArray(cmsObj.resumes)) {
+        cmsObj.resumes = cmsObj.resumes.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+        await CMSData.findOneAndUpdate(
+          { key: "careersCMS" },
+          { value: cmsObj },
+          { upsert: true, new: true }
+        );
+      }
+    }
+
+    // 4. Delete from "careersPage"
+    const docPage = await CMSData.findOne({ key: "careersPage" });
+    if (docPage && docPage.value && typeof docPage.value === "object") {
+      const pageObj = docPage.value as any;
+      if (Array.isArray(pageObj.resumes)) {
+        pageObj.resumes = pageObj.resumes.filter((r: any) => String(r.id) !== targetIdStr && String(r._id) !== targetIdStr);
+        await CMSData.findOneAndUpdate(
+          { key: "careersPage" },
+          { value: pageObj },
+          { upsert: true, new: true }
+        );
+      }
+    }
 
     ApiResponse.success(res, "Application deleted successfully", { id });
   } catch (error) {
@@ -197,6 +235,8 @@ const handleDeleteResume = async (req: any, res: any, next: any) => {
 
 router.delete("/resumes/:id", handleDeleteResume);
 router.delete("/public/resume/:id", handleDeleteResume);
+router.delete("/career-application/:id", handleDeleteResume);
+router.delete("/applications/:id", handleDeleteResume);
 
 // Proxy & direct local file downloader for resumes (PDF, DOCX, PPT, etc.)
 const handleResumeDownload = async (req: any, res: any) => {

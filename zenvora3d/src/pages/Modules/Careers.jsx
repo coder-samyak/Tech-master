@@ -273,17 +273,9 @@ export const Careers = () => {
       const res = await fetch(`${baseUrl}/cms`);
       if (res.ok) {
         const json = await res.json();
-        const serverResumes = json.data?.resumes || json.data?.careerApplications || [];
-        if (Array.isArray(serverResumes) && serverResumes.length > 0) {
-          setFormData(prev => {
-            const merged = [...serverResumes];
-            (prev.resumes || []).forEach(localItem => {
-              if (!merged.some(m => m.id === localItem.id || (m.email === localItem.email && m.createdAt === localItem.createdAt))) {
-                merged.push(localItem);
-              }
-            });
-            return { ...prev, resumes: merged };
-          });
+        const serverResumes = json.data?.resumes || json.data?.careerApplications || json.data?.careersCMS?.resumes;
+        if (Array.isArray(serverResumes)) {
+          setFormData(prev => ({ ...prev, resumes: serverResumes }));
         }
       }
     } catch (e) {
@@ -318,14 +310,6 @@ export const Careers = () => {
   useEffect(() => {
     fetchResumesFromBackend();
     fetchCareersFromBackend();
-    const interval = setInterval(fetchResumesFromBackend, 5000);
-
-    // Auto-purge any old luxury mock jobs or legacy department/team from local state and storage
-    if (formData.jobs && (formData.jobs.some(j => isMockJob(j)) || formData.jobs.some(j => j.department || j.team))) {
-      const filtered = formData.jobs.filter(j => !isMockJob(j));
-      const finalCleaned = filtered.length > 0 ? sanitizeJobs(filtered) : defaultCareersCMS.jobs;
-      persistChanges({ ...formData, jobs: finalCleaned });
-    }
 
     let channel;
     try {
@@ -334,7 +318,7 @@ export const Careers = () => {
         if (event.data?.type === "APPLICATION_SUBMITTED" && event.data?.data) {
           const newApp = event.data.data;
           setFormData(prev => {
-            const exists = (prev.resumes || []).some(r => r.id === newApp.id);
+            const exists = (prev.resumes || []).some(r => String(r.id) === String(newApp.id));
             if (exists) return prev;
             const updated = [newApp, ...(prev.resumes || [])];
             updateSection('resumes', updated);
@@ -346,7 +330,6 @@ export const Careers = () => {
     } catch (e) {}
 
     return () => {
-      clearInterval(interval);
       if (channel) channel.close();
     };
   }, []);
@@ -361,9 +344,9 @@ export const Careers = () => {
       console.warn("Delete endpoint call error:", e);
     }
 
-    const updatedResumes = formData.resumes.filter(r => r.id !== appId && r._id !== appId);
+    const updatedResumes = (formData.resumes || []).filter(r => String(r.id) !== String(appId) && String(r._id) !== String(appId));
     persistChanges({ ...formData, resumes: updatedResumes });
-    if (selectedApplicant && (selectedApplicant.id === appId || selectedApplicant._id === appId)) {
+    if (selectedApplicant && (String(selectedApplicant.id) === String(appId) || String(selectedApplicant._id) === String(appId))) {
       setSelectedApplicant(null);
     }
     showToast('Application deleted successfully!', 'info');
@@ -379,6 +362,8 @@ export const Careers = () => {
     setFormData(cleanedState);
     updateSection('careers', cleanedState.jobs);
     updateSection('careersCMS', cleanedState);
+    updateSection('resumes', cleanedState.resumes);
+    updateSection('careerApplications', cleanedState.resumes);
 
     // Direct localStorage backup & storage event trigger
     try {
@@ -387,6 +372,8 @@ export const Careers = () => {
       parsed.careers = cleanedJobs;
       parsed.careerData = cleanedJobs;
       parsed.careersCMS = cleanedState;
+      parsed.resumes = cleanedState.resumes;
+      parsed.careerApplications = cleanedState.resumes;
       localStorage.setItem('zenvora_db', JSON.stringify(parsed));
       localStorage.setItem('techmaster-cms-last-updated', JSON.stringify({ key: 'careers', timestamp: Date.now() }));
       window.dispatchEvent(new CustomEvent('techmaster-cms-updated', { detail: { key: 'careers', timestamp: Date.now() } }));
