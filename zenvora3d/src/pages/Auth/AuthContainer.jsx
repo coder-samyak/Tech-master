@@ -9,16 +9,16 @@ import { TiltCard } from '../../components/ui/TiltCard';
 export const AuthContainer = ({ onAuthSuccess }) => {
   const { login, requestPasswordReset, changePassword } = useDatabase();
   const [mode, setMode] = useState('login'); // login, forgot, change
-  
-  const [email, setEmail] = useState('admin@gmail.com');
-  const [password, setPassword] = useState('Admin@123');
-  
+
+  const [email, setEmail] = useState('techmasteradmin@gmail.com');
+  const [password, setPassword] = useState('Techmaster@2026');
+
   const [forgotEmail, setForgotEmail] = useState('');
-  
+
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  
+
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -357,7 +357,7 @@ export const AuthContainer = ({ onAuthSuccess }) => {
 
         {/* Demo login reminder */}
         {mode === 'login' && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
