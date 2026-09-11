@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { normalizeCmsMedia } from "../utils/media";
+import initialCmsData from "../utils/initialCmsData.json";
 
 interface DataContextType {
   homeData: any;
@@ -111,7 +112,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (saved) localDb = JSON.parse(saved);
     } catch (e) {}
 
-    const mergedDb = { ...localDb, ...db };
+    const mergedDb = { ...(initialCmsData as any), ...localDb, ...db };
     db = normalizeCmsMedia(mergedDb);
     setDbData(db);
     setIsBackendConnected(true);
@@ -258,16 +259,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [applyCmsDataToState]);
 
   useEffect(() => {
-    // 0ms instant synchronous hydration from local storage on mount
+    // 0ms instant synchronous hydration from initialCmsData + local storage on mount
     try {
       const saved = localStorage.getItem('zenvora_db');
       if (saved) {
         applyCmsDataToState(JSON.parse(saved));
       } else {
-        applyCmsDataToState({});
+        applyCmsDataToState(initialCmsData);
       }
     } catch (e) {
-      applyCmsDataToState({});
+      applyCmsDataToState(initialCmsData);
     }
 
     void refreshData();

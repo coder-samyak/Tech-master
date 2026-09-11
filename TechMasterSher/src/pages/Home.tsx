@@ -134,7 +134,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     liveHomeData?.hero?.topBadgeText ||
     activeHome?.hero?.topBadgeText ||
     activeHome?.heroTopBadge ||
-    "India's most-watched media production house";
+    "India's fastest-growing multi-channel media house";
 
   const heroMainHeading =
     liveHomeData?.hero?.mainHeading ||
@@ -146,7 +146,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
     liveHomeData?.hero?.tagline ||
     activeHome?.hero?.tagline ||
     activeHome?.heroTagline ||
-    '"Nothing We Make Is Forgettable. Unskippable. Unforgettable."';
+    '"Nothing We Make Is Forgettable."';
 
   const heroSubTagline =
     liveHomeData?.hero?.subTagline ||
