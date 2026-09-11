@@ -92,7 +92,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [dbData, setDbData] = useState<any>(null);
-  const DEFAULT_API_URL = "https://tech-master-afhx.onrender.com/api/v1";
+  const DEFAULT_API_URL = "https://techmasterbackend12.onrender.com/api/v1";
   const getApiBaseUrl = () => {
     if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
       return "http://localhost:5000/api/v1";
@@ -111,10 +111,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (saved) localDb = JSON.parse(saved);
     } catch (e) {}
 
-    const mergedDb = { ...db, ...localDb };
+    const mergedDb = { ...localDb, ...db };
     db = normalizeCmsMedia(mergedDb);
     setDbData(db);
     setIsBackendConnected(true);
+
+    // Save to localStorage so future page visits / reloads load real admin data with 0ms delay
+    if (db && Object.keys(db).length > 0) {
+      try {
+        localStorage.setItem('zenvora_db', JSON.stringify(db));
+      } catch (e) {}
+    }
 
     if (db.homepageCMS) setHomeData(db.homepageCMS);
     else if (db.homepage) setHomeData(db.homepage);
@@ -219,49 +226,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let fetchedDb: any = {};
 
       try {
-        const prodRes = await fetch("https://tech-master-afhx.onrender.com/api/v1/cms").catch(() => null);
-        if (prodRes && prodRes.ok) {
-          const prodJson = await prodRes.json();
-          if (prodJson.success && prodJson.data) {
-            fetchedDb = { ...prodJson.data };
+        const response = await fetch(`${baseUrl}/cms?t=${Date.now()}`).catch(() => null);
+        if (response && response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            fetchedDb = { ...result.data };
           }
         }
       } catch (e) {}
 
-      if (baseUrl !== "https://tech-master-afhx.onrender.com/api/v1") {
-        try {
-          const response = await fetch(`${baseUrl}/cms`).catch(() => null);
-          if (response && response.ok) {
-            const result = await response.json();
-            if (result.success && result.data) {
-              const localJobs = result.data.careersCMS?.jobs || result.data.careers || [];
-              const prodJobs = fetchedDb.careersCMS?.jobs || fetchedDb.careers || [];
-              const mergedJobs = [...prodJobs];
-              if (Array.isArray(localJobs)) {
-                for (const lj of localJobs) {
-                  const key = (lj.title || lj.role || lj.id || '').trim().toLowerCase();
-                  if (key && !mergedJobs.some(pj => (pj.title || pj.role || pj.id || '').trim().toLowerCase() === key)) {
-                    mergedJobs.push(lj);
-                  }
-                }
-              }
-              fetchedDb = {
-                ...fetchedDb,
-                ...result.data,
-                careers: mergedJobs,
-                careersCMS: {
-                  ...(fetchedDb.careersCMS || {}),
-                  ...(result.data.careersCMS || {}),
-                  jobs: mergedJobs
-                }
-              };
-            }
-          }
-        } catch (e) {}
-      }
-
       try {
-        const fvRes = await fetch(`${baseUrl}/featured-videos`).catch(() => null);
+        const fvRes = await fetch(`${baseUrl}/featured-videos?t=${Date.now()}`).catch(() => null);
         if (fvRes && fvRes.ok) {
           const fvJson = await fvRes.json();
           if (fvJson.success && Array.isArray(fvJson.data)) {
@@ -270,7 +245,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (e) {}
 
-      applyCmsDataToState(fetchedDb);
+      if (Object.keys(fetchedDb).length > 0) {
+        applyCmsDataToState(fetchedDb);
+      }
       setIsBackendConnected(true);
     } catch (err) {
       console.warn("Backend CMS sync initial fallback:", err);
@@ -282,7 +259,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // 0ms instant synchronous hydration from local storage on mount
-    applyCmsDataToState({});
+    try {
+      const saved = localStorage.getItem('zenvora_db');
+      if (saved) {
+        applyCmsDataToState(JSON.parse(saved));
+      } else {
+        applyCmsDataToState({});
+      }
+    } catch (e) {
+      applyCmsDataToState({});
+    }
 
     void refreshData();
 

@@ -66,7 +66,7 @@ export const GlobalMediaManager = ({ onClose, onSelect, defaultTypeFilter }) => 
       formData.append("file", selectedFile);
 
       let apiEnv = (import.meta.env.VITE_API_URL || "").trim();
-      let backendOrigin = "https://tech-master-afhx.onrender.com";
+      let backendOrigin = "https://techmasterbackend12.onrender.com";
       if (apiEnv.startsWith("http://") || apiEnv.startsWith("https://")) {
         try {
           backendOrigin = new URL(apiEnv).origin;

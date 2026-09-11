@@ -18,53 +18,40 @@ export const Career: React.FC = () => {
       return "http://localhost:5000/api/v1";
     }
     const envUrl = import.meta.env.VITE_API_URL?.trim();
-    return envUrl || "https://tech-master-afhx.onrender.com/api/v1";
+    return envUrl || "https://techmasterbackend12.onrender.com/api/v1";
   };
 
   const fetchLiveCareers = async () => {
     try {
-      const prodRes = await fetch("https://tech-master-afhx.onrender.com/api/v1/cms").catch(() => null);
-      let prodData: any = null;
-      if (prodRes && prodRes.ok) {
-        const json = await prodRes.json();
-        if (json.success && json.data) prodData = json.data;
-      }
-
       const localBaseUrl = getApiBaseUrl();
       let localData: any = null;
-      if (localBaseUrl !== "https://tech-master-afhx.onrender.com/api/v1") {
-        const localRes = await fetch(`${localBaseUrl}/cms`).catch(() => null);
-        if (localRes && localRes.ok) {
-          const json = await localRes.json();
-          if (json.success && json.data) localData = json.data;
-        }
+      const localRes = await fetch(`${localBaseUrl}/cms?t=${Date.now()}`).catch(() => null);
+      if (localRes && localRes.ok) {
+        const json = await localRes.json();
+        if (json.success && json.data) localData = json.data;
       }
 
-      const prodJobs = getCleanList(prodData?.careersCMS?.jobs || prodData?.careers);
-      const localServerJobs = getCleanList(localData?.careersCMS?.jobs || localData?.careers);
-
-      const mergedServerJobs = [...prodJobs];
-      for (const lj of localServerJobs) {
-        const key = (lj.title || lj.role || lj.id || '').trim().toLowerCase();
-        if (key && !mergedServerJobs.some(pj => (pj.title || pj.role || pj.id || '').trim().toLowerCase() === key)) {
-          mergedServerJobs.push(lj);
-        }
-      }
-
-      if (mergedServerJobs.length > 0 || prodData || localData) {
+      if (localData) {
+        const rawJobs = localData.careersCMS?.jobs || localData.careers || [];
+        const cleanJobs = Array.isArray(rawJobs) ? rawJobs.filter((j: any) => !isMockJob(j)) : [];
         setLiveCareerData({
-          ...(prodData || {}),
-          ...(localData || {}),
-          careers: mergedServerJobs,
+          ...localData,
+          careers: cleanJobs,
           careersCMS: {
-            ...(prodData?.careersCMS || {}),
-            ...(localData?.careersCMS || {}),
-            jobs: mergedServerJobs
+            ...(localData.careersCMS || {}),
+            jobs: cleanJobs
           }
         });
+        try {
+          const currentSaved = localStorage.getItem("zenvora_db");
+          const parsed = currentSaved ? JSON.parse(currentSaved) : {};
+          parsed.careers = cleanJobs;
+          parsed.careersCMS = { ...(parsed.careersCMS || {}), jobs: cleanJobs };
+          localStorage.setItem("zenvora_db", JSON.stringify(parsed));
+        } catch (e) {}
       }
     } catch (e) {
-      console.warn("Direct Career fetch error:", e);
+      console.warn("Careers fetch warning:", e);
     }
   };
 
@@ -289,7 +276,7 @@ export const Career: React.FC = () => {
       dataPayload.append("resume", formData.resumeFile);
       dataPayload.append("resumeBase64", resumeBase64);
 
-      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend12.onrender.com/api/v1";
       const endpoints = [
         `${baseUrl}/cms/public/resume`,
         `${baseUrl}/public/resume`,

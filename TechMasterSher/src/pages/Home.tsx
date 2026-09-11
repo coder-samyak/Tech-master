@@ -72,7 +72,7 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
             .endsWith("/api/v1")
             ? envUrl.replace(/\/+$|\/api\/v1\/*$/i, "")
             : `${envUrl.replace(/\/+$|\/api\/v1\/*$/i, "")}/api/v1`
-          : "https://tech-master-afhx.onrender.com/api/v1";
+          : "https://techmasterbackend12.onrender.com/api/v1";
 
         const res = await fetch(`${base}/homepage?t=${Date.now()}`);
 
@@ -81,6 +81,13 @@ export const Home: React.FC<HomeProps> = ({ onChangePage }) => {
 
           if (json.success && json.data) {
             setLiveHomeData(json.data);
+            try {
+              const currentSaved = localStorage.getItem("zenvora_db");
+              const parsed = currentSaved ? JSON.parse(currentSaved) : {};
+              parsed.homepageCMS = json.data;
+              parsed.homepage = json.data;
+              localStorage.setItem("zenvora_db", JSON.stringify(parsed));
+            } catch (e) {}
           }
         }
       } catch (e) {

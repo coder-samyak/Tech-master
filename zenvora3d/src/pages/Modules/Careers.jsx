@@ -234,7 +234,7 @@ export const Careers = () => {
     }
 
     // CASE 2: Resume is a URL (Legacy / External link / Server Path)
-    const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+    const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend12.onrender.com/api/v1";
     let fullRawUrl = rawUrl;
     if (rawUrl.startsWith("/uploads/")) {
       fullRawUrl = `${baseUrl.replace(/\/api\/v1\/?$/, "")}${rawUrl}`;
@@ -255,7 +255,7 @@ export const Careers = () => {
 
   const fetchResumesFromBackend = async () => {
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend12.onrender.com/api/v1";
       // 1. Try dedicated /resumes endpoint
       let res = await fetch(`${baseUrl}/resumes`).catch(() => null);
       if (res && res.ok) {
@@ -281,7 +281,7 @@ export const Careers = () => {
 
   const fetchCareersFromBackend = async () => {
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend12.onrender.com/api/v1";
       const res = await fetch(`${baseUrl}/cms`);
       if (res.ok) {
         const json = await res.json();
@@ -338,7 +338,7 @@ export const Careers = () => {
     const targetStr = String(targetId || '');
 
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || "https://tech-master-afhx.onrender.com/api/v1";
+      const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend12.onrender.com/api/v1";
       if (targetStr) {
         await fetch(`${baseUrl}/resumes/${encodeURIComponent(targetStr)}`, { method: "DELETE" });
       }
