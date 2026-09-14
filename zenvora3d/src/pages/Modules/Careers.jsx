@@ -159,9 +159,21 @@ export const Careers = () => {
     ...storedCMS,
     hero: { ...defaultCareersCMS.hero, ...(storedCMS.hero || db?.careerHero || {}) },
     cultureHeader: { ...defaultCareersCMS.cultureHeader, ...(storedCMS.cultureHeader || db?.cultureHeader || {}) },
-    culture: (db?.careerCulture && db.careerCulture.length > 0) ? db.careerCulture : defaultCareersCMS.culture,
+    culture: (Array.isArray(storedCMS?.culture) && storedCMS.culture.length > 0) 
+      ? storedCMS.culture 
+      : (Array.isArray(db?.careersCMS?.culture) && db.careersCMS.culture.length > 0)
+        ? db.careersCMS.culture
+        : (Array.isArray(db?.careerCulture) && db.careerCulture.length > 0) 
+          ? db.careerCulture 
+          : defaultCareersCMS.culture,
     processHeader: { ...defaultCareersCMS.processHeader, ...(storedCMS.processHeader || db?.processHeader || {}) },
-    process: (db?.careerProcess && db.careerProcess.length > 0) ? db.careerProcess : defaultCareersCMS.process,
+    process: (Array.isArray(storedCMS?.process) && storedCMS.process.length > 0) 
+      ? storedCMS.process 
+      : (Array.isArray(db?.careersCMS?.process) && db.careersCMS.process.length > 0)
+        ? db.careersCMS.process
+        : (Array.isArray(db?.careerProcess) && db.careerProcess.length > 0) 
+          ? db.careerProcess 
+          : defaultCareersCMS.process,
     jobs: getInitialJobs(),
     resumes: storedResumes
   });
@@ -282,21 +294,30 @@ export const Careers = () => {
   const fetchCareersFromBackend = async () => {
     try {
       const baseUrl = import.meta.env.VITE_API_URL || "https://techmasterbackend12.onrender.com/api/v1";
-      const res = await fetch(`${baseUrl}/cms`);
+      const res = await fetch(`${baseUrl}/cms?t=${Date.now()}`);
       if (res.ok) {
         const json = await res.json();
-        const serverJobs = json.data?.careersCMS?.jobs || json.data?.careers;
-        if (Array.isArray(serverJobs) && serverJobs.length > 0) {
-          const cleanServerJobs = serverJobs.filter(j => !isMockJob(j));
-          if (cleanServerJobs.length > 0) {
-            setFormData(prev => {
-              if (prev.jobs.some(j => isMockJob(j)) || JSON.stringify(prev.jobs) !== JSON.stringify(cleanServerJobs)) {
-                return { ...prev, jobs: cleanServerJobs };
-              }
-              return prev;
-            });
-          }
-        }
+        const serverCMS = json.data?.careersCMS || json.data;
+        const serverJobs = serverCMS?.jobs || json.data?.careers;
+        const serverCulture = serverCMS?.culture || json.data?.careerCulture;
+        const serverCultureHeader = serverCMS?.cultureHeader || json.data?.cultureHeader;
+        const serverProcess = serverCMS?.process || json.data?.careerProcess;
+        const serverProcessHeader = serverCMS?.processHeader || json.data?.processHeader;
+        const serverHero = serverCMS?.hero || json.data?.careerHero;
+
+        setFormData(prev => {
+          const cleanServerJobs = (Array.isArray(serverJobs) ? serverJobs : []).filter(j => !isMockJob(j));
+          return {
+            ...prev,
+            ...(serverCMS || {}),
+            jobs: cleanServerJobs.length > 0 ? cleanServerJobs : prev.jobs,
+            culture: (Array.isArray(serverCulture) && serverCulture.length > 0) ? serverCulture : prev.culture,
+            cultureHeader: serverCultureHeader || prev.cultureHeader,
+            process: (Array.isArray(serverProcess) && serverProcess.length > 0) ? serverProcess : prev.process,
+            processHeader: serverProcessHeader || prev.processHeader,
+            hero: serverHero || prev.hero
+          };
+        });
       }
     } catch (e) {
       console.warn("Careers fetch warning:", e);
@@ -386,6 +407,22 @@ export const Careers = () => {
     if (cleanedState.hero) updateSection('careerHero', cleanedState.hero);
     updateSection('resumes', cleanedState.resumes);
     updateSection('careerApplications', cleanedState.resumes);
+
+    // Explicit HTTP API sync to backend MongoDB (/api/v1/cms/update) so refresh NEVER loses changes!
+    try {
+      if (apiFetch) {
+        apiFetch('/cms/update', {
+          method: 'POST',
+          body: JSON.stringify({ key: 'careersCMS', value: cleanedState })
+        }).catch(() => null);
+        if (cleanedState.culture) {
+          apiFetch('/cms/update', {
+            method: 'POST',
+            body: JSON.stringify({ key: 'careerCulture', value: cleanedState.culture })
+          }).catch(() => null);
+        }
+      }
+    } catch (e) {}
 
     // Direct localStorage backup & storage event trigger
     try {

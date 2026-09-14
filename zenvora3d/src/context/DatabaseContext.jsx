@@ -142,6 +142,21 @@ export const DatabaseProvider = ({ children }) => {
           footer: mergedFooter
         };
 
+        if (merged.careersCMS) {
+          if (Array.isArray(merged.careersCMS.culture) && merged.careersCMS.culture.length > 0) {
+            merged.careerCulture = merged.careersCMS.culture;
+          }
+          if (merged.careersCMS.cultureHeader) {
+            merged.cultureHeader = merged.careersCMS.cultureHeader;
+          }
+          if (Array.isArray(merged.careersCMS.process) && merged.careersCMS.process.length > 0) {
+            merged.careerProcess = merged.careersCMS.process;
+          }
+          if (merged.careersCMS.processHeader) {
+            merged.processHeader = merged.careersCMS.processHeader;
+          }
+        }
+
         if (merged.footer) {
           if (merged.footer.copyrightText === "TECH MASTER MEDIA & CREATIVE LABS. ALL RIGHTS RESERVED.") {
             merged.footer.copyrightText = "TECH MASTER. ALL RIGHTS RESERVED.";
