@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Pause } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import coverImg from "../assets/Cover.jpeg";
@@ -93,10 +94,58 @@ export const About: React.FC = () => {
 
   const targetYtUrl = youtubeUrl || (videoId ? `https://www.youtube.com/watch?v=${videoId}&t=${startSec}s` : "");
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
-  const [isPaused, setIsPaused] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  // Infinite Seamless Loop Effect (Restarts at startSec when endSec is reached or video ends)
+  React.useEffect(() => {
+    if (!videoId || mediaType !== "youtube") return;
+
+    const restartVideo = () => {
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        try {
+          iframeRef.current.contentWindow.postMessage(
+            JSON.stringify({ event: "command", func: "seekTo", args: [startSec, true] }),
+            "*"
+          );
+          iframeRef.current.contentWindow.postMessage(
+            JSON.stringify({ event: "command", func: "playVideo", args: "" }),
+            "*"
+          );
+        } catch (e) {}
+      }
+    };
+
+    // 1. Listen for YouTube ENDED (0) state from iframe postMessage
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        if (typeof event.data === "string") {
+          const data = JSON.parse(event.data);
+          if (data.event === "onStateChange" && (data.info === 0 || data.info === 2)) {
+            restartVideo();
+          }
+        }
+      } catch (e) {}
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    // 2. Interval timer loop if start & end timestamps are specified
+    let intervalId: any = null;
+    if (endSec > startSec) {
+      const loopDurationMs = Math.max(1000, (endSec - startSec) * 1000);
+      intervalId = setInterval(() => {
+        restartVideo();
+      }, loopDurationMs);
+    }
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [videoId, mediaType, startSec, endSec]);
 
   const handleMouseEnter = () => {
-    setIsPaused(true);
+    setIsHovered(true);
     if (iframeRef.current && iframeRef.current.contentWindow) {
       try {
         iframeRef.current.contentWindow.postMessage(
@@ -108,7 +157,7 @@ export const About: React.FC = () => {
   };
 
   const handleMouseLeave = () => {
-    setIsPaused(false);
+    setIsHovered(false);
     if (iframeRef.current && iframeRef.current.contentWindow) {
       try {
         iframeRef.current.contentWindow.postMessage(
@@ -243,19 +292,12 @@ export const About: React.FC = () => {
                   onClick={handleCardClick}
                 />
 
-                {/* Hover Status Badge */}
-                {mediaType === "youtube" && videoId && (
-                  <div className="absolute top-4 right-4 z-35 transition-all duration-300">
-                    {isPaused ? (
-                      <div className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-gold/50 text-[10px] font-mono uppercase text-gold flex items-center gap-1.5 shadow-lg animate-pulse">
-                        <span className="w-2 h-2 rounded-full bg-gold" />
-                        Paused (Click to Open YouTube)
-                      </div>
-                    ) : (
-                      <div className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-mono uppercase text-white/80 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span>Click to Watch on YouTube</span>
-                      </div>
-                    )}
+                {/* Custom Sleek Pause Icon Overlay on Hover (Unblurred crisp video frame) */}
+                {mediaType === "youtube" && videoId && isHovered && (
+                  <div className="absolute inset-0 z-35 flex items-center justify-center pointer-events-none transition-all duration-300">
+                    <div className="w-16 h-16 rounded-full bg-black/80 border border-gold/60 flex items-center justify-center shadow-[0_0_25px_rgba(212,175,55,0.5)]">
+                      <Pause className="w-7 h-7 text-gold fill-gold" />
+                    </div>
                   </div>
                 )}
 
@@ -268,12 +310,12 @@ export const About: React.FC = () => {
                   />
                 )}
 
-                {/* 2. YouTube Live Video Stream iFrame (Full Bleed Edge-To-Edge) */}
+                {/* 2. YouTube Live Video Stream iFrame (Clean single video embed without playlist controls) */}
                 {mediaType === "youtube" && videoId ? (
                   <div className="absolute inset-0 z-10 overflow-hidden flex items-center justify-center pointer-events-none">
                     <iframe
                       ref={iframeRef}
-                      src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
+                      src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
                       title={culture.imageAlt || studioCard.imageAlt || "Tech Master Company Culture Video"}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       style={{

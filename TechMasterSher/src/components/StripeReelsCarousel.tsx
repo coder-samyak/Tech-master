@@ -11,7 +11,7 @@ interface StripeReelsCarouselProps {
 
 const stripeEasing: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const transitionSettings = {
-  duration: 0.75,
+  duration: 0.3,
   ease: stripeEasing,
 };
 
@@ -139,7 +139,7 @@ const InstagramReelPlayer: React.FC<{ instId?: string; embedUrl: string; display
         title={displayTitle}
         className="w-full h-full scale-[2.2] origin-center pointer-events-none border-none bg-black"
         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-        loading="lazy"
+        loading="eager"
       />
     </div>
   );
@@ -321,7 +321,6 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
               <div
                 className="w-full h-full absolute inset-0 z-20 overflow-hidden"
                 style={{
-                  filter: absOffset === 0 ? "none" : absOffset === 1 ? "blur(3px)" : "blur(6px)",
                   transform: "translateZ(0)"
                 }}
               >
@@ -347,7 +346,7 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
                         title={displayTitle}
                         className="w-full h-full object-cover scale-[1.3] pointer-events-none border-none"
                         allow="autoplay; encrypted-media"
-                        loading="lazy"
+                        loading="eager"
                       />
                     );
                   } else if (embedInfo.type === "instagram") {
