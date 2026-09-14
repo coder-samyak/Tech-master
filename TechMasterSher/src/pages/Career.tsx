@@ -70,12 +70,14 @@ export const Career: React.FC = () => {
     try {
       channel = new BroadcastChannel("zenvora_cms_sync");
       channel.onmessage = (event) => {
-        if (event.data?.type === "CAREERS_UPDATED" && event.data?.data) {
-          const cleanJobs = (event.data.data || []).filter((j: any) => !isMockJob(j));
+        if (event.data?.type === "CAREERS_UPDATED") {
+          const fullState = event.data?.fullState || {};
+          const cleanJobs = (event.data?.data || fullState.jobs || []).filter((j: any) => !isMockJob(j));
           setLiveCareerData((prev: any) => ({
             ...prev,
+            ...fullState,
             careers: cleanJobs,
-            careersCMS: { ...(prev?.careersCMS || {}), jobs: cleanJobs }
+            careersCMS: { ...(prev?.careersCMS || {}), ...fullState, jobs: cleanJobs }
           }));
           setSyncTick(t => t + 1);
         }
@@ -199,7 +201,7 @@ export const Career: React.FC = () => {
     description: "We look for cinematic editors , writer and Future of Creator economy who want to construct the future of tech education."
   };
 
-  const cultureHeader = activeDb?.cultureHeader || activeDb?.careersCMS?.cultureHeader || {
+  const cultureHeader = activeDb?.careersCMS?.cultureHeader || activeDb?.cultureHeader || {
     badge: "OUR DNA",
     titleLine1: "Culture &",
     titleLine2: "Benefits"
@@ -211,9 +213,17 @@ export const Career: React.FC = () => {
     { title: "Creator Autonomy", description: "Own your projects. We cultivate leaders who can drive their own vision." },
     { title: "Remote First", description: "Work from anywhere in the world. We believe in output, not office hours." }
   ];
-  const careerCulture = (activeDb?.careerCulture || activeDb?.careersCMS?.culture || defaultCulture).filter((c: any) => c.visible !== false && !c.deleted);
 
-  const processHeader = activeDb?.processHeader || activeDb?.careersCMS?.processHeader || {
+  const rawCultureList = (
+    (Array.isArray(activeDb?.careersCMS?.culture) && activeDb.careersCMS.culture.length > 0)
+      ? activeDb.careersCMS.culture
+      : (Array.isArray(activeDb?.careerCulture) && activeDb.careerCulture.length > 0)
+        ? activeDb.careerCulture
+        : defaultCulture
+  );
+  const careerCulture = rawCultureList.filter((c: any) => c && c.visible !== false && !c.deleted && c.active !== false);
+
+  const processHeader = activeDb?.careersCMS?.processHeader || activeDb?.processHeader || {
     badge: "HOW WE HIRE",
     titleLine1: "The",
     titleLine2: "Process"
@@ -225,7 +235,15 @@ export const Career: React.FC = () => {
     { step: "03", title: "Technical Task", description: "A paid, asynchronous take-home project relevant to your role." },
     { step: "04", title: "Final Interview", description: "A conversation with Aman and the leads. No live whiteboarding." }
   ];
-  const careerProcess = (activeDb?.careerProcess || activeDb?.careersCMS?.process || defaultProcess).filter((p: any) => p.visible !== false && !p.deleted);
+
+  const rawProcessList = (
+    (Array.isArray(activeDb?.careersCMS?.process) && activeDb.careersCMS.process.length > 0)
+      ? activeDb.careersCMS.process
+      : (Array.isArray(activeDb?.careerProcess) && activeDb.careerProcess.length > 0)
+        ? activeDb.careerProcess
+        : defaultProcess
+  );
+  const careerProcess = rawProcessList.filter((p: any) => p && p.visible !== false && !p.deleted && p.active !== false);
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

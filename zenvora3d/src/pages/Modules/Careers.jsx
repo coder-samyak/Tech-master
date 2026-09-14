@@ -379,6 +379,11 @@ export const Careers = () => {
     setFormData(cleanedState);
     updateSection('careers', cleanedState.jobs);
     updateSection('careersCMS', cleanedState);
+    if (cleanedState.culture) updateSection('careerCulture', cleanedState.culture);
+    if (cleanedState.cultureHeader) updateSection('cultureHeader', cleanedState.cultureHeader);
+    if (cleanedState.process) updateSection('careerProcess', cleanedState.process);
+    if (cleanedState.processHeader) updateSection('processHeader', cleanedState.processHeader);
+    if (cleanedState.hero) updateSection('careerHero', cleanedState.hero);
     updateSection('resumes', cleanedState.resumes);
     updateSection('careerApplications', cleanedState.resumes);
 
@@ -389,6 +394,11 @@ export const Careers = () => {
       parsed.careers = cleanedJobs;
       parsed.careerData = cleanedJobs;
       parsed.careersCMS = cleanedState;
+      if (cleanedState.culture) parsed.careerCulture = cleanedState.culture;
+      if (cleanedState.cultureHeader) parsed.cultureHeader = cleanedState.cultureHeader;
+      if (cleanedState.process) parsed.careerProcess = cleanedState.process;
+      if (cleanedState.processHeader) parsed.processHeader = cleanedState.processHeader;
+      if (cleanedState.hero) parsed.careerHero = cleanedState.hero;
       parsed.resumes = cleanedState.resumes;
       parsed.careerApplications = cleanedState.resumes;
       localStorage.setItem('zenvora_db', JSON.stringify(parsed));

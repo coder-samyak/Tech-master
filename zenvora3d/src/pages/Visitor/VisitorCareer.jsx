@@ -10,8 +10,8 @@ export const VisitorCareer = () => {
   
   const careerHero = db?.careerHero || {};
   const careers = db?.careers || [];
-  const careerCulture = db?.careerCulture || [];
-  const careerProcess = db?.careerProcess || [];
+  const careerCulture = (db?.careersCMS?.culture && db.careersCMS.culture.length > 0) ? db.careersCMS.culture : (db?.careerCulture || []);
+  const careerProcess = (db?.careersCMS?.process && db.careersCMS.process.length > 0) ? db.careersCMS.process : (db?.careerProcess || []);
   const careerStats = db?.careerStats || {};
   const careerSettings = db?.careerSettings || {};
 
