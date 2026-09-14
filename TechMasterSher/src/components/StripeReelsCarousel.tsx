@@ -15,7 +15,7 @@ const transitionSettings = {
   ease: stripeEasing,
 };
 
-function getEmbedUrl(url: string): { type: "youtube" | "instagram" | "direct"; embedUrl?: string; instId?: string } {
+function getEmbedUrl(url: string): { type: "youtube" | "instagram" | "direct"; embedUrl?: string; instId?: string; ytId?: string } {
   if (!url) return { type: "direct" };
 
   let ytId: string | null = null;
@@ -33,7 +33,8 @@ function getEmbedUrl(url: string): { type: "youtube" | "instagram" | "direct"; e
   if (ytId) {
     return {
       type: "youtube",
-      embedUrl: `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`
+      ytId,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`
     };
   }
 
@@ -101,6 +102,43 @@ const CardVideoPlayer: React.FC<{ src: string; isActive: boolean; poster?: strin
       poster={poster}
       preload="auto"
       className="w-full h-full object-cover"
+    />
+  );
+};
+
+const YouTubeShortPlayer: React.FC<{ ytId: string; displayTitle: string; isActive: boolean }> = ({ ytId, displayTitle }) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        if ((data && data.event === "infoDelivery" && data.info && data.info.playerState === 0) || (data && data.event === "onStateChange" && data.info === 0)) {
+          if (iframeRef.current && iframeRef.current.contentWindow) {
+            iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func: "seekTo", args: [0, true] }), "*");
+            iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "*");
+          }
+        }
+      } catch (e) {}
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`;
+
+  return (
+    <iframe
+      ref={iframeRef}
+      src={embedUrl}
+      title={displayTitle}
+      style={{ pointerEvents: "none", userSelect: "none" }}
+      className="w-full h-full object-cover scale-[1.45] pointer-events-none border-none origin-center"
+      allow="autoplay; encrypted-media"
+      loading="eager"
     />
   );
 };
@@ -339,14 +377,12 @@ export const StripeReelsCarousel: React.FC<StripeReelsCarouselProps> = ({ reels,
 
                   const embedInfo = getEmbedUrl(clickUrl || playUrl);
 
-                  if (embedInfo.type === "youtube") {
+                  if (embedInfo.type === "youtube" && embedInfo.ytId) {
                     return (
-                      <iframe
-                        src={embedInfo.embedUrl}
-                        title={displayTitle}
-                        className="w-full h-full object-cover scale-[1.3] pointer-events-none border-none"
-                        allow="autoplay; encrypted-media"
-                        loading="eager"
+                      <YouTubeShortPlayer
+                        ytId={embedInfo.ytId}
+                        displayTitle={displayTitle}
+                        isActive={isActive}
                       />
                     );
                   } else if (embedInfo.type === "instagram") {

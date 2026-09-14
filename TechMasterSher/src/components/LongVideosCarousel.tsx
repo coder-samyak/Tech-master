@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PanInfo } from "framer-motion";
@@ -13,6 +13,48 @@ interface LongVideosCarouselProps {
   videos?: any[];
   isHomePage?: boolean;
 }
+
+const YouTubeLongVideoPlayer: React.FC<{ videoId: string; displayTitle: string; isActive: boolean; startSec: number; endSec?: number }> = ({ videoId, displayTitle, isActive, startSec, endSec }) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        if ((data && data.event === "infoDelivery" && data.info && data.info.playerState === 0) || (data && data.event === "onStateChange" && data.info === 0)) {
+          if (iframeRef.current && iframeRef.current.contentWindow) {
+            iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func: "seekTo", args: [startSec || 0, true] }), "*");
+            iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "*");
+          }
+        }
+      } catch (e) {}
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [startSec]);
+
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`;
+
+  return (
+    <iframe
+      ref={iframeRef}
+      src={embedUrl}
+      title={displayTitle}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      style={{
+        height: "120%",
+        aspectRatio: "16/9",
+        minWidth: isActive ? "170%" : "550%",
+        pointerEvents: "none",
+        userSelect: "none"
+      }}
+      className="object-cover border-0 pointer-events-none origin-center transform scale-110"
+    />
+  );
+};
 
 
 
@@ -243,16 +285,12 @@ export const LongVideosCarousel: React.FC<LongVideosCarouselProps> = ({ videos, 
                 {/* 2. Instant Video Stream iFrame (Guaranteed 100% Full Bleed Edge-To-Edge Video with ZERO Letterbox Black Bars on ALL Cards) */}
                 {videoId && (
                   <div className="absolute inset-0 z-30 overflow-hidden flex items-center justify-center pointer-events-none">
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
-                      title={displayTitle}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      style={{
-                        height: "120%",
-                        aspectRatio: "16/9",
-                        minWidth: isActive ? "170%" : "550%"
-                      }}
-                      className="object-cover border-0 pointer-events-none origin-center transform scale-110"
+                    <YouTubeLongVideoPlayer
+                      videoId={videoId}
+                      displayTitle={displayTitle}
+                      isActive={isActive}
+                      startSec={startSec}
+                      endSec={endSec}
                     />
                   </div>
                 )}
