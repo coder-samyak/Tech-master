@@ -3,10 +3,31 @@ import { useDatabase } from '../../context/DatabaseContext';
 import { useMediaManager } from '../../context/MediaContext';
 import { 
   Building2, Users, Quote, Save, Check, Upload, Trash2, 
-  RefreshCw, Image as ImageIcon, Eye, Sparkles, Layers, ShieldCheck 
+  RefreshCw, Image as ImageIcon, Eye, Sparkles, Layers, ShieldCheck,
+  Video, Play, Film, Clock, Link as LinkIcon
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
+
+function extractYouTubeId(url) {
+  if (!url) return '';
+  if (url.length === 11 && !url.includes('/') && !url.includes('.')) return url;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : '';
+}
+
+function parseTimeToSeconds(timeInput) {
+  if (typeof timeInput === 'number') return timeInput;
+  if (!timeInput) return 0;
+  const str = timeInput.toString().trim();
+  if (!str) return 0;
+  const parts = str.split(':').map((p) => parseInt(p, 10));
+  if (parts.some(isNaN)) return 0;
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return Number(str) || 0;
+}
 
 export const About = () => {
   const { db, updateSection, apiFetch } = useDatabase();
@@ -42,6 +63,11 @@ export const About = () => {
       imageSubtitle: "Jaipur Studio",
       imageDescription: "50+ Person Production & Gaming Suite",
       overlayCaption: "",
+      mediaType: "image",
+      youtubeUrl: "",
+      videoId: "",
+      startTime: "",
+      endTime: "",
       bgStyle: "glass",
       borderStyle: "gold-subtle",
       order: 2,
@@ -56,6 +82,11 @@ export const About = () => {
       imageSubtitle: "Jaipur Studio",
       imageDescription: "50+ Person Production & Gaming Suite",
       overlayCaption: "",
+      mediaType: "image",
+      youtubeUrl: "",
+      videoId: "",
+      startTime: "",
+      endTime: "",
       visibility: true,
       order: 3
     },
@@ -129,14 +160,29 @@ export const About = () => {
   const syncToDatabase = async (nextData, isPublished = false) => {
     setFormData(nextData);
 
+    const cultureMediaType = nextData.culture.mediaType || 'image';
+    const cultureYtUrl = nextData.culture.youtubeUrl || '';
+    const cultureVidId = nextData.culture.videoId || extractYouTubeId(cultureYtUrl);
+    const cultureStart = nextData.culture.startTime || '';
+    const cultureEnd = nextData.culture.endTime || '';
+
     const payload = {
       ...nextData,
+      culture: {
+        ...nextData.culture,
+        videoId: cultureVidId
+      },
       studioCard: {
         imageUrl: nextData.culture.imageUrl || nextData.studioCard?.imageUrl,
         imageAlt: nextData.culture.imageAlt || nextData.studioCard?.imageAlt,
         imageSubtitle: nextData.culture.imageSubtitle || nextData.studioCard?.imageSubtitle,
         imageDescription: nextData.culture.imageDescription || nextData.studioCard?.imageDescription,
         overlayCaption: nextData.culture.overlayCaption || nextData.studioCard?.overlayCaption || "",
+        mediaType: cultureMediaType,
+        youtubeUrl: cultureYtUrl,
+        videoId: cultureVidId,
+        startTime: cultureStart,
+        endTime: cultureEnd,
         visibility: nextData.culture.visibility !== false,
         order: 3
       },
@@ -403,27 +449,194 @@ export const About = () => {
               </div>
             </div>
 
-            {/* Right Side Image Upload & Preview */}
+            {/* Right Side Media Upload, YouTube Video & Preview */}
             <div className="space-y-4 bg-zinc-900/40 p-5 rounded-xl border border-zinc-800/80">
-              <label className="text-zinc-400 font-mono uppercase text-[10px] block">Right Side Team Image</label>
+              <div className="flex items-center justify-between">
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block">Right Side Team Media</label>
+                <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({
+                      ...formData,
+                      culture: { ...formData.culture, mediaType: 'image' }
+                    })}
+                    className={`px-2.5 py-1 rounded text-[10px] font-mono font-semibold uppercase flex items-center gap-1 transition-all cursor-pointer ${
+                      (formData.culture.mediaType || 'image') === 'image'
+                        ? 'bg-luxury-gold text-black shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <ImageIcon className="w-3 h-3" />
+                    <span>Image</span>
+                  </button>
 
-              {/* Image Preview Box */}
-              <div className="aspect-video w-full bg-black rounded-lg overflow-hidden border border-zinc-800 relative group flex items-center justify-center">
-                {formData.culture.imageUrl ? (
-                  <img src={formData.culture.imageUrl} alt={formData.culture.imageAlt} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-center p-6 text-zinc-500">
-                    <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <span>No image uploaded</span>
-                  </div>
-                )}
+                  <button
+                    type="button"
+                    onClick={() => setFormData({
+                      ...formData,
+                      culture: { ...formData.culture, mediaType: 'youtube' }
+                    })}
+                    className={`px-2.5 py-1 rounded text-[10px] font-mono font-semibold uppercase flex items-center gap-1 transition-all cursor-pointer ${
+                      formData.culture.mediaType === 'youtube'
+                        ? 'bg-luxury-gold text-black shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Video className="w-3 h-3" />
+                    <span>YouTube Video</span>
+                  </button>
+                </div>
               </div>
 
+              {/* YouTube Video Config & Live Preview */}
+              {formData.culture.mediaType === 'youtube' ? (
+                <div className="space-y-3.5">
+                  <div>
+                    <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1 flex items-center gap-1">
+                      <LinkIcon className="w-3 h-3 text-luxury-gold" />
+                      YouTube Video URL
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.culture.youtubeUrl || ''}
+                      onChange={(e) => {
+                        const url = e.target.value;
+                        const vid = extractYouTubeId(url);
+                        setFormData({
+                          ...formData,
+                          culture: {
+                            ...formData.culture,
+                            youtubeUrl: url,
+                            videoId: vid || formData.culture.videoId
+                          }
+                        });
+                      }}
+                      placeholder="e.g. https://www.youtube.com/watch?v=8H272rF60dc"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-200 font-mono text-xs focus:outline-none focus:border-luxury-gold/40"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-luxury-gold" />
+                        Start Time (e.g. 0:20)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.culture.startTime || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          culture: { ...formData.culture, startTime: e.target.value }
+                        })}
+                        placeholder="0:20"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-200 font-mono text-xs focus:outline-none focus:border-luxury-gold/40"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-luxury-gold" />
+                        End Time (e.g. 1:00)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.culture.endTime || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          culture: { ...formData.culture, endTime: e.target.value }
+                        })}
+                        placeholder="1:00"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-200 font-mono text-xs focus:outline-none focus:border-luxury-gold/40"
+                      />
+                    </div>
+                  </div>
+
+                  {/* YouTube Video Preview Box */}
+                  <div className="aspect-video w-full bg-black rounded-lg overflow-hidden border border-zinc-800 relative group flex items-center justify-center">
+                    {(() => {
+                      const vId = formData.culture.videoId || extractYouTubeId(formData.culture.youtubeUrl || '');
+                      const startSec = parseTimeToSeconds(formData.culture.startTime);
+                      const endSec = parseTimeToSeconds(formData.culture.endTime);
+                      
+                      if (vId) {
+                        return (
+                          <div className="relative w-full h-full">
+                            <iframe
+                              src={`https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&mute=1&loop=1&playlist=${vId}&controls=1&modestbranding=1&rel=0&start=${startSec}${endSec ? `&end=${endSec}` : ''}`}
+                              title="YouTube Preview"
+                              className="w-full h-full object-cover border-0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            />
+                            <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-md border border-luxury-gold/40 text-[9px] font-mono uppercase text-luxury-gold flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                              Live YouTube Stream Preview ({startSec}s - {endSec ? `${endSec}s` : 'End'})
+                            </div>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className="text-center p-6 text-zinc-500">
+                          <Film className="w-8 h-8 mx-auto mb-2 opacity-50 text-luxury-gold" />
+                          <span className="text-xs">Enter YouTube Video URL to preview live stream</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              ) : (
+                /* Image Preview Box & Controls */
+                <div className="space-y-3.5">
+                  <div className="aspect-video w-full bg-black rounded-lg overflow-hidden border border-zinc-800 relative group flex items-center justify-center">
+                    {formData.culture.imageUrl ? (
+                      <img src={formData.culture.imageUrl} alt={formData.culture.imageAlt} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-center p-6 text-zinc-500">
+                        <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <span>No image uploaded</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Upload Controls */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <label className="cursor-pointer">
+                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'culture')} className="hidden" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-luxury-gold text-black font-semibold text-xs uppercase tracking-wider hover:brightness-110 cursor-pointer">
+                        {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                        Upload Image
+                      </span>
+                    </label>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openMediaManager({ onSelect: (url) => setFormData({ ...formData, culture: { ...formData.culture, imageUrl: url } }) })}
+                      className="text-xs uppercase"
+                    >
+                      Media Picker
+                    </Button>
+
+                    {formData.culture.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, culture: { ...formData.culture, imageUrl: '' } })}
+                        className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
+                        title="Remove Image"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div>
-                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Image Alt Text</label>
+                <label className="text-zinc-400 font-mono uppercase text-[10px] block mb-1">Image / Media Alt Text</label>
                 <input
                   type="text"
-                  value={formData.culture.imageAlt}
+                  value={formData.culture.imageAlt || ''}
                   onChange={(e) => setFormData({
                     ...formData,
                     culture: { ...formData.culture, imageAlt: e.target.value }
@@ -458,38 +671,6 @@ export const About = () => {
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-zinc-200 font-serif font-bold"
                   placeholder="50+ Person Production & Gaming Suite"
                 />
-              </div>
-
-              {/* Upload Controls */}
-              <div className="flex items-center gap-2 pt-2">
-                <label className="cursor-pointer">
-                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'culture')} className="hidden" />
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-luxury-gold text-black font-semibold text-xs uppercase tracking-wider hover:brightness-110 cursor-pointer">
-                    {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                    Upload Image
-                  </span>
-                </label>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openMediaManager({ onSelect: (url) => setFormData({ ...formData, culture: { ...formData.culture, imageUrl: url } }) })}
-                  className="text-xs uppercase"
-                >
-                  Media Picker
-                </Button>
-
-                {formData.culture.imageUrl && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, culture: { ...formData.culture, imageUrl: '' } })}
-                    className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
-                    title="Remove Image"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
               </div>
             </div>
           </div>

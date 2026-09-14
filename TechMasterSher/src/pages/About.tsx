@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useData } from "../context/DataContext";
 import { mediaUrl } from "../utils/media";
 import coverImg from "../assets/Cover.jpeg";
+import { extractYouTubeId, parseTimeToSeconds, getYouTubeThumbnail } from "../utils/youtube";
 
 export const About: React.FC = () => {
   const { aboutData } = useData();
@@ -79,7 +80,15 @@ export const About: React.FC = () => {
     order: 4
   };
 
-  const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || coverImg;
+  // Video / YouTube details
+  const mediaType = culture.mediaType || studioCard.mediaType || ((culture.youtubeUrl || studioCard.youtubeUrl) ? "youtube" : "image");
+  const youtubeUrl = culture.youtubeUrl || studioCard.youtubeUrl || "";
+  const videoId = culture.videoId || studioCard.videoId || extractYouTubeId(youtubeUrl);
+  const startSec = parseTimeToSeconds(culture.startTime ?? studioCard.startTime);
+  const endSec = parseTimeToSeconds(culture.endTime ?? studioCard.endTime);
+
+  const fallbackThumb = videoId ? getYouTubeThumbnail(videoId) : "";
+  const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || fallbackThumb || coverImg;
   const founderImgUrl = mediaUrl(philosophy.profileImageUrl || philosophy.imageUrl || philosophy.image || aboutDataAny?.introduction?.profileImageUrl) || coverImg;
 
   return (
@@ -161,7 +170,7 @@ export const About: React.FC = () => {
           </section>
         )}
 
-        {/* 3. Team Culture & Studio Image Card Section */}
+        {/* 3. Team Culture & Studio Image/Video Card Section */}
         {(culture.visibility !== false || studioCard.visibility !== false) && (
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {culture.visibility !== false && culture.status !== "Draft" && (
@@ -189,15 +198,39 @@ export const About: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="relative rounded-3xl overflow-hidden border border-gold/20 shadow-2xl h-[380px]"
+                className="relative rounded-3xl overflow-hidden border border-gold/20 shadow-2xl h-[380px] sm:h-[420px] bg-zinc-950 group"
               >
-                <img
-                  src={studioImgUrl}
-                  alt={culture.imageAlt || studioCard.imageAlt || "Tech Master Team"}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
+                {/* 1. Poster image underlay for zero black frame flicker */}
+                {studioImgUrl && (
+                  <img
+                    src={studioImgUrl}
+                    alt={culture.imageAlt || studioCard.imageAlt || "Tech Master Team"}
+                    className="w-full h-full object-cover absolute inset-0 z-0 opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  />
+                )}
+
+                {/* 2. YouTube Live Video Stream iFrame (Full Bleed Edge-To-Edge) */}
+                {mediaType === "youtube" && videoId ? (
+                  <div className="absolute inset-0 z-10 overflow-hidden flex items-center justify-center pointer-events-none">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
+                      title={culture.imageAlt || studioCard.imageAlt || "Tech Master Company Culture Video"}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      style={{
+                        height: "135%",
+                        aspectRatio: "16/9",
+                        minWidth: "170%"
+                      }}
+                      className="object-cover border-0 pointer-events-none origin-center transform scale-110"
+                    />
+                  </div>
+                ) : null}
+
+                {/* Dark Vignette Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent z-20 pointer-events-none" />
+
+                {/* Bottom Overlay Text Details */}
+                <div className="absolute bottom-6 left-6 right-6 z-30 pointer-events-none">
                   <span className="text-gold font-mono text-xs uppercase tracking-widest font-bold block mb-1">
                     {culture.imageSubtitle || studioCard.imageSubtitle || "Jaipur Studio"}
                   </span>

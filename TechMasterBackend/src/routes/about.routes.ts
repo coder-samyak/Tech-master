@@ -8,6 +8,14 @@ import { createCmsRouter } from "./cmsRouterHelper";
 
 const router = Router();
 
+function extractYouTubeId(url: string): string {
+  if (!url) return "";
+  if (url.length === 11 && !url.includes("/") && !url.includes(".")) return url;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : "";
+}
+
 // GET About Page Data
 router.get("/", async (req, res, next) => {
   try {
@@ -24,6 +32,22 @@ router.get("/", async (req, res, next) => {
 router.put("/", authenticate as any, async (req, res, next) => {
   try {
     const payload = req.body;
+
+    if (payload.culture) {
+      if (payload.culture.youtubeUrl && !payload.culture.videoId) {
+        payload.culture.videoId = extractYouTubeId(payload.culture.youtubeUrl);
+      } else if (payload.culture.youtubeUrl && payload.culture.videoId === "") {
+        payload.culture.videoId = extractYouTubeId(payload.culture.youtubeUrl);
+      }
+    }
+    if (payload.studioCard) {
+      if (payload.studioCard.youtubeUrl && !payload.studioCard.videoId) {
+        payload.studioCard.videoId = extractYouTubeId(payload.studioCard.youtubeUrl);
+      } else if (payload.studioCard.youtubeUrl && payload.studioCard.videoId === "") {
+        payload.studioCard.videoId = extractYouTubeId(payload.studioCard.youtubeUrl);
+      }
+    }
+
     await CMSData.findOneAndUpdate({ key: "about" }, { value: payload }, { upsert: true, new: true });
     await CMSData.findOneAndUpdate({ key: "aboutTechMaster" }, { value: payload.aboutTechMaster || payload }, { upsert: true, new: true });
     

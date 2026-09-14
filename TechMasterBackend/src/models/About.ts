@@ -52,6 +52,17 @@ export interface ICultureSection {
   mainHeading?: string;
   highlightedText?: string;
   description?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  imageSubtitle?: string;
+  imageDescription?: string;
+  overlayCaption?: string;
+  mediaType?: "image" | "video" | "youtube";
+  youtubeUrl?: string;
+  videoId?: string;
+  videoUrl?: string;
+  startTime?: string | number;
+  endTime?: string | number;
   bgStyle?: string;
   borderStyle?: string;
   order?: number;
@@ -65,6 +76,12 @@ export interface IStudioCardSection {
   imageSubtitle?: string;
   imageDescription?: string;
   overlayCaption?: string;
+  mediaType?: "image" | "video" | "youtube";
+  youtubeUrl?: string;
+  videoId?: string;
+  videoUrl?: string;
+  startTime?: string | number;
+  endTime?: string | number;
   visibility?: boolean;
   order?: number;
 }
@@ -119,6 +136,17 @@ const AboutSchema = new Schema<IAbout>(
       mainHeading: { type: String, default: "Good People." },
       highlightedText: { type: String, default: "Good Work. Good Vibes" },
       description: { type: String, default: "Ideas get clashed over here, not because we're trying to prove a point, but because everyone actually cares. We push each other, we push ourselves but nobody's burning out to do it. Somewhere between the deadlines and the chai breaks, this team just falls into a rhythm. Good People. Good Work. Good Vibes" },
+      imageUrl: { type: String, default: "" },
+      imageAlt: { type: String, default: "" },
+      imageSubtitle: { type: String, default: "" },
+      imageDescription: { type: String, default: "" },
+      overlayCaption: { type: String, default: "" },
+      mediaType: { type: String, default: "image" },
+      youtubeUrl: { type: String, default: "" },
+      videoId: { type: String, default: "" },
+      videoUrl: { type: String, default: "" },
+      startTime: { type: Schema.Types.Mixed, default: "" },
+      endTime: { type: Schema.Types.Mixed, default: "" },
       bgStyle: { type: String, default: "glass" },
       borderStyle: { type: String, default: "gold-subtle" },
       order: { type: Number, default: 2 },
@@ -131,6 +159,12 @@ const AboutSchema = new Schema<IAbout>(
       imageSubtitle: { type: String, default: "Jaipur Studio" },
       imageDescription: { type: String, default: "50+ Person Production & Gaming Suite" },
       overlayCaption: { type: String, default: "" },
+      mediaType: { type: String, default: "image" },
+      youtubeUrl: { type: String, default: "" },
+      videoId: { type: String, default: "" },
+      videoUrl: { type: String, default: "" },
+      startTime: { type: Schema.Types.Mixed, default: "" },
+      endTime: { type: Schema.Types.Mixed, default: "" },
       visibility: { type: Boolean, default: true },
       order: { type: Number, default: 3 }
     },
