@@ -91,6 +91,40 @@ export const About: React.FC = () => {
   const studioImgUrl = mediaUrl(studioCard.imageUrl || culture.imageUrl || aboutDataAny?.story?.imageUrl) || fallbackThumb || coverImg;
   const founderImgUrl = mediaUrl(philosophy.profileImageUrl || philosophy.imageUrl || philosophy.image || aboutDataAny?.introduction?.profileImageUrl) || coverImg;
 
+  const targetYtUrl = youtubeUrl || (videoId ? `https://www.youtube.com/watch?v=${videoId}&t=${startSec}s` : "");
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
+  const [isPaused, setIsPaused] = React.useState(false);
+
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: "command", func: "pauseVideo", args: "" }),
+          "*"
+        );
+      } catch (e) {}
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: "command", func: "playVideo", args: "" }),
+          "*"
+        );
+      } catch (e) {}
+    }
+  };
+
+  const handleCardClick = () => {
+    if (targetYtUrl) {
+      window.open(targetYtUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <div className="relative text-white min-h-screen pt-28 pb-16 px-6 overflow-hidden bg-black">
       {/* Ambient background glows */}
@@ -198,8 +232,33 @@ export const About: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="relative rounded-3xl overflow-hidden border border-gold/20 shadow-2xl h-[380px] sm:h-[420px] bg-zinc-950 group"
+                onClick={handleCardClick}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                className="relative rounded-3xl overflow-hidden border border-gold/20 hover:border-gold/60 shadow-2xl h-[380px] sm:h-[420px] bg-zinc-950 group cursor-pointer transition-all duration-300"
               >
+                {/* Transparent Click-Capturing Overlay */}
+                <div 
+                  className="absolute inset-0 z-40 cursor-pointer"
+                  onClick={handleCardClick}
+                />
+
+                {/* Hover Status Badge */}
+                {mediaType === "youtube" && videoId && (
+                  <div className="absolute top-4 right-4 z-35 transition-all duration-300">
+                    {isPaused ? (
+                      <div className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-gold/50 text-[10px] font-mono uppercase text-gold flex items-center gap-1.5 shadow-lg animate-pulse">
+                        <span className="w-2 h-2 rounded-full bg-gold" />
+                        Paused (Click to Open YouTube)
+                      </div>
+                    ) : (
+                      <div className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-mono uppercase text-white/80 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span>Click to Watch on YouTube</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* 1. Poster image underlay for zero black frame flicker */}
                 {studioImgUrl && (
                   <img
@@ -213,6 +272,7 @@ export const About: React.FC = () => {
                 {mediaType === "youtube" && videoId ? (
                   <div className="absolute inset-0 z-10 overflow-hidden flex items-center justify-center pointer-events-none">
                     <iframe
+                      ref={iframeRef}
                       src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&start=${startSec}${endSec ? `&end=${endSec}` : ""}`}
                       title={culture.imageAlt || studioCard.imageAlt || "Tech Master Company Culture Video"}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
