@@ -110,23 +110,49 @@ const YouTubeShortPlayer: React.FC<{ ytId: string; displayTitle: string; isActiv
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const restartVideo = () => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "seekTo", args: [0, true] }), "*");
+        iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "*");
+      }
+    };
+
+    // Send listening handshake so YouTube iframe posts event updates
+    const sendHandshake = () => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({ event: "listening" }), "*");
+      }
+    };
+    sendHandshake();
+    const handshakeInterval = setInterval(sendHandshake, 800);
+
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        if ((data && data.event === "infoDelivery" && data.info && data.info.playerState === 0) || (data && data.event === "onStateChange" && data.info === 0)) {
-          if (iframeRef.current && iframeRef.current.contentWindow) {
-            iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func: "seekTo", args: [0, true] }), "*");
-            iframeRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "*");
+        if (data && data.event === "infoDelivery" && data.info) {
+          const { currentTime, duration, playerState } = data.info;
+          if (
+            (duration > 0 && currentTime >= duration - 0.4) ||
+            playerState === 0 ||
+            playerState === 2
+          ) {
+            restartVideo();
           }
+        } else if (data && data.event === "onStateChange" && (data.info === 0 || data.info === 2)) {
+          restartVideo();
         }
       } catch (e) {}
     };
 
     window.addEventListener("message", handleMessage);
     return () => {
+      clearInterval(handshakeInterval);
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [ytId]);
 
   const embedUrl = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1`;
 
